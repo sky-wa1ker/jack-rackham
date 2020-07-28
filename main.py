@@ -65,12 +65,12 @@ async def api(ctx):
 
 
 
-nations_v1 = requests.get(f'https://politicsandwar.com/api/nations/?key={api_key}').json()['nations']
-
-nations_v2 = requests.get(f'https://politicsandwar.com/api/v2/nations/{api_key}/').json()['data']
+#nations_v1 = requests.get(f'https://politicsandwar.com/api/nations/?key={api_key}').json()['nations']
 
 
 def nation_search(self):
+    nations_v2 = requests.get(f'https://politicsandwar.com/api/v2/nations/{api_key}/').json()['data']
+    
     result = next((item for item in nations_v2 if (item["nation"]).lower() == (f"{self}").lower()), False)
 
     if result != False:
