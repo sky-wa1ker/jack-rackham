@@ -176,7 +176,7 @@ async def counter(ctx, *, enemy_id):
                         embed=discord.Embed(title='Counter Search', color=0x000000)
                         embed.add_field(name="Enemy", value=f"[{e_leader} of {e_name}](https://politicsandwar.com/nation/id={enemy_id}) \n `{e_alliance} | {e_war_policy} | 🏙️ {e_city_count} | Score: {e_score}` \n`💂 {e_soldiers} | ⚙️ {e_tanks} | ✈️ {e_aircraft} | 🚢 {e_ships}\n🚀 {e_missiles} | ☢️ {e_nukes}`", inline=False)
                         embed.add_field(name='Counter 1', value=f'[{name1}](https://politicsandwar.com/nation/id={id1}) \n `{leader1} | 🏙️ {city_count1} | Score: {score1}` \n `💂 {soldiers1} | ⚙️ {tanks1} | ✈️ {aircraft1} | 🚢 {ships1}`', inline=False)
-                        embed.set_footer(text="DM Sam Cooper for help or to report a bug                  .")
+                        embed.set_footer(text="DM Sam Cooper for help or to report a bug                     .")
 
                         await ctx.send(embed=embed)
 
@@ -205,7 +205,7 @@ async def counter(ctx, *, enemy_id):
                         embed.add_field(name="Enemy", value=f"[{e_leader} of {e_name}](https://politicsandwar.com/nation/id={enemy_id}) \n `{e_alliance} | {e_war_policy} | 🏙️ {e_city_count} | Score: {e_score}` \n`💂 {e_soldiers} | ⚙️ {e_tanks} | ✈️ {e_aircraft} | 🚢 {e_ships}\n🚀 {e_missiles} | ☢️ {e_nukes}`", inline=False)
                         embed.add_field(name='Counter 1', value=f'[{name1}](https://politicsandwar.com/nation/id={id1}) \n `{leader1} | 🏙️ {city_count1} | Score: {score1}` \n `💂 {soldiers1} | ⚙️ {tanks1} | ✈️ {aircraft1} | 🚢 {ships1}`', inline=False)
                         embed.add_field(name='Counter 2', value=f'[{name2}](https://politicsandwar.com/nation/id={id2}) \n `{leader2} | 🏙️ {city_count2} | Score: {score2}` \n `💂 {soldiers2} | ⚙️ {tanks2} | ✈️ {aircraft2} | 🚢 {ships2}`', inline=False)
-                        embed.set_footer(text="DM Sam Cooper for help or to report a bug                  .")
+                        embed.set_footer(text="DM Sam Cooper for help or to report a bug                     .")
 
                         await ctx.send(embed=embed)
 
@@ -245,7 +245,7 @@ async def counter(ctx, *, enemy_id):
                         embed.add_field(name='Counter 1', value=f'[{name1}](https://politicsandwar.com/nation/id={id1}) \n `{leader1} | 🏙️ {city_count1} | Score: {score1}` \n `💂 {soldiers1} | ⚙️ {tanks1} | ✈️ {aircraft1} | 🚢 {ships1}`', inline=False)
                         embed.add_field(name='Counter 2', value=f'[{name2}](https://politicsandwar.com/nation/id={id2}) \n `{leader2} | 🏙️ {city_count2} | Score: {score2}` \n `💂 {soldiers2} | ⚙️ {tanks2} | ✈️ {aircraft2} | 🚢 {ships2}`', inline=False)
                         embed.add_field(name='Counter 3', value=f'[{name3}](https://politicsandwar.com/nation/id={id3}) \n `{leader3} | 🏙️ {city_count3} | Score: {score3}` \n `💂 {soldiers3} | ⚙️ {tanks3} | ✈️ {aircraft3} | 🚢 {ships3}`', inline=False)
-                        embed.set_footer(text="DM Sam Cooper for help or to report a bug                  .")
+                        embed.set_footer(text="DM Sam Cooper for help or to report a bug                     .")
 
                         await ctx.send(embed=embed)
 
