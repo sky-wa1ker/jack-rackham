@@ -4,6 +4,7 @@ import timeago
 import os
 from discord.ext import commands
 from datetime import datetime
+import asyncio
 
 
 
@@ -62,6 +63,12 @@ async def api(ctx):
         await ctx.send('This command can only be used by my master.')
 
 
+@client.event
+async def on_member_join(member):
+    await asyncio.sleep(2)
+    channel = client.get_channel(220361410616492033) #channel where welcome message is sent.
+    channel1 = client.get_channel(678147969912012810) #channel that gets mentioned.
+    await channel.send(f'Hello and welcome {member.mention}!, Lady Anne was actually referring to {channel1.mention}(totally not mansplaining here), that\'s where you apply or get a room to talk secret stuff.')
 
 
 
