@@ -2,11 +2,23 @@ import requests
 import discord
 import timeago
 import os
-from discord.ext import commands
+from discord.ext import commands, tasks
 from datetime import datetime
 import asyncio
 
 
+'''
+Commands active :
+ping : latency check. - Status : Optimal.
+help : the help message. - Status : Optimal.
+api: gets the api numbers, used and remaining for the day -  Status : Optimal.
+nation : Searches for a nation in nations_v2 dictionary. - Status : Working condition, yet to be tested thoroughly.
+counter : gets potential counters for an attack. - Status : Very good.
+
+
+Tasks active :
+update_nation_active : updates nations_v2 dictionary every 15 minutes.
+'''
 
 token = os.environ['token']
 api_key = os.environ['api_key']
@@ -19,6 +31,7 @@ client.remove_command('help')
 async def on_ready():
     game = discord.Game("innocent. type .help")
     await client.change_presence(status=discord.Status.online, activity=game)
+    update_nation_dict.start()
     print('Online as {0.user}'.format(client))
 
 
@@ -29,6 +42,14 @@ async def on_command_error(ctx, error):
     else:
         await ctx.send('There was some error lol.')
 
+
+@tasks.loop(minutes=15)
+async def update_nation_dict():
+    channel = client.get_channel(520567638779232256)
+    message = await channel.send('Updating nations data please wait....')
+    global nations_v2
+    nations_v2 = requests.get(f'https://politicsandwar.com/api/v2/nations/{api_key}/').json()['data']
+    await message.delete()
 
 @client.command()
 async def ping(ctx):
@@ -76,8 +97,6 @@ async def on_member_join(member):
 
 
 def nation_search(self):
-    nations_v2 = requests.get(f'https://politicsandwar.com/api/v2/nations/{api_key}/').json()['data']
-    
     result = next((item for item in nations_v2 if (item["nation"]).lower() == (f"{self}").lower()), False)
 
     if result != False:
