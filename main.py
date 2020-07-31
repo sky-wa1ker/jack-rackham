@@ -96,8 +96,8 @@ async def on_member_join(member):
 @client.event
 async def on_member_remove(member):
     await asyncio.sleep(1)
-    channel = client.get_channel(731146047081939025)
-    await channel.send(f'{member.mention} drank too much rum and fell off the deck. Fs in the chat please.')
+    channel = client.get_channel(220361410616492033)
+    await channel.send(f'{member.mention} drank too much rum and fell off the deck.')
 
 
 
