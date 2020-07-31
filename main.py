@@ -43,7 +43,7 @@ async def on_command_error(ctx, error):
         await ctx.send('There was some error lol.')
 
 
-@tasks.loop(minutes=15)
+@tasks.loop(minutes=20)
 async def update_nation_dict():
     channel = client.get_channel(520567638779232256)
     message = await channel.send('Updating nations data please wait....')
