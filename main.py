@@ -89,7 +89,15 @@ async def on_member_join(member):
     await asyncio.sleep(2)
     channel = client.get_channel(220361410616492033) #channel where welcome message is sent.
     channel1 = client.get_channel(678147969912012810) #channel that gets mentioned.
-    await channel.send(f'Hello and welcome {member.mention}!, Lady Anne was actually referring to {channel1.mention}(totally not mansplaining here), that\'s where you apply or get a room to talk secret stuff.')
+    await channel.send(f'Hello and welcome {member.mention}!, Lady Anne is a little bit drunk from all that rum, she was actually referring to {channel1.mention}, that\'s where you apply or get a room to talk secret stuff.')
+
+
+
+@client.event
+async def on_member_remove(member):
+    await asyncio.sleep(1)
+    channel = client.get_channel(731146047081939025)
+    await channel.send(f'{member.mention} drank too much rum and fell off the deck. Fs in the chat please.')
 
 
 
