@@ -64,8 +64,8 @@ async def help(ctx):
     embed=discord.Embed(title="Jack Rackham help centre", description="Commands and help:", color=0x007bff)
     embed.add_field(name=".nation {nation/leader name}", value="Search for a nation. (.nation Markovia)", inline=False)
     embed.add_field(name='.counter {target nation ID}', value= 'Search for counters. (.counter 176311)', inline=False)
-    embed.add_field(name='.api', value= 'API details, not for general use.')
-    embed.add_field(name='.getwhale {alliance id}', value='Gets you 5 people with most infra in an alliance. (.getwhale 1584) ')
+    embed.add_field(name='.api', value= 'API details, not for general use.', inline=False)
+    embed.add_field(name='.getwhale {alliance id}', value='Gets you 5 people with most infra in an alliance. (.getwhale 1584) ', inline=False)
     embed.add_field(name="About", value="Developed and maintained by Sam Cooper.", inline=False)
     
 
