@@ -40,6 +40,8 @@ async def on_ready():
 async def on_command_error(ctx, error):
     if isinstance(error, commands.MissingRequiredArgument):
         await ctx.send('Command is missing one or more required arguments.')
+    elif isinstance(error, TypeError):
+        await ctx.send('Wrong argument type.')
     else:
         await ctx.send('There was some error lol.')
 
