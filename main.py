@@ -120,7 +120,7 @@ def nation_search(self):
 
 @client.command(aliases=['nations'])
 async def nation(ctx, *, nation_name):
-    if ctx.category.name != 'PUBLIC':
+    if ctx.Category.name != 'PUBLIC':
         result_dict = nation_search(nation_name)
         if result_dict is False:
             await ctx.send('No results.')
@@ -168,7 +168,7 @@ async def nation(ctx, *, nation_name):
 
 @client.command()
 async def counter(ctx, *, enemy_id):
-    if ctx.category.name != 'PUBLIC':
+    if ctx.Category.name != 'PUBLIC':
         if enemy_id is int:
             await ctx.send('error lol.')
         else:
@@ -297,7 +297,7 @@ async def counter(ctx, *, enemy_id):
 
 @client.command(aliases=['getwhales'])
 async  def getwhale(ctx, *, aa_id: int):
-    if ctx.category.name != 'PUBLIC':
+    if ctx.Category.name != 'PUBLIC':
         aa_members = requests.get(f'https://politicsandwar.com/api/nations/?key={api_key}&alliance_id={aa_id}').json()['nations']
         if len(aa_members) > 5:
             for d in aa_members: d['avg_infra'] = d['infrastructure']/d['cities']
