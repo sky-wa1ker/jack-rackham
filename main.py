@@ -65,6 +65,7 @@ async def help(ctx):
     embed.add_field(name=".nation {nation/leader name}", value="Search for a nation. (.nation Markovia)", inline=False)
     embed.add_field(name='.counter {target nation ID}', value= 'Search for counters. (.counter 176311)', inline=False)
     embed.add_field(name='.api', value= 'API details, not for general use.')
+    embed.add_field(name='.getwhale {alliance id}', value='Gets you 5 people with most infra in an alliance. (.getwhale 1584) ')
     embed.add_field(name="About", value="Developed and maintained by Sam Cooper.", inline=False)
     
 
@@ -153,7 +154,7 @@ async def nation(ctx, *, nation_name):
             embed.add_field(name="War Range", value=f'`⬆️ {round((score * 0.75),2)} to {round((score * 1.75),2)}\n\n⬇️ {round((score / 1.75),2)} to {round((score / 0.75),2)}`', inline=False)
             embed.add_field(name="Wars", value=f'`⬆️ {o_wars} | ⬇️ {d_wars}`', inline=False)
             embed.add_field(name="Military", value=f'`💂 {soldiers} | ⚙️ {tanks} | ✈️ {aircraft} | 🚢 {ships}\n🚀 {missiles} | ☢️ {nukes}`', inline=False)
-            embed.set_footer(text="DM Sam Cooper for help or to report a bug                  .")
+            embed.set_footer(text="DM Sam Cooper for help or to report a bug                  .", icon_url='https://i.ibb.co/hZYfs2G/c4f2d1b5f5b1abda378a236a87f827cf.jpg')
             await ctx.send(embed=embed)
     else:
         await ctx.send('Wrong channel mate!')
@@ -213,7 +214,7 @@ async def counter(ctx, *, enemy_id):
                         embed=discord.Embed(title='Counter Search', color=0x000000)
                         embed.add_field(name="Enemy", value=f"[{e_leader} of {e_name}](https://politicsandwar.com/nation/id={enemy_id}) \n `{e_alliance} | {e_war_policy} | 🏙️ {e_city_count} | NS: {e_score}` \n`💂 {e_soldiers} | ⚙️ {e_tanks} | ✈️ {e_aircraft} | 🚢 {e_ships}\n🚀 {e_missiles} | ☢️ {e_nukes}`", inline=False)
                         embed.add_field(name='Counter 1', value=f'[{name1}](https://politicsandwar.com/nation/id={id1}) \n `{leader1} | 🏙️ {city_count1} | Score: {score1}` \n `💂 {soldiers1} | ⚙️ {tanks1} | ✈️ {aircraft1} | 🚢 {ships1}`', inline=False)
-                        embed.set_footer(text="DM Sam Cooper for help or to report a bug                     .")
+                        embed.set_footer(text="DM Sam Cooper for help or to report a bug                     .", icon_url='https://i.ibb.co/hZYfs2G/c4f2d1b5f5b1abda378a236a87f827cf.jpg')
 
                         await ctx.send(embed=embed)
 
@@ -242,7 +243,7 @@ async def counter(ctx, *, enemy_id):
                         embed.add_field(name="Enemy", value=f"[{e_leader} of {e_name}](https://politicsandwar.com/nation/id={enemy_id}) \n `{e_alliance} | {e_war_policy} | 🏙️ {e_city_count} | NS: {e_score}` \n`💂 {e_soldiers} | ⚙️ {e_tanks} | ✈️ {e_aircraft} | 🚢 {e_ships}\n🚀 {e_missiles} | ☢️ {e_nukes}`", inline=False)
                         embed.add_field(name='Counter 1', value=f'[{name1}](https://politicsandwar.com/nation/id={id1}) \n `{leader1} | 🏙️ {city_count1} | Score: {score1}` \n `💂 {soldiers1} | ⚙️ {tanks1} | ✈️ {aircraft1} | 🚢 {ships1}`', inline=False)
                         embed.add_field(name='Counter 2', value=f'[{name2}](https://politicsandwar.com/nation/id={id2}) \n `{leader2} | 🏙️ {city_count2} | Score: {score2}` \n `💂 {soldiers2} | ⚙️ {tanks2} | ✈️ {aircraft2} | 🚢 {ships2}`', inline=False)
-                        embed.set_footer(text="DM Sam Cooper for help or to report a bug                     .")
+                        embed.set_footer(text="DM Sam Cooper for help or to report a bug                     .", icon_url='https://i.ibb.co/hZYfs2G/c4f2d1b5f5b1abda378a236a87f827cf.jpg')
 
                         await ctx.send(embed=embed)
 
@@ -282,7 +283,7 @@ async def counter(ctx, *, enemy_id):
                         embed.add_field(name='Counter 1', value=f'[{name1}](https://politicsandwar.com/nation/id={id1}) \n `{leader1} | 🏙️ {city_count1} | Score: {score1}` \n `💂 {soldiers1} | ⚙️ {tanks1} | ✈️ {aircraft1} | 🚢 {ships1}`', inline=False)
                         embed.add_field(name='Counter 2', value=f'[{name2}](https://politicsandwar.com/nation/id={id2}) \n `{leader2} | 🏙️ {city_count2} | Score: {score2}` \n `💂 {soldiers2} | ⚙️ {tanks2} | ✈️ {aircraft2} | 🚢 {ships2}`', inline=False)
                         embed.add_field(name='Counter 3', value=f'[{name3}](https://politicsandwar.com/nation/id={id3}) \n `{leader3} | 🏙️ {city_count3} | Score: {score3}` \n `💂 {soldiers3} | ⚙️ {tanks3} | ✈️ {aircraft3} | 🚢 {ships3}`', inline=False)
-                        embed.set_footer(text="DM Sam Cooper for help or to report a bug                     .")
+                        embed.set_footer(text="DM Sam Cooper for help or to report a bug                     .", icon_url='https://i.ibb.co/hZYfs2G/c4f2d1b5f5b1abda378a236a87f827cf.jpg')
 
                         await ctx.send(embed=embed)
 
@@ -328,11 +329,12 @@ async  def getwhale(ctx, *, aa_id: int):
             score5 = float(whales[4]['score'])
 
             embed = discord.Embed(title='Whale Search', color=0x000000)
-            embed.add_field(name= 'Whale 1', value=f'[{name1}](https://politicsandwar.com/nation/id={id1})\nAvg Infra: {avg_infra1}\nRange: **{round((score1 / 1.75),2)} - {round((score1 / 0.75),2)}**')
-            embed.add_field(name= 'Whale 2', value=f'[{name2}](https://politicsandwar.com/nation/id={id2})\nAvg Infra: {avg_infra2}\nRange: **{round((score2 / 1.75),2)} - {round((score2 / 0.75),2)}**')
-            embed.add_field(name= 'Whale 3', value=f'[{name3}](https://politicsandwar.com/nation/id={id3})\nAvg Infra: {avg_infra3}\nRange: **{round((score3 / 1.75),2)} - {round((score3 / 0.75),2)}**')
-            embed.add_field(name= 'Whale 4', value=f'[{name4}](https://politicsandwar.com/nation/id={id4})\nAvg Infra: {avg_infra4}\nRange: **{round((score4 / 1.75),2)} - {round((score4 / 0.75),2)}**')
-            embed.add_field(name= 'Whale 5', value=f'[{name5}](https://politicsandwar.com/nation/id={id5})\nAvg Infra: {avg_infra5}\nRange: **{round((score5 / 1.75),2)} - {round((score5 / 0.75),2)}**')
+            embed.add_field(name= 'Whale 1', value=f'[{name1}](https://politicsandwar.com/nation/id={id1})\nAvg Infra: {avg_infra1}\nRange: **{round((score1 / 1.75),2)} - {round((score1 / 0.75),2)}**', inline=False)
+            embed.add_field(name= 'Whale 2', value=f'[{name2}](https://politicsandwar.com/nation/id={id2})\nAvg Infra: {avg_infra2}\nRange: **{round((score2 / 1.75),2)} - {round((score2 / 0.75),2)}**', inline=False)
+            embed.add_field(name= 'Whale 3', value=f'[{name3}](https://politicsandwar.com/nation/id={id3})\nAvg Infra: {avg_infra3}\nRange: **{round((score3 / 1.75),2)} - {round((score3 / 0.75),2)}**', inline=False)
+            embed.add_field(name= 'Whale 4', value=f'[{name4}](https://politicsandwar.com/nation/id={id4})\nAvg Infra: {avg_infra4}\nRange: **{round((score4 / 1.75),2)} - {round((score4 / 0.75),2)}**', inline=False)
+            embed.add_field(name= 'Whale 5', value=f'[{name5}](https://politicsandwar.com/nation/id={id5})\nAvg Infra: {avg_infra5}\nRange: **{round((score5 / 1.75),2)} - {round((score5 / 0.75),2)}**', inline=False)
+            embed.set_footer(text='DM Sam Cooper for help or to report a bug.', icon_url='https://i.ibb.co/hZYfs2G/c4f2d1b5f5b1abda378a236a87f827cf.jpg')
 
             await ctx.send(embed=embed)
         else:
