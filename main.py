@@ -14,6 +14,7 @@ help : the help message. - Status : Optimal.
 api: gets the api numbers, used and remaining for the day -  Status : Optimal.
 nation : Searches for a nation in nations_v2 dictionary. - Status : Working condition, yet to be tested thoroughly.
 counter : gets potential counters for an attack. - Status : Very good.
+getwhale : gets 5 people with most infra in an aa. - Status : yet to be checked.
 
 
 Tasks active :
@@ -290,7 +291,53 @@ async def counter(ctx, *, enemy_id):
         await ctx.send('Wrong channel mate!')
 
 
-        
+
+@client.command()
+async  def getwhale(ctx, *, aa_id: int):
+    if ctx.channel.name == 'bot-test':
+        aa_members = requests.get(f'https://politicsandwar.com/api/nations/?key={api_key}&alliance_id={aa_id}').json()['nations']
+        if len(aa_members) > 5:
+            for d in aa_members: d['avg_infra'] = d['infrastructure']/d['cities']
+            whales = sorted(aa_members, key=lambda i: i['avg_infra'], reverse=True)
+
+            name1 = whales[0]['nation']
+            id1 = whales[0]['nationid']
+            avg_infra1 = round(whales[0]['avg_infra'], 2)
+            score1 = float(whales[0]['score'])
+
+            name2 = whales[1]['nation']
+            id2 = whales[1]['nationid']
+            avg_infra2 = round(whales[1]['avg_infra'], 2)
+            score2 = float(whales[1]['score'])
+
+            name3 = whales[2]['nation']
+            id3 = whales[2]['nationid']
+            avg_infra3 = round(whales[2]['avg_infra'], 2)
+            score3 = float(whales[2]['score'])
+
+            name4 = whales[3]['nation']
+            id4 = whales[3]['nationid']
+            avg_infra4 = round(whales[3]['avg_infra'], 2)
+            score4 = float(whales[3]['score'])
+
+            name5 = whales[4]['nation']
+            id5 = whales[4]['nationid']
+            avg_infra5 = round(whales[4]['avg_infra'], 2)
+            score5 = float(whales[4]['score'])
+
+            embed = discord.Embed(title='Whale Search', color=0x000000)
+            embed.add_field(name= 'Whale 1', value=f'[{name1}](https://politicsandwar.com/nation/id={id1})\nAvg Infra: {avg_infra1}\nRange: **{round((score1 / 1.75),2)} - {round((score1 / 0.75),2)}**')
+            embed.add_field(name= 'Whale 2', value=f'[{name2}](https://politicsandwar.com/nation/id={id2})\nAvg Infra: {avg_infra2}\nRange: **{round((score2 / 1.75),2)} - {round((score2 / 0.75),2)}**')
+            embed.add_field(name= 'Whale 3', value=f'[{name3}](https://politicsandwar.com/nation/id={id3})\nAvg Infra: {avg_infra3}\nRange: **{round((score3 / 1.75),2)} - {round((score3 / 0.75),2)}**')
+            embed.add_field(name= 'Whale 4', value=f'[{name4}](https://politicsandwar.com/nation/id={id4})\nAvg Infra: {avg_infra4}\nRange: **{round((score4 / 1.75),2)} - {round((score4 / 0.75),2)}**')
+            embed.add_field(name= 'Whale 5', value=f'[{name5}](https://politicsandwar.com/nation/id={id5})\nAvg Infra: {avg_infra5}\nRange: **{round((score5 / 1.75),2)} - {round((score5 / 0.75),2)}**')
+
+            await ctx.send(embed=embed)
+        else:
+            await ctx.send('The alliance is too smol, go check manually.')
+    else:
+        await ctx.send('Wrong channel mate!')
+
         
         
         
