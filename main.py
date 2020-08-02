@@ -117,7 +117,7 @@ def nation_search(self):
 
 
 
-@client.command()
+@client.command(aliases=['nations'])
 async def nation(ctx, *, nation_name):
     if ctx.channel.name == ('tech_support'):
         result_dict = nation_search(nation_name)
@@ -294,9 +294,9 @@ async def counter(ctx, *, enemy_id):
 
 
 
-@client.command()
+@client.command(aliases=['getwhales'])
 async  def getwhale(ctx, *, aa_id: int):
-    if ctx.channel.name == 'bot-test':
+    if ctx.channel.name == 'tech_support':
         aa_members = requests.get(f'https://politicsandwar.com/api/nations/?key={api_key}&alliance_id={aa_id}').json()['nations']
         if len(aa_members) > 5:
             for d in aa_members: d['avg_infra'] = d['infrastructure']/d['cities']
