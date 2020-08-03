@@ -93,7 +93,7 @@ async def on_member_join(member):
     await asyncio.sleep(2)
     channel = client.get_channel(220361410616492033) #channel where welcome message is sent.
     channel1 = client.get_channel(678147969912012810) #channel that gets mentioned.
-    await channel.send(f'Hello and welcome {member.mention}!, Lady Anne is a little bit drunk from all that rum, she was actually referring to {channel1.mention}, that\'s where you apply or get a room to talk secret stuff.')
+    await channel.send(f'Hello and welcome {member.mention}!, Lady Anne is a little bit drunk from all that rum, she was referring to {channel1.mention}, that\'s where you apply or get a room to talk secret stuff.')
 
 
 
@@ -101,7 +101,7 @@ async def on_member_join(member):
 async def on_member_remove(member):
     await asyncio.sleep(1)
     channel = client.get_channel(220361410616492033)
-    await channel.send(f'{member.mention} drank too much rum and fell off the deck.')
+    await channel.send(f'{member.mention}({member.display_name}) drank too much rum and fell off the deck.')
 
 
 
@@ -154,7 +154,7 @@ async def nation(ctx, *, nation_name):
             embed.add_field(name="War Range", value=f'`⬆️ {round((score * 0.75),2)} to {round((score * 1.75),2)}\n\n⬇️ {round((score / 1.75),2)} to {round((score / 0.75),2)}`', inline=False)
             embed.add_field(name="Wars", value=f'`⬆️ {o_wars} | ⬇️ {d_wars}`', inline=False)
             embed.add_field(name="Military", value=f'`💂 {soldiers} | ⚙️ {tanks} | ✈️ {aircraft} | 🚢 {ships}\n🚀 {missiles} | ☢️ {nukes}`', inline=False)
-            embed.set_footer(text="DM Sam Cooper for help or to report a bug                  .", icon_url='https://i.ibb.co/hZYfs2G/c4f2d1b5f5b1abda378a236a87f827cf.jpg')
+            embed.set_footer(text="DM Sam Cooper for help or to report a bug                  .", icon_url='https://i.ibb.co/qg5vp8w/dp-cropped.jpg')
             await ctx.send(embed=embed)
     else:
         await ctx.send('Wrong channel mate!')
@@ -214,7 +214,7 @@ async def counter(ctx, *, enemy_id):
                         embed=discord.Embed(title='Counter Search', color=0x000000)
                         embed.add_field(name="Enemy", value=f"[{e_leader} of {e_name}](https://politicsandwar.com/nation/id={enemy_id}) \n `{e_alliance} | {e_war_policy} | 🏙️ {e_city_count} | NS: {e_score}` \n`💂 {e_soldiers} | ⚙️ {e_tanks} | ✈️ {e_aircraft} | 🚢 {e_ships}\n🚀 {e_missiles} | ☢️ {e_nukes}`", inline=False)
                         embed.add_field(name='Counter 1', value=f'[{name1}](https://politicsandwar.com/nation/id={id1}) \n `{leader1} | 🏙️ {city_count1} | Score: {score1}` \n `💂 {soldiers1} | ⚙️ {tanks1} | ✈️ {aircraft1} | 🚢 {ships1}`', inline=False)
-                        embed.set_footer(text="DM Sam Cooper for help or to report a bug                     .", icon_url='https://i.ibb.co/hZYfs2G/c4f2d1b5f5b1abda378a236a87f827cf.jpg')
+                        embed.set_footer(text="DM Sam Cooper for help or to report a bug                     .", icon_url='https://i.ibb.co/qg5vp8w/dp-cropped.jpg')
 
                         await ctx.send(embed=embed)
 
@@ -243,7 +243,7 @@ async def counter(ctx, *, enemy_id):
                         embed.add_field(name="Enemy", value=f"[{e_leader} of {e_name}](https://politicsandwar.com/nation/id={enemy_id}) \n `{e_alliance} | {e_war_policy} | 🏙️ {e_city_count} | NS: {e_score}` \n`💂 {e_soldiers} | ⚙️ {e_tanks} | ✈️ {e_aircraft} | 🚢 {e_ships}\n🚀 {e_missiles} | ☢️ {e_nukes}`", inline=False)
                         embed.add_field(name='Counter 1', value=f'[{name1}](https://politicsandwar.com/nation/id={id1}) \n `{leader1} | 🏙️ {city_count1} | Score: {score1}` \n `💂 {soldiers1} | ⚙️ {tanks1} | ✈️ {aircraft1} | 🚢 {ships1}`', inline=False)
                         embed.add_field(name='Counter 2', value=f'[{name2}](https://politicsandwar.com/nation/id={id2}) \n `{leader2} | 🏙️ {city_count2} | Score: {score2}` \n `💂 {soldiers2} | ⚙️ {tanks2} | ✈️ {aircraft2} | 🚢 {ships2}`', inline=False)
-                        embed.set_footer(text="DM Sam Cooper for help or to report a bug                     .", icon_url='https://i.ibb.co/hZYfs2G/c4f2d1b5f5b1abda378a236a87f827cf.jpg')
+                        embed.set_footer(text="DM Sam Cooper for help or to report a bug                     .", icon_url='https://i.ibb.co/qg5vp8w/dp-cropped.jpg')
 
                         await ctx.send(embed=embed)
 
@@ -283,7 +283,7 @@ async def counter(ctx, *, enemy_id):
                         embed.add_field(name='Counter 1', value=f'[{name1}](https://politicsandwar.com/nation/id={id1}) \n `{leader1} | 🏙️ {city_count1} | Score: {score1}` \n `💂 {soldiers1} | ⚙️ {tanks1} | ✈️ {aircraft1} | 🚢 {ships1}`', inline=False)
                         embed.add_field(name='Counter 2', value=f'[{name2}](https://politicsandwar.com/nation/id={id2}) \n `{leader2} | 🏙️ {city_count2} | Score: {score2}` \n `💂 {soldiers2} | ⚙️ {tanks2} | ✈️ {aircraft2} | 🚢 {ships2}`', inline=False)
                         embed.add_field(name='Counter 3', value=f'[{name3}](https://politicsandwar.com/nation/id={id3}) \n `{leader3} | 🏙️ {city_count3} | Score: {score3}` \n `💂 {soldiers3} | ⚙️ {tanks3} | ✈️ {aircraft3} | 🚢 {ships3}`', inline=False)
-                        embed.set_footer(text="DM Sam Cooper for help or to report a bug                     .", icon_url='https://i.ibb.co/hZYfs2G/c4f2d1b5f5b1abda378a236a87f827cf.jpg')
+                        embed.set_footer(text="DM Sam Cooper for help or to report a bug                     .", icon_url='https://i.ibb.co/qg5vp8w/dp-cropped.jpg')
 
                         await ctx.send(embed=embed)
 
@@ -334,7 +334,7 @@ async  def getwhale(ctx, *, aa_id: int):
             embed.add_field(name= 'Whale 3', value=f'[{name3}](https://politicsandwar.com/nation/id={id3})\nAvg Infra: {avg_infra3}\nRange: **{round((score3 / 1.75),2)} - {round((score3 / 0.75),2)}**', inline=False)
             embed.add_field(name= 'Whale 4', value=f'[{name4}](https://politicsandwar.com/nation/id={id4})\nAvg Infra: {avg_infra4}\nRange: **{round((score4 / 1.75),2)} - {round((score4 / 0.75),2)}**', inline=False)
             embed.add_field(name= 'Whale 5', value=f'[{name5}](https://politicsandwar.com/nation/id={id5})\nAvg Infra: {avg_infra5}\nRange: **{round((score5 / 1.75),2)} - {round((score5 / 0.75),2)}**', inline=False)
-            embed.set_footer(text='DM Sam Cooper for help or to report a bug.', icon_url='https://i.ibb.co/hZYfs2G/c4f2d1b5f5b1abda378a236a87f827cf.jpg')
+            embed.set_footer(text='DM Sam Cooper for help or to report a bug.', icon_url='https://i.ibb.co/qg5vp8w/dp-cropped.jpg')
 
             await ctx.send(embed=embed)
         else:
