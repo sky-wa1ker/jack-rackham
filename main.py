@@ -25,12 +25,12 @@ token = os.environ['token']
 api_key = os.environ['api_key']
 
 
-client = commands.Bot(command_prefix = '.')
+client = commands.Bot(command_prefix = ';')
 client.remove_command('help')
 
 @client.event
 async def on_ready():
-    game = discord.Game("innocent. type .help")
+    game = discord.Game("innocent. type ;help")
     await client.change_presence(status=discord.Status.online, activity=game)
     update_nation_dict.start()
     print('Online as {0.user}'.format(client))
