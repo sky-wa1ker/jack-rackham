@@ -9,6 +9,12 @@ import aiohttp
 
 
 '''
+Events active :
+on ready
+on command error
+on member join
+on member remove
+
 Commands active :
 ping : latency check. - Status : Optimal.
 help : the help message. - Status : Optimal.
@@ -19,7 +25,7 @@ getwhale : gets 5 people with most infra in an aa. - Status : yet to be checked.
 
 
 Tasks active :
-update_nation_active : updates nations_v2 dictionary every 15 minutes.
+update_nation_active : updates nations_v2 dictionary every 20 minutes.
 '''
 
 token = os.environ['token']
@@ -43,6 +49,8 @@ async def on_command_error(ctx, error):
         await ctx.send('Command is missing one or more required arguments.')
     elif isinstance(error, TypeError):
         await ctx.send('Wrong argument type.')
+    elif isinstance(error, commands.CommandOnCooldown):
+        await ctx.send(f'Try again in {round(error.retry_after)} seconds.')
     else:
         await ctx.send('There was some error, see if you\'re using the command right. (;help).')
 
@@ -59,6 +67,7 @@ async def update_nation_dict():
     await message.delete()
 
 @client.command()
+@commands.cooldown(1, 120, commands.BucketType.user)
 async def ping(ctx):
     await ctx.send(f'Pong! {round(client.latency*1000)}ms')
 
