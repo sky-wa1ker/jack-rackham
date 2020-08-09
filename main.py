@@ -5,6 +5,7 @@ import os
 from discord.ext import commands, tasks
 from datetime import datetime
 import asyncio
+import aiohttp
 
 
 '''
@@ -43,15 +44,18 @@ async def on_command_error(ctx, error):
     elif isinstance(error, TypeError):
         await ctx.send('Wrong argument type.')
     else:
-        await ctx.send('There was some error lol.')
+        await ctx.send('There was some error, see if you\'re using the command right. (;help).')
 
 
 @tasks.loop(minutes=20)
 async def update_nation_dict():
     channel = client.get_channel(520567638779232256)
-    message = await channel.send('Updating nations data please wait....')
-    global nations_v2
-    nations_v2 = requests.get(f'https://politicsandwar.com/api/v2/nations/{api_key}/').json()['data']
+    message = await channel.send('Updating nations data....')
+    async with aiohttp.ClientSession() as session:
+        async with session.get(f'https://politicsandwar.com/api/v2/nations/{api_key}/') as r:
+            global nations_v2
+            json_obj = await r.json()
+            nations_v2 = json_obj['data']
     await message.delete()
 
 @client.command()
@@ -66,7 +70,7 @@ async def help(ctx):
     embed.add_field(name='.counter {target nation ID}', value= 'Search for counters. (.counter 176311)', inline=False)
     embed.add_field(name='.api', value= 'API details, not for general use.', inline=False)
     embed.add_field(name='.getwhale {alliance id}', value='Gets you 5 people with most infra in an alliance. (.getwhale 1584) ', inline=False)
-    embed.add_field(name="About", value="Developed and maintained by Sam Cooper.", inline=False)
+    embed.add_field(name="\u200b", value="Developed and maintained by Sam Cooper.", inline=False)
     
 
     await ctx.send(embed=embed)
@@ -77,15 +81,17 @@ async def help(ctx):
 @client.command()
 async def api(ctx):
     if ctx.message.author.id == 343397899369054219:
-        api_check = requests.get(f'https://politicsandwar.com/api/v2/nations/{api_key}/&alliance_id=913&date_created=20190830').json()
-        max_reqs = api_check['api_request']['api_key_details']['daily_requests_maximum']
-        used_reqs = api_check['api_request']['api_key_details']['daily_requests_used']
-        remaining_reqs = api_check['api_request']['api_key_details']['daily_requests_remaining']
-
+        async with aiohttp.ClientSession() as session:
+            async with session.get(f'https://politicsandwar.com/api/v2/nations/{api_key}/&alliance_id=913&date_created=20190830') as r:
+                api_check = await r.json()
+                max_reqs = api_check['api_request']['api_key_details']['daily_requests_maximum']
+                used_reqs = api_check['api_request']['api_key_details']['daily_requests_used']
+                remaining_reqs = api_check['api_request']['api_key_details']['daily_requests_remaining']
         await ctx.send(f'Requests made today :** {used_reqs}** \nRequests remaining: **{remaining_reqs}** \nMaximum daily requests: **{max_reqs}**')
 
     else:
         await ctx.send('This command can only be used by my master.')
+
 
 
 @client.event
