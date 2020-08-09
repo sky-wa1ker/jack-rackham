@@ -198,8 +198,8 @@ async def counter(ctx, *, enemy_id):
                         e_ships = enemy_data.get('ships')
                         e_missiles = enemy_data.get('missiles')
                         e_nukes = enemy_data.get('nukes')
-                        async with aiohttp.ClientSession as session2:
-                            async with session2.get(f'https://politicsandwar.com/api/v2/nations/{api_key}/&alliance_id=913&v_mode=0&min_score={min_score}&max_score={max_score}') as r2:
+                        async with aiohttp.ClientSession as session:
+                            async with session.get(f'https://politicsandwar.com/api/v2/nations/{api_key}/&alliance_id=913&v_mode=0&min_score={min_score}&max_score={max_score}') as r2:
                                 test_request = await r2.json()
                                 in_range_members = test_request['data']
 
