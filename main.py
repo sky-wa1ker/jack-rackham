@@ -6,6 +6,7 @@ from discord.ext import commands, tasks
 from datetime import datetime
 import asyncio
 import aiohttp
+import difflib
 
 
 '''
@@ -121,12 +122,17 @@ async def on_member_remove(member):
 
 def nation_search(self):
     result = next((item for item in nations_v2 if (item["nation"]).lower() == (f"{self}").lower()), False)
-
-    if result != False:
+    if result:
         return result
     else:
         return next((item for item in nations_v2 if (item["leader"]).lower() == (f"{self}").lower()), False)
 
+
+def fuzzy_search(self):
+    raw_list = [[sub['nation'], sub['leader']] for sub in nations_v2]
+    pot_results = [item for sublist in raw_list for item in sublist]
+    results = difflib.get_close_matches(self, pot_results, n=5)
+    return results
 
 
 @client.command(aliases=['nations'])
@@ -134,7 +140,17 @@ async def nation(ctx, *, nation_name):
     if ctx.channel.category.name != 'PUBLIC':
         result_dict = nation_search(nation_name)
         if result_dict is False:
-            await ctx.send('No results.')
+            m = await ctx.send('No exact match found, trying fuzzy search.......')
+            await asyncio.sleep(2)
+            result = fuzzy_search(nation_name)
+            await m.delete()
+            await ctx.send('Did you mean any of these? :')
+            for x in result:
+                nat_dict = nation_search(x)
+                lead = nat_dict['leader']
+                nat = nat_dict['nation']
+                aa = nat_dict['alliance']
+                await ctx.send(f'```Nation : {nat}\nLeader : {lead}\nAlliance : {aa}```')
         else:
             n_name = result_dict.get('nation')
             n_leader = result_dict.get('leader')
