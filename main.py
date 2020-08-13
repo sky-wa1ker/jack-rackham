@@ -20,9 +20,10 @@ Commands active :
 ping : latency check. - Status : Optimal.
 help : the help message. - Status : Optimal.
 api: gets the api numbers, used and remaining for the day -  Status : Optimal.
-nation : Searches for a nation in nations_v2 dictionary. - Status : Working condition, yet to be tested thoroughly.
+nation : Searches for a nation in nations_v2 dictionary. - Status : Almost Optimal.
 counter : gets potential counters for an attack. - Status : Very good.
-getwhale : gets 5 people with most infra in an aa. - Status : yet to be checked.
+getwhale : gets 5 people with most infra in an aa. - Status : Optimal.
+trade : gets you realtime trade prices. - status : Optimal.
 
 
 Tasks active :
@@ -80,6 +81,7 @@ async def help(ctx):
     embed.add_field(name=';counter {target nation ID}', value= 'Search for counters. (;counter 176311)', inline=False)
     embed.add_field(name=';api', value= 'API details, not for general use.', inline=False)
     embed.add_field(name=';getwhale {alliance id}', value='Gets you 5 people with most infra in an alliance. (;getwhale 1584) ', inline=False)
+    embed.add_field(name=';trade {resource name)', value='Gets you real-time prices for that resource. (;trade coal)', inline=False)
     embed.add_field(name="\u200b", value="Developed and maintained by Sam Cooper.", inline=False)
     
 
@@ -405,8 +407,25 @@ async  def getwhale(ctx, *, aa_id: int):
 
         
         
-        
-        
+@client.command()
+async def trade(ctx, resource):
+    resources = ['credits', 'coal', 'oil', 'uranium', 'lead', 'iron', 'bauxite', 'gasoline', 'munitions', 'steel', 'aluminum']
+    if resource.lower() not in resources:
+        await ctx.send('No such resource.')
+    else:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(f'https://politicsandwar.com/api/tradeprice/?resource={resource.lower()}&key={api_key}') as r:
+                trade_dict = await r.json()
+                sell_ppu = "${:,}".format(int(trade_dict['lowestbuy']['price']))
+                buy_ppu = "${:,}".format(int(trade_dict['highestbuy']['price']))
+                total_sell = "${:,}".format(int(trade_dict['lowestbuy']['totalvalue']))
+                total_buy = "${:,}".format(int(trade_dict['highestbuy']['totalvalue']))
+                embed = discord.Embed(title=f"Real-time prices for {trade_dict['resource']}")
+                embed.add_field(name="Lowest Sell Offer", value=f"[Seller](https://politicsandwar.com/nation/id={trade_dict['lowestbuy']['nationid']})\nAmount: **{trade_dict['lowestbuy']['amount']}**\nPrice: **{sell_ppu}** PPU\nTotal: **{total_sell}**", inline=False)
+                embed.add_field(name="Highest Buy Offer", value=f"[Buyer](https://politicsandwar.com/nation/id={trade_dict['highestbuy']['nationid']})\nAmount: **{trade_dict['highestbuy']['amount']}**\nPrice: **{buy_ppu}** PPU\nTotal: **{total_buy}**", inline=False)
+                embed.add_field(name="Extras", value=f"[Go to sell offers page.](https://politicsandwar.com/index.php?id=90&display=world&resource1={trade_dict['resource']}&buysell=sell&ob=price&od=DEF&maximum=50&minimum=0&search=Go)\n[Go to buy offers page.](https://politicsandwar.com/index.php?id=90&display=world&resource1={trade_dict['resource']}&buysell=buy&ob=price&od=DEF&maximum=50&minimum=0&search=Go)\n[Post a trade offer for {trade_dict['resource']}.](https://politicsandwar.com/nation/trade/create/resource={trade_dict['resource']})")
+                embed.set_footer(text="DM Sam Cooper for help or to report a bug.", icon_url='https://i.ibb.co/qg5vp8w/dp-cropped.jpg')
+                await ctx.send(embed=embed)
         
         
 
