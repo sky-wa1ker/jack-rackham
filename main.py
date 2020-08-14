@@ -125,8 +125,8 @@ All pirate inquiries are done through the ticket system in {channel.mention}.
 Join us, fight us, but whatever you do, don't bleed on our floor.
 '''
     , color=10038562)
-    embed.set_author(name="Arrgh!", url="https://politicsandwar.com/alliance/id=913", icon_url=ctx.guild.icon_url)
-    await ctx.send(embed=embed)
+    embed.set_author(name="Arrgh!", url="https://politicsandwar.com/alliance/id=913", icon_url=discord.Guild.icon_url)
+    await member.send(embed=embed)
 
 
 
