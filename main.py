@@ -83,7 +83,6 @@ async def help(ctx):
     embed.add_field(name=';getwhale {alliance id}', value='Gets you 5 people with most infra in an alliance. (;getwhale 1584) ', inline=False)
     embed.add_field(name=';trade {resource name)', value='Gets you real-time prices for that resource. (;trade coal)', inline=False)
     embed.add_field(name="\u200b", value="Developed and maintained by Sam Cooper.", inline=False)
-    
 
     await ctx.send(embed=embed)
 
@@ -107,19 +106,30 @@ async def api(ctx):
 
 
 @client.event
-async def on_member_join(member):
+async def on_member_join(ctx, member):
     await asyncio.sleep(2)
-    channel = client.get_channel(220361410616492033) #channel where welcome message is sent.
-    channel1 = client.get_channel(678147969912012810) #channel that gets mentioned.
-    await channel.send(f'Hello and welcome {member.mention}!, Lady Anne is a little bit drunk from all that rum, she was referring to {channel1.mention}, that\'s where you apply or get a room to talk secret stuff.')
+    channel = client.get_channel(678147969912012810) #channel that gets mentioned.
+    embed = discord.Embed(description=f'''
+    Ahoy there {member.mention}! You have reached the pirates.
+
+• Want to join us in raiding the seven seas?
+• Want to contract pirate help? 
+• Have any questions for the Pirate Leadership?
+
+All pirate inquiries are done through the ticket system in {channel.mention}.
+
+• Has a pirate shamelessly taken off with your hard earned money? 
+• Has he winked at your girlfriend? 
+• Are you absolutely outraged?
+
+Join us, fight us, but whatever you do, don't bleed on our floor.
+'''
+    , color=10038562)
+    embed.set_author(name="Arrgh!", url="https://politicsandwar.com/alliance/id=913", icon_url=ctx.guild.icon_url)
+    await ctx.send(embed=embed)
 
 
 
-@client.event
-async def on_member_remove(member):
-    await asyncio.sleep(1)
-    channel = client.get_channel(220361410616492033)
-    await channel.send(f'{member.mention}({member.display_name}) drank too much rum and fell off the deck.')
 
 
 def nation_search(self):
@@ -421,8 +431,8 @@ async def trade(ctx, resource):
                 total_sell = "${:,}".format(int(trade_dict['lowestbuy']['totalvalue']))
                 total_buy = "${:,}".format(int(trade_dict['highestbuy']['totalvalue']))
                 embed = discord.Embed(title=f"Real-time prices for {trade_dict['resource']}")
-                embed.add_field(name="Lowest Sell Offer", value=f"[Seller](https://politicsandwar.com/nation/id={trade_dict['lowestbuy']['nationid']})\nAmount: **{trade_dict['lowestbuy']['amount']}**\nPrice: **{sell_ppu}** PPU\nTotal: **{total_sell}**", inline=False)
-                embed.add_field(name="Highest Buy Offer", value=f"[Buyer](https://politicsandwar.com/nation/id={trade_dict['highestbuy']['nationid']})\nAmount: **{trade_dict['highestbuy']['amount']}**\nPrice: **{buy_ppu}** PPU\nTotal: **{total_buy}**", inline=False)
+                embed.add_field(name="Lowest Sell Offer", value=f"Amount: **{trade_dict['lowestbuy']['amount']}**\nPrice: **{sell_ppu}** PPU\nTotal: **{total_sell}**", inline=False)
+                embed.add_field(name="Highest Buy Offer", value=f"Amount: **{trade_dict['highestbuy']['amount']}**\nPrice: **{buy_ppu}** PPU\nTotal: **{total_buy}**", inline=False)
                 embed.add_field(name="Extras", value=f"[Go to sell offers page.](https://politicsandwar.com/index.php?id=90&display=world&resource1={trade_dict['resource']}&buysell=sell&ob=price&od=DEF&maximum=50&minimum=0&search=Go)\n[Go to buy offers page.](https://politicsandwar.com/index.php?id=90&display=world&resource1={trade_dict['resource']}&buysell=buy&ob=price&od=DEF&maximum=50&minimum=0&search=Go)\n[Post a trade offer for {trade_dict['resource']}.](https://politicsandwar.com/nation/trade/create/resource={trade_dict['resource']})")
                 embed.set_footer(text="DM Sam Cooper for help or to report a bug.", icon_url='https://i.ibb.co/qg5vp8w/dp-cropped.jpg')
                 await ctx.send(embed=embed)
