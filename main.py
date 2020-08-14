@@ -106,7 +106,7 @@ async def api(ctx):
 
 
 @client.event
-async def on_member_join(ctx, member):
+async def on_member_join(member):
     await asyncio.sleep(2)
     channel = client.get_channel(678147969912012810) #channel that gets mentioned.
     embed = discord.Embed(description=f'''
