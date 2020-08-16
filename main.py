@@ -198,7 +198,7 @@ def fuzzy_search(self):
 
 
 @client.command(aliases=['nations'])
-async def nation(ctx, *, nation_name):
+async def nation(ctx, *, nation_name: str):
     if ctx.channel.category.name != 'PUBLIC':
         result_dict = nation_search(nation_name)
         if result_dict is False:
