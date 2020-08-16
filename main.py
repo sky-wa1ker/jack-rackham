@@ -176,26 +176,11 @@ async def war_alert():
                     for i in final_wars:
                         a_nation_dict = nation_search(i["attackerID"])
                         d_nation_dict = nation_search(i["defenderID"])
-                        #if i["defenderAA"] in ("Arrgh", "Arrgh Applicant"):
-                            #dcolor = discord.Colour(0xE5E242)
-                        #else:
-                            #dcolor = discord.Colour(0xE5E242)
-                        embed = discord.Embed(title=f'''{i['attackerAA']} on {i['defenderAA']}''', description=f'''
-[{a_nation_dict["nation"]}](https://politicsandwar.com/nation/id={i["attackerID"]}) declared a(n) {i['war_type']} war on [{d_nation_dict["nation"]}](https://politicsandwar.com/nation/id={i["defenderID"]})
-                        
-Score: `{a_nation_dict['score']}` on `{d_nation_dict['score']}`
-
-Slots: `{a_nation_dict["offensive_wars"]}/5 | {a_nation_dict["defensive_wars"]}/3` on `{d_nation_dict["offensive_wars"]}/5 | {d_nation_dict["defensive_wars"]}/3`
-
-Cities: `{a_nation_dict["cities"]}` on `{d_nation_dict["cities"]}`
-
-Attacker Military
- `💂 {a_nation_dict["soldiers"]} | ⚙️ {a_nation_dict["tanks"]} | ✈️ {a_nation_dict["aircraft"]} | 🚢 {a_nation_dict["ships"]}\n🚀 {a_nation_dict["missiles"]} | ☢️ {a_nation_dict["nukes"]}`
-Defender Military
- `💂 {d_nation_dict["soldiers"]} | ⚙️ {d_nation_dict["tanks"]} | ✈️ {d_nation_dict["aircraft"]} | 🚢 {d_nation_dict["ships"]}\n🚀 {d_nation_dict["missiles"]} | ☢️ {d_nation_dict["nukes"]}`
-
-[Go to war page.](https://politicsandwar.com/nation/war/timeline/war={i["warID"]})
-Find counters: `;counter {i["attackerID"]}`''') #, color=dcolor
+                        if i["defenderAA"] in ("Arrgh", "Arrgh Applicant"):
+                            dcolor = 15158332
+                        else:
+                            dcolor = 3066993
+                        embed = discord.Embed(title=f"{i['attackerAA']} on {i['defenderAA']}", description="I don't know, really", color=dcolor)
                         await channel.send(embed=embed)
             with open('last_war.txt', 'w') as f:
                 f.write(str(wars[0]['warID']))
