@@ -186,7 +186,8 @@ async def war_alert():
                         embed.add_field(name='Cities', value=f'`{a_nation_dict["cities"]}` on `{d_nation_dict["cities"]}`', inline=False)
                         embed.add_field(name='Attacker Military', value=f'`💂 {a_nation_dict["soldiers"]} | ⚙️ {a_nation_dict["tanks"]} | ✈️ {a_nation_dict["aircraft"]} | 🚢 {a_nation_dict["ships"]}\n🚀 {a_nation_dict["missiles"]} | ☢️ {a_nation_dict["nukes"]}`')
                         embed.add_field(name='Defender Military', value=f'`💂 {d_nation_dict["soldiers"]} | ⚙️ {d_nation_dict["tanks"]} | ✈️ {d_nation_dict["aircraft"]} | 🚢 {d_nation_dict["ships"]}\n🚀 {d_nation_dict["missiles"]} | ☢️ {d_nation_dict["nukes"]}`')
-                        embed.add_field(name='Extras', value='[Go to war page.](https://politicsandwar.com/nation/war/timeline/war={i["warID"]})\nFind counters: `;counter {i["attackerID"]}`')
+                        embed.add_field(name='Extras', value=f'[Go to war page.](https://politicsandwar.com/nation/war/timeline/war={i["warID"]})\nFind counters: `;counter {i["attackerID"]}`')
+                        embed.set_footer(text="DM Sam Cooper for help or to report a bug              .", icon_url='https://i.ibb.co/qg5vp8w/dp-cropped.jpg')
                         await channel.send(embed=embed)
             with open('last_war.txt', 'w') as f:
                 f.write(str(wars[0]['warID']))
