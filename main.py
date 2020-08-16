@@ -156,12 +156,12 @@ def fuzzy_search(self):
 
 
 
-@tasks.loop(minutes=30)
+@tasks.loop(minutes=5)
 async def war_alert():
     await asyncio.sleep(60)
-    channel = client.get_channel(514689777778294785)
+    channel = client.get_channel(520567638779232256)
     async with aiohttp.ClientSession() as session:
-        async with session.get(f'https://politicsandwar.com/api/wars/?key={api_key}&limit=500&alliance_id=913') as r:
+        async with session.get(f'https://politicsandwar.com/api/wars/?key={api_key}&limit=500') as r: #&alliance_id=913
             json_obj = await r.json()
             wars = json_obj['wars']
             with open('last_war.txt', 'r') as f:
