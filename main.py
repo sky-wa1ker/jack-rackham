@@ -180,7 +180,13 @@ async def war_alert():
                             dcolor = 15158332
                         else:
                             dcolor = 3066993
-                        embed = discord.Embed(title=f"{i['attackerAA']} on {i['defenderAA']}", description="I don't know, really", color=dcolor)
+                        embed = discord.Embed(title=f"{i['attackerAA']} on {i['defenderAA']}", description=f"[{a_nation_dict['nation']}](https://politicsandwar.com/nation/id={i['attackerID']}) declared a(n) {i['war_type']} war on [{d_nation_dict['nation']}](https://politicsandwar.com/nation/id={i['defenderID']})", color=dcolor)
+                        embed.add_field(name='Score', value=f"`{a_nation_dict['score']}` on `{d_nation_dict['score']}`", inline=False)
+                        embed.add_field(name='Slots', value=f'`{a_nation_dict["offensive_wars"]}/5 | {a_nation_dict["defensive_wars"]}/3` on `{d_nation_dict["offensive_wars"]}/5 | {d_nation_dict["defensive_wars"]}/3`', inline=False)
+                        embed.add_field(name='Cities', value=f'`{a_nation_dict["cities"]}` on `{d_nation_dict["cities"]}`', inline=False)
+                        embed.add_field(name='Attacker Military', value=f'`💂 {a_nation_dict["soldiers"]} | ⚙️ {a_nation_dict["tanks"]} | ✈️ {a_nation_dict["aircraft"]} | 🚢 {a_nation_dict["ships"]}\n🚀 {a_nation_dict["missiles"]} | ☢️ {a_nation_dict["nukes"]}`')
+                        embed.add_field(name='Defender Military', value=f'`💂 {d_nation_dict["soldiers"]} | ⚙️ {d_nation_dict["tanks"]} | ✈️ {d_nation_dict["aircraft"]} | 🚢 {d_nation_dict["ships"]}\n🚀 {d_nation_dict["missiles"]} | ☢️ {d_nation_dict["nukes"]}`')
+                        embed.add_field(name='Extras', value='[Go to war page.](https://politicsandwar.com/nation/war/timeline/war={i["warID"]})\nFind counters: `;counter {i["attackerID"]}`')
                         await channel.send(embed=embed)
             with open('last_war.txt', 'w') as f:
                 f.write(str(wars[0]['warID']))
