@@ -42,6 +42,7 @@ async def on_ready():
     game = discord.Game("innocent. type ;help")
     await client.change_presence(status=discord.Status.online, activity=game)
     update_nation_dict.start()
+    war_alert.start()
     print('Online as {0.user}'.format(client))
 
 
@@ -67,6 +68,54 @@ async def update_nation_dict():
             json_obj = await r.json()
             nations_v2 = json_obj['data']
     await message.delete()
+
+
+
+@tasks.loop(minutes=30)
+async def war_alert():
+    channel = client.get_channel(514689777778294785)
+    async with aiohttp.ClientSession() as session:
+        async with session.get(f'https://politicsandwar.com/api/wars/?key={api_key}&limit=500&alliance_id=913') as r:
+            json_obj = await r.json()
+            wars = json_obj['wars']
+            with open('last_war.txt', 'r') as f:
+                last_war = int(f.readline())
+                last_war_ind = wars.index(next(item for item in wars if item["warID"] == last_war))
+                if last_war_ind == 0:
+                    m = await channel.send('No new wars declared....')
+                    await asyncio.sleep(10)
+                    await m.delete()
+                else:
+                    final_wars = wars[0:last_war_ind]
+                    for i in final_wars:
+                        a_nation_dict = next(item for item in nations_v2 if item["nation_id"] == i["attackerID"])
+                        d_nation_dict = next(item for item in nations_v2 if item["nation_id"] == i["defenderID"])
+                        if i["defenderAA"] in ("Arrgh", "Arrgh Applicant"):
+                            color = 15158332
+                        else:
+                            color = 3066993
+                        embed = discord.Embed(title=f'''{i['attackerAA']} on {i['defenderAA']}''', description=f'''
+[{a_nation_dict["nation"]}](https://politicsandwar.com/nation/id={i["attackerID"]}) declared a(n) {i['war_type']} war on [{d_nation_dict["nation"]}](https://politicsandwar.com/nation/id={i["defenderID"]})
+                        
+Score: `{a_nation_dict['score']}` on `{d_nation_dict['score']}`
+
+Slots: `{a_nation_dict["offensive_wars"]}/5 | {a_nation_dict["defensive_wars"]}/3` on `{d_nation_dict["offensive_wars"]}/5 | {d_nation_dict["defensive_wars"]}/3`
+
+Cities: `{a_nation_dict["cities"]}` on `{d_nation_dict["cities"]}`
+
+Attacker Military
+ `💂 {a_nation_dict["soldiers"]} | ⚙️ {a_nation_dict["tanks"]} | ✈️ {a_nation_dict["aircraft"]} | 🚢 {a_nation_dict["ships"]}\n🚀 {a_nation_dict["missiles"]} | ☢️ {a_nation_dict["nukes"]}`
+Defender Military
+ `💂 {d_nation_dict["soldiers"]} | ⚙️ {d_nation_dict["tanks"]} | ✈️ {d_nation_dict["aircraft"]} | 🚢 {d_nation_dict["ships"]}\n🚀 {d_nation_dict["missiles"]} | ☢️ {d_nation_dict["nukes"]}`
+
+[Go to war page.](https://politicsandwar.com/nation/war/timeline/war={i["warID"]})
+Find counters: `;counter {i["attackerID"]}`
+                        ''', color=color)
+                        await channel.send(embed=embed)
+            with open('last_war.txt', 'w') as f:
+                f.write(str(wars[0]['warID']))
+
+
 
 @client.command()
 @commands.cooldown(1, 120, commands.BucketType.user)
