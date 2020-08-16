@@ -177,9 +177,9 @@ async def war_alert():
                         a_nation_dict = nation_search(i["attackerID"])
                         d_nation_dict = nation_search(i["defenderID"])
                         if i["defenderAA"] in ("Arrgh", "Arrgh Applicant"):
-                            dcolor = 15158332
+                            dcolor = discord.Colour(0xE5E242)
                         else:
-                            dcolor = 3066993
+                            dcolor = discord.Colour(0xE5E242)
                         embed = discord.Embed(title=f'''{i['attackerAA']} on {i['defenderAA']}''', description=f'''
 [{a_nation_dict["nation"]}](https://politicsandwar.com/nation/id={i["attackerID"]}) declared a(n) {i['war_type']} war on [{d_nation_dict["nation"]}](https://politicsandwar.com/nation/id={i["defenderID"]})
                         
