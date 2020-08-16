@@ -42,8 +42,7 @@ async def on_ready():
     game = discord.Game("innocent. type ;help")
     await client.change_presence(status=discord.Status.online, activity=game)
     update_nation_dict.start()
-    channel = client.get_channel(514689777778294785)
-    await channel.send('quack!')
+    await asyncio.sleep(15)
     war_alert.start()
     print('Online as {0.user}'.format(client))
 
