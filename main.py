@@ -176,10 +176,10 @@ async def war_alert():
                     for i in final_wars:
                         a_nation_dict = nation_search(i["attackerID"])
                         d_nation_dict = nation_search(i["defenderID"])
-                        if i["defenderAA"] in ("Arrgh", "Arrgh Applicant"):
-                            dcolor = discord.Colour(0xE5E242)
-                        else:
-                            dcolor = discord.Colour(0xE5E242)
+                        #if i["defenderAA"] in ("Arrgh", "Arrgh Applicant"):
+                            #dcolor = discord.Colour(0xE5E242)
+                        #else:
+                            #dcolor = discord.Colour(0xE5E242)
                         embed = discord.Embed(title=f'''{i['attackerAA']} on {i['defenderAA']}''', description=f'''
 [{a_nation_dict["nation"]}](https://politicsandwar.com/nation/id={i["attackerID"]}) declared a(n) {i['war_type']} war on [{d_nation_dict["nation"]}](https://politicsandwar.com/nation/id={i["defenderID"]})
                         
@@ -196,7 +196,7 @@ Defender Military
 
 [Go to war page.](https://politicsandwar.com/nation/war/timeline/war={i["warID"]})
 Find counters: `;counter {i["attackerID"]}`
-                        ''', color=dcolor)
+                        ''') #, color=dcolor
                         await channel.send(embed=embed)
             with open('last_war.txt', 'w') as f:
                 f.write(str(wars[0]['warID']))
