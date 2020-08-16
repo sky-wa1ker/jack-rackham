@@ -196,7 +196,7 @@ Defender Military
 
 [Go to war page.](https://politicsandwar.com/nation/war/timeline/war={i["warID"]})
 Find counters: `;counter {i["attackerID"]}`
-                        ''', color = dcolor)
+                        ''', color=dcolor)
                         await channel.send(embed=embed)
             with open('last_war.txt', 'w') as f:
                 f.write(str(wars[0]['warID']))
