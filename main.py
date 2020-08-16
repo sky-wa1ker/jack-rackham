@@ -42,7 +42,6 @@ async def on_ready():
     game = discord.Game("innocent. type ;help")
     await client.change_presence(status=discord.Status.online, activity=game)
     update_nation_dict.start()
-    await asyncio.sleep(15)
     war_alert.start()
     print('Online as {0.user}'.format(client))
 
@@ -74,6 +73,7 @@ async def update_nation_dict():
 
 @tasks.loop(minutes=30)
 async def war_alert():
+    await asyncio.sleep(60)
     channel = client.get_channel(514689777778294785)
     async with aiohttp.ClientSession() as session:
         async with session.get(f'https://politicsandwar.com/api/wars/?key={api_key}&limit=500&alliance_id=913') as r:
