@@ -13,8 +13,7 @@ import difflib
 Events active :
 on ready
 on command error
-on member join
-on member remove
+on member join (in DMs)
 
 Commands active :
 ping : latency check. - Status : Optimal.
@@ -28,6 +27,7 @@ trade : gets you realtime trade prices. - status : Optimal.
 
 Tasks active :
 update_nation_active : updates nations_v2 dictionary every 20 minutes.
+war_alert : sends war alerts every 30 minutes.
 '''
 
 token = os.environ['token']
