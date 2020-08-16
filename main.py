@@ -74,7 +74,6 @@ async def update_nation_dict():
 
 @tasks.loop(minutes=30)
 async def war_alert():
-    global nations_v2
     channel = client.get_channel(514689777778294785)
     async with aiohttp.ClientSession() as session:
         async with session.get(f'https://politicsandwar.com/api/wars/?key={api_key}&limit=500&alliance_id=913') as r:
@@ -90,8 +89,8 @@ async def war_alert():
                 else:
                     final_wars = wars[0:last_war_ind]
                     for i in final_wars:
-                        a_nation_dict = next(item for item in nations_v2 if item["nation_id"] == i["attackerID"])
-                        d_nation_dict = next(item for item in nations_v2 if item["nation_id"] == i["defenderID"])
+                        a_nation_dict = nation_search(i["attackerID"])
+                        d_nation_dict = nation_search(i["defenderID"])
                         if i["defenderAA"] in ("Arrgh", "Arrgh Applicant"):
                             color = 15158332
                         else:
@@ -184,11 +183,14 @@ Join us, fight us, but whatever you do, don't bleed on our floor.
 
 
 def nation_search(self):
-    result = next((item for item in nations_v2 if (item["nation"]).lower() == (f"{self}").lower()), False)
-    if result:
-        return result
+    if self == int:
+        return next(item for item in nations_v2 if item["nation_id"] == self)
     else:
-        return next((item for item in nations_v2 if (item["leader"]).lower() == (f"{self}").lower()), False)
+        result = next((item for item in nations_v2 if (item["nation"]).lower() == (f"{self}").lower()), False)
+        if result:
+            return result
+        else:
+            return next((item for item in nations_v2 if (item["leader"]).lower() == (f"{self}").lower()), False)
 
 
 def fuzzy_search(self):
