@@ -74,6 +74,7 @@ async def update_nation_dict():
 
 @tasks.loop(minutes=30)
 async def war_alert():
+    global nations_v2
     channel = client.get_channel(514689777778294785)
     async with aiohttp.ClientSession() as session:
         async with session.get(f'https://politicsandwar.com/api/wars/?key={api_key}&limit=500&alliance_id=913') as r:
@@ -198,7 +199,7 @@ def fuzzy_search(self):
 
 
 @client.command(aliases=['nations'])
-async def nation(ctx, *, nation_name: str):
+async def nation(ctx, *, nation_name):
     if ctx.channel.category.name != 'PUBLIC':
         result_dict = nation_search(nation_name)
         if result_dict is False:
