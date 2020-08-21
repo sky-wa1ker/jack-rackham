@@ -58,7 +58,7 @@ async def on_command_error(ctx, error):
         await ctx.send('There was some error, see if you\'re using the command right. (;help).')
 
 
-@tasks.loop(minutes=60)
+@tasks.loop(minutes=25)
 async def update_nation_dict():
     channel = client.get_channel(520567638779232256)
     message = await channel.send('Updating nations data....')
@@ -153,7 +153,7 @@ def fuzzy_search(self):
 
 
 
-@tasks.loop(minutes=60)
+@tasks.loop(minutes=30)
 async def war_alert():
     await asyncio.sleep(90)
     channel = client.get_channel(514689777778294785)
