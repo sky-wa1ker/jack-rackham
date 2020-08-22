@@ -41,6 +41,7 @@ client.remove_command('help')
 async def on_ready():
     game = discord.Game("innocent. type ;help")
     await client.change_presence(status=discord.Status.online, activity=game)
+    await get_last_war()
     update_nation_dict.start()
     war_alert.start()
     print('Online as {0.user}'.format(client))
@@ -150,6 +151,13 @@ def fuzzy_search(self):
     return results
 
 
+async def get_last_war():
+    async with aiohttp.ClientSession() as session:
+        async with session.get(f'https://politicsandwar.com/api/wars/?key={api_key}&limit=5&alliance_id=913') as r:
+            json_obj = await r.json()
+            wars = json_obj['wars']
+            with open("last_war.txt", 'w') as f:
+                f.write(str(wars[0]["warID"]))
 
 
 
