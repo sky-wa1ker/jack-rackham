@@ -20,6 +20,7 @@ ping : latency check. - Status : Optimal.
 help : the help message. - Status : Optimal.
 api: gets the api numbers, used and remaining for the day -  Status : Optimal.
 nation : Searches for a nation in nations_v2 dictionary. - Status : Almost Optimal.
+alliance : Gets you data for an alliance, alliance ID is acquired from nations_v2. - Status : Almost optimal.
 counter : gets potential counters for an attack. - Status : Very good.
 getwhale : gets 5 people with most infra in an aa. - Status : Optimal.
 trade : gets you realtime trade prices. - status : Optimal.
@@ -86,6 +87,7 @@ async def help(ctx):
     embed.add_field(name=';api', value= 'API details, not for general use.', inline=False)
     embed.add_field(name=';getwhale {alliance id}', value='Gets you 5 people with most infra in an alliance. (;getwhale 1584) ', inline=False)
     embed.add_field(name=';trade {resource name)', value='Gets you real-time prices for that resource. (;trade coal)', inline=False)
+    embed.add_field(name=';alliance {alliance name}', value='Search for an alliance.', inline=False)
     embed.add_field(name="\u200b", value="Developed and maintained by Sam Cooper.", inline=False)
 
     await ctx.send(embed=embed)
@@ -259,7 +261,47 @@ async def nation(ctx, *, nation_name):
             await ctx.send(embed=embed)
     else:
         await ctx.send('Wrong channel mate!')
-        
+
+
+
+@client.command()
+async def alliance(ctx, *, aa_name):
+    if ctx.channel.category.name != 'PUBLIC':
+        nat_dict = next((item for item in nations_v2 if (item["alliance"]).lower() == aa_name.lower()), False)
+        if nat_dict:
+            aa_id = nat_dict["alliance_id"]
+            async with aiohttp.ClientSession() as session:
+                async with session.get(f"https://politicsandwar.com/api/alliance/id={aa_id}&key={api_key}") as r:
+                    aa_dict = await r.json()
+                    soldiers = aa_dict["soldiers"]
+                    tanks = aa_dict["tanks"]
+                    aircraft = aa_dict["aircraft"]
+                    ships = aa_dict["ships"]
+                    embed = discord.Embed(title=f'{aa_dict["name"]}({aa_dict["acronym"]})', url=f'https://politicsandwar.com/alliance/id={aa_dict["allianceid"]}', description=f'''
+**General**
+ID : {aa_dict["allianceid"]}
+Score : {aa_dict["score"]}
+Members : {aa_dict["members"]} ({aa_dict["vmodemembers"]} of them in VM.)
+Applicants : {aa_dict["applicants"]}
+[Discord Link]({aa_dict["irc"]})
+
+**Military (Militarization %)**
+Soldiers : {soldiers:,} ({str(round(soldiers/(15000*(aa_dict["cities"])), 2)*100)+"%"})
+Tanks : {tanks:,} ({str(round(tanks/(1250*(aa_dict["cities"])), 2)*100)+"%"})
+Aircraft : {aircraft:,} ({str(round(aircraft/(75*(aa_dict["cities"])), 2)*100)+"%"})
+Ships : {ships:,} ({str(round(ships/(15*(aa_dict["cities"])), 2)*100)+"%"})
+Missiles : {aa_dict["missiles"]}
+Nukes : {aa_dict["nukes"]}
+                    ''')
+                    embed.set_thumbnail(url=f"{aa_dict['flagurl']}")
+                    embed.set_footer(text="DM Sam Cooper for help or to report a bug.", icon_url='https://i.ibb.co/qg5vp8w/dp-cropped.jpg')
+                    await ctx.send(embed=embed)
+        else:
+            aa_list = [sub['alliance'] for sub in nations_v2]
+            aa = difflib.get_close_matches(aa_name, aa_list, n=1)
+            await ctx.send(f'No exact match, did you mean **{aa[0]}**?')
+    else:
+        await ctx.send('Wrong channel mate!')
         
 
 
