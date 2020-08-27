@@ -45,6 +45,7 @@ async def on_ready():
     await get_last_war()
     update_nation_dict.start()
     war_alert.start()
+    beige_alert.start()
     print('Online as {0.user}'.format(client))
 
 
@@ -208,6 +209,20 @@ Find counters: `;counter {i["attackerID"]}`
             with open('last_war.txt', 'w') as f:
                 f.write(str(wars[0]['warID']))
 
+
+@tasks.loop(minutes=120)
+async def beige_alert():
+    await asyncio.sleep(120)
+    channel = client.get_channel(526632259520954390)
+    result = [x for x in nations_v2 if (x["beige_turns"]) == 1 and (x["alliance"]) != 'None']
+    if result:
+        for i in result:
+            embed = discord.Embed(title=f'{i["nation"]} is leaving beige next turn.', url=f'https://politicsandwar.com/nation/id={i["nation_id"]}', description=f'''
+Alliance: [{i["alliance"]}](https://politicsandwar.com/alliance/id={i["alliance_id"]})
+Military : `💂 {i["soldiers"]} | ⚙️ {i["tanks"]} | ✈️ {i["aircraft"]} | 🚢 {i["ships"]} | 🚀 {i["missiles"]} | ☢️ {i["nukes"]}`
+Defensive Range : `{round((i["score"] / 1.75),2)} to {round((i["score"] / 0.75),2)}`
+''')
+            await channel.send(embed=embed)
 
 
 
@@ -455,12 +470,6 @@ async def counter(ctx, enemy_id):
 
     else:
         ctx.send('Wrong channel mate!')
-
-
-
-
-
-
 
 
 
