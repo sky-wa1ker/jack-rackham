@@ -29,6 +29,7 @@ trade : gets you realtime trade prices. - status : Optimal.
 Tasks active :
 update_nation_active : updates nations_v2 dictionary every 20 minutes.
 war_alert : sends war alerts every 30 minutes.
+beige_alert : sends nations that are in an alliance ard are leaving beige next turn.
 '''
 
 token = os.environ['token']
@@ -218,6 +219,7 @@ async def beige_alert():
     if result:
         for i in result:
             embed = discord.Embed(title=f'{i["nation"]} is leaving beige next turn.', url=f'https://politicsandwar.com/nation/id={i["nation_id"]}', description=f'''
+Last Active : {timeago.format(i["last_active"], datetime.utcnow())}
 Alliance: [{i["alliance"]}](https://politicsandwar.com/alliance/id={i["alliance_id"]})
 Military : `💂 {i["soldiers"]} | ⚙️ {i["tanks"]} | ✈️ {i["aircraft"]} | 🚢 {i["ships"]} | 🚀 {i["missiles"]} | ☢️ {i["nukes"]}`
 Defensive Range : `{round((i["score"] / 1.75),2)} to {round((i["score"] / 0.75),2)}`
