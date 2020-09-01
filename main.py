@@ -44,6 +44,8 @@ async def on_ready():
     game = discord.Game("innocent. type ;help")
     await client.change_presence(status=discord.Status.online, activity=game)
     await get_last_war()
+    await get_member_list()
+    member_alert.start()
     update_nation_dict.start()
     war_alert.start()
     beige_alert.start()
@@ -155,6 +157,10 @@ def fuzzy_search(self):
     return results
 
 
+def list_diff(old_list, new_list): 
+    li_dif = [i for i in old_list if i not in new_list]  #[members left]
+    return li_dif
+
 async def get_last_war():
     async with aiohttp.ClientSession() as session:
         async with session.get(f'https://politicsandwar.com/api/wars/?key={api_key}&limit=5&alliance_id=913') as r:
@@ -163,6 +169,13 @@ async def get_last_war():
             with open("last_war.txt", 'w') as f:
                 f.write(str(wars[0]["warID"]))
 
+
+async def get_member_list():
+    async with aiohttp.ClientSession() as session:
+        async with session.get(f'https://politicsandwar.com/api/alliance/id=913&key={api_key}') as r:
+            global or_members_list
+            json_obj = await r.json()
+            or_members_list = json_obj["member_id_list"]
 
 
 @tasks.loop(minutes=30)
@@ -226,6 +239,23 @@ Defensive Range : `{round((i["score"] / 1.75),2)} to {round((i["score"] / 0.75),
 ''')
             await channel.send(embed=embed)
 
+
+@tasks.loop(hours=5)
+async def member_alert():
+    global or_members_list
+    channel = client.get_channel(220580210251137024) #channel where alerts are sent
+    user = client.get_user(277192148808499201) #user who gets pinged
+    await asyncio.sleep(90)
+    async with aiohttp.ClientSession() as session:
+        async with session.get(f'https://politicsandwar.com/api/alliance/id=913&key={api_key}') as r:
+            json_obj = await r.json()
+            new_members_list = json_obj["member_id_list"]
+            changes = list_diff(or_members_list, new_members_list)
+            if len(changes) > 0:
+                await channel.send(f'{user.mention} Following nations have left Arrgh.')
+                for x in changes:
+                    await channel.send(f'https://politicsandwar.com/nation/id={x}')
+                or_members_list = new_members_list
 
 
 @client.command(aliases=['nations'])
