@@ -29,6 +29,7 @@ trade : gets you realtime trade prices. - status : Optimal.
 Tasks active :
 update_nation_active : updates nations_v2 dictionary every 20 minutes.
 war_alert : sends war alerts every 30 minutes.
+member_alert : notifies Ripper if anyone has left Arrgh! every 5 hours.
 beige_alert : sends nations that are in an alliance ard are leaving beige next turn.
 '''
 
