@@ -10,6 +10,8 @@ import difflib
 
 
 '''
+Codebase version 0.75
+
 Events active :
 on ready
 on command error
@@ -29,7 +31,7 @@ trade : gets you realtime trade prices. - status : Optimal.
 Tasks active :
 update_nation_active : updates nations_v2 dictionary every 20 minutes.
 war_alert : sends war alerts every 30 minutes.
-member_alert : notifies Ripper if anyone has left Arrgh! every 5 hours.
+member_alert : notifies admiralty if anyone has left Arrgh! every 5 hours.
 beige_alert : sends nations that are in an alliance ard are leaving beige next turn.
 '''
 
@@ -245,7 +247,7 @@ Defensive Range : `{round((i["score"] / 1.75),2)} to {round((i["score"] / 0.75),
 async def member_alert():
     global or_members_list
     channel = client.get_channel(220580210251137024) #channel where alerts are sent
-    user = client.get_user(277192148808499201) #user who gets pinged
+    role = 576711897328386069 #role that gets pinged
     await asyncio.sleep(90)
     async with aiohttp.ClientSession() as session:
         async with session.get(f'https://politicsandwar.com/api/alliance/id=913&key={api_key}') as r:
@@ -253,7 +255,7 @@ async def member_alert():
             new_members_list = json_obj["member_id_list"]
             changes = list_diff(or_members_list, new_members_list)
             if len(changes) > 0:
-                await channel.send(f'{user.mention} Following nations have left Arrgh.')
+                await channel.send(f'<@&{role}> Following nations have left Arrgh.')
                 for x in changes:
                     await channel.send(f'https://politicsandwar.com/nation/id={x}')
                 or_members_list = new_members_list
