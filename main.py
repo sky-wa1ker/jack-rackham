@@ -67,7 +67,7 @@ async def on_command_error(ctx, error):
         await ctx.send('There was some error, see if you\'re using the command right. (;help).')
 
 
-@tasks.loop(minutes=25)
+@tasks.loop(minutes=30)
 async def update_nation_dict():
     channel = client.get_channel(520567638779232256)
     message = await channel.send('Updating nations data....')
@@ -183,7 +183,7 @@ async def get_member_list():
 
 @tasks.loop(minutes=30)
 async def war_alert():
-    await asyncio.sleep(90)
+    await asyncio.sleep(120)
     channel = client.get_channel(514689777778294785)
     async with aiohttp.ClientSession() as session:
         async with session.get(f'https://politicsandwar.com/api/wars/?key={api_key}&limit=500&alliance_id=913') as r:
