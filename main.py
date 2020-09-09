@@ -10,7 +10,7 @@ import difflib
 
 
 '''
-Codebase version 0.75
+Codebase version 0.77
 
 Events active :
 on ready
@@ -29,7 +29,7 @@ trade : gets you realtime trade prices. - status : Optimal.
 
 
 Tasks active :
-update_nation_active : updates nations_v2 dictionary every 20 minutes.
+update_nation_active : updates nations_v2 dictionary every 30 minutes.
 war_alert : sends war alerts every 30 minutes.
 member_alert : notifies admiralty if anyone has left Arrgh! every 5 hours.
 beige_alert : sends nations that are in an alliance ard are leaving beige next turn.
@@ -69,14 +69,11 @@ async def on_command_error(ctx, error):
 
 @tasks.loop(minutes=30)
 async def update_nation_dict():
-    channel = client.get_channel(520567638779232256)
-    message = await channel.send('Updating nations data....')
     async with aiohttp.ClientSession() as session:
         async with session.get(f'https://politicsandwar.com/api/v2/nations/{api_key}/') as r:
             global nations_v2
             json_obj = await r.json()
             nations_v2 = json_obj['data']
-    await message.delete()
 
 
 
@@ -199,14 +196,19 @@ async def war_alert():
                 else:
                     final_wars = wars[0:last_war_ind]
                     for i in final_wars:
-                        a_nation_dict = next(item for item in nations_v2 if item["nation_id"] == i["attackerID"])
-                        d_nation_dict = next(item for item in nations_v2 if item["nation_id"] == i["defenderID"])
-                        if i["defenderAA"] in ("Arrgh", "Arrgh Applicant"):
-                            dcolor = 15158332
-                        else:
-                            dcolor = 3066993
-                        embed = discord.Embed(title=f'''{i['attackerAA']} on {i['defenderAA']}''', description=f'''
+                        async with session.get(f'https://politicsandwar.com/api/war/{i["warID"]}/&key={api_key}') as r:
+                            reason_dict = await r.json()
+                            reason = reason_dict["war"][0]["war_reason"]
+                            a_nation_dict = next(item for item in nations_v2 if item["nation_id"] == i["attackerID"])
+                            d_nation_dict = next(item for item in nations_v2 if item["nation_id"] == i["defenderID"])
+                            if i["defenderAA"] in ("Arrgh", "Arrgh Applicant"):
+                                dcolor = 15158332
+                            else:
+                                dcolor = 3066993
+                            embed = discord.Embed(title=f'''{i['attackerAA']} on {i['defenderAA']}''', description=f'''
 [{a_nation_dict["nation"]}](https://politicsandwar.com/nation/id={i["attackerID"]}) declared a(n) {i['war_type']} war on [{d_nation_dict["nation"]}](https://politicsandwar.com/nation/id={i["defenderID"]})
+
+Reason: `{reason}`
                         
 Score: `{a_nation_dict['score']}` on `{d_nation_dict['score']}`
 
@@ -221,10 +223,10 @@ Defender Military
 
 [Go to war page.](https://politicsandwar.com/nation/war/timeline/war={i["warID"]})
 Find counters: `;counter {i["attackerID"]}`
-                        ''', color=dcolor)
-                        await channel.send(embed=embed)
-            with open('last_war.txt', 'w') as f:
-                f.write(str(wars[0]['warID']))
+                            ''', color=dcolor)
+                            await channel.send(embed=embed)
+                with open('last_war.txt', 'w') as f:
+                    f.write(str(wars[0]['warID']))
 
 
 @tasks.loop(minutes=120)
