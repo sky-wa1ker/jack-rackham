@@ -10,7 +10,7 @@ import difflib
 
 
 '''
-Codebase version 0.77
+Codebase version 0.78
 
 Events active :
 on ready
@@ -89,7 +89,7 @@ async def help(ctx):
     embed.add_field(name=";nation {nation/leader name}", value="Search for a nation. (;nation Markovia)", inline=False)
     embed.add_field(name=';counter {target nation ID}', value= 'Search for counters. (;counter 176311)', inline=False)
     embed.add_field(name=';api', value= 'API details, not for general use.', inline=False)
-    embed.add_field(name=';getwhale {alliance id}', value='Gets you 5 people with most infra in an alliance. (;getwhale 1584) ', inline=False)
+    embed.add_field(name=';getwhale {alliance id}', value='Gets you 5 people with most infra in an alliance (use alliance search for ID). (;getwhale 1584) ', inline=False)
     embed.add_field(name=';trade {resource name)', value='Gets you real-time prices for that resource. (;trade coal)', inline=False)
     embed.add_field(name=';alliance {alliance name}', value='Search for an alliance.', inline=False)
     embed.add_field(name="\u200b", value="Developed and maintained by Sam Cooper.", inline=False)
@@ -552,11 +552,11 @@ async  def getwhale(ctx, *, aa_id: int):
                     score5 = float(whales[4]['score'])
 
                     embed = discord.Embed(title=f'Whales in {alliance}', color=0x000000)
-                    embed.add_field(name= '\u200b', value=f'[{name1}](https://politicsandwar.com/nation/id={id1})\nAvg Infra: {avg_infra1}\nRange: **{round((score1 / 1.75),2)} - {round((score1 / 0.75),2)}**', inline=False)
-                    embed.add_field(name= '\u200b', value=f'[{name2}](https://politicsandwar.com/nation/id={id2})\nAvg Infra: {avg_infra2}\nRange: **{round((score2 / 1.75),2)} - {round((score2 / 0.75),2)}**', inline=False)
-                    embed.add_field(name= '\u200b', value=f'[{name3}](https://politicsandwar.com/nation/id={id3})\nAvg Infra: {avg_infra3}\nRange: **{round((score3 / 1.75),2)} - {round((score3 / 0.75),2)}**', inline=False)
-                    embed.add_field(name= '\u200b', value=f'[{name4}](https://politicsandwar.com/nation/id={id4})\nAvg Infra: {avg_infra4}\nRange: **{round((score4 / 1.75),2)} - {round((score4 / 0.75),2)}**', inline=False)
-                    embed.add_field(name= '\u200b', value=f'[{name5}](https://politicsandwar.com/nation/id={id5})\nAvg Infra: {avg_infra5}\nRange: **{round((score5 / 1.75),2)} - {round((score5 / 0.75),2)}**', inline=False)
+                    embed.add_field(name= '\u200b', value=f'[{name1}](https://politicsandwar.com/nation/id={id1})\nAvg Infra: {avg_infra1}\nDefensive Range: **{round((score1 / 1.75),2)} - {round((score1 / 0.75),2)}**', inline=False)
+                    embed.add_field(name= '\u200b', value=f'[{name2}](https://politicsandwar.com/nation/id={id2})\nAvg Infra: {avg_infra2}\nDefensive Range: **{round((score2 / 1.75),2)} - {round((score2 / 0.75),2)}**', inline=False)
+                    embed.add_field(name= '\u200b', value=f'[{name3}](https://politicsandwar.com/nation/id={id3})\nAvg Infra: {avg_infra3}\nDefensive Range: **{round((score3 / 1.75),2)} - {round((score3 / 0.75),2)}**', inline=False)
+                    embed.add_field(name= '\u200b', value=f'[{name4}](https://politicsandwar.com/nation/id={id4})\nAvg Infra: {avg_infra4}\nDefensive Range: **{round((score4 / 1.75),2)} - {round((score4 / 0.75),2)}**', inline=False)
+                    embed.add_field(name= '\u200b', value=f'[{name5}](https://politicsandwar.com/nation/id={id5})\nAvg Infra: {avg_infra5}\nDefensive Range: **{round((score5 / 1.75),2)} - {round((score5 / 0.75),2)}**', inline=False)
                     embed.set_footer(text='DM Sam Cooper for help or to report a bug.', icon_url='https://i.ibb.co/qg5vp8w/dp-cropped.jpg')
 
                     await ctx.send(embed=embed)
