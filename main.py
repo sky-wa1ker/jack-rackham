@@ -166,7 +166,7 @@ Buccaneer : New recruits in Arrgh, and your current role.
 Arrgh has a bank (like every other alliance) that you can use to store cash or resources, to make a deposit, make the deposit in-game first and then notify Helm with a ping in #buried_treasure to safekeep your stuff. To make a withdrawal, ping Helm in the same channel with required amount and your nation link.
 ''')
         await user.send(embed=embed)
-        await ctx.send (f'{user.mention}, check your DMs!')
+        await ctx.send (f'{user.mention} check your DMs :)')
     else:
         await ctx.send(f'This command is only for {role.name}')
 
