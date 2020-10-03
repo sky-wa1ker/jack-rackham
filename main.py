@@ -148,19 +148,19 @@ Welcome {user.mention}! you are now a pirate!
 Here's a quick guide to get you started
 
 **Ranks Structure**
-Grand Admiral : The Arrgh leader, and thus the highest role we have.
-Admiral : Admirals form the Admiralty of Arrgh. The Admiralty collectively makes all alliance-wide decisions by majority vote except for declarations of war and signing letters of marque.
-Commodore : Commodores lead the Captains and provide on-the-scene leadership. Commodore is consultancy and banking. They are also given the right to vote for declarations of war or signing letters of marque. They have bank access and can undertake government-related Procedures.
-Captain : Trusted pirates and the base Arrgh membership.
-Buccaneer : New recruits in Arrgh, and your current role.
+**Grand Admiral** : The Arrgh leader, and thus the highest role we have.
+**Admiral** : Admirals form the Admiralty of Arrgh. The Admiralty collectively makes all alliance-wide decisions by majority vote except for declarations of war and signing letters of marque.
+**Commodore** : Commodores lead the Captains and provide on-the-scene leadership. Commodore is consultancy and banking. They are also given the right to vote for declarations of war or signing letters of marque. They have bank access and can undertake government-related Procedures.
+**Captain** : Trusted pirates and the base Arrgh membership.
+**Buccaneer** : New recruits in Arrgh, and your current role.
 
 **Discord Basics**
-*#buccaneers* : This is your main chat for now.
-*#war_room* : This is where you coordinate with fellow pirates.
-#buried_treasure : Banking channel, should not be used for anything else.
-#requests : This is where you request a spy-op or help from your fellow pirates, but remember no one is obliged to help you in Arrgh.
-#tech_support : This channel should be used for spamming bot commands.
-#captains_log : This is where you post anything from an espionage report to a victory message.
+**#buccaneers** : This is your main chat for now.
+**#war_room** : This is where you coordinate with fellow pirates.
+**#buried_treasure** : Banking channel, should not be used for anything else.
+**#requests** : This is where you request a spy-op or help from your fellow pirates, but remember no one is obliged to help you in Arrgh.
+**#tech_support** : This channel should be used for spamming bot commands.
+**#captains_log** : This is where you post anything from an espionage report to a victory message.
 
 **Banking Basics**
 Arrgh has a bank (like every other alliance) that you can use to store cash or resources, to make a deposit, make the deposit in-game first and then notify Helm with a ping in #buried_treasure to safekeep your stuff. To make a withdrawal, ping Helm in the same channel with required amount and your nation link.
