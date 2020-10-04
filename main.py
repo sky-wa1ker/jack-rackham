@@ -541,56 +541,63 @@ async def counter(ctx, enemy_id):
 
 
 @client.command(aliases=['getwhales'])
-async  def getwhale(ctx, *, aa_id: int):
+async  def getwhale(ctx, *, aa_name):
     if ctx.channel.category.name != 'PUBLIC':
-        async with aiohttp.ClientSession() as session:
-            async with session.get(f'https://politicsandwar.com/api/nations/?key={api_key}&alliance_id={aa_id}') as r:
-                json_obj = await r.json()
-                aa_members = json_obj['nations']
-                if len(aa_members) == 0:
-                    await ctx.send('Alliance not found.')
-                elif len(aa_members) > 5:
-                    for d in aa_members: d['avg_infra'] = d['infrastructure']/d['cities']
-                    whales = sorted(aa_members, key=lambda i: i['avg_infra'], reverse=True)
+        nat_dict = next((item for item in nations_v2 if (item["alliance"]).lower() == aa_name.lower()), False)
+        if nat_dict:
+            aa_id = nat_dict["alliance_id"]
+            async with aiohttp.ClientSession() as session:
+                async with session.get(f'https://politicsandwar.com/api/nations/?key={api_key}&alliance_id={aa_id}') as r:
+                    json_obj = await r.json()
+                    aa_members = json_obj['nations']
+                    if len(aa_members) == 0:
+                        await ctx.send('Alliance not found.')
+                    elif len(aa_members) > 5:
+                        for d in aa_members: d['avg_infra'] = d['infrastructure']/d['cities']
+                        whales = sorted(aa_members, key=lambda i: i['avg_infra'], reverse=True)
 
-                    alliance = whales[0]['alliance']
+                        alliance = whales[0]['alliance']
 
-                    name1 = whales[0]['nation']
-                    id1 = whales[0]['nationid']
-                    avg_infra1 = round(whales[0]['avg_infra'], 2)
-                    score1 = float(whales[0]['score'])
+                        name1 = whales[0]['nation']
+                        id1 = whales[0]['nationid']
+                        avg_infra1 = round(whales[0]['avg_infra'], 2)
+                        score1 = float(whales[0]['score'])
 
-                    name2 = whales[1]['nation']
-                    id2 = whales[1]['nationid']
-                    avg_infra2 = round(whales[1]['avg_infra'], 2)
-                    score2 = float(whales[1]['score'])
+                        name2 = whales[1]['nation']
+                        id2 = whales[1]['nationid']
+                        avg_infra2 = round(whales[1]['avg_infra'], 2)
+                        score2 = float(whales[1]['score'])
 
-                    name3 = whales[2]['nation']
-                    id3 = whales[2]['nationid']
-                    avg_infra3 = round(whales[2]['avg_infra'], 2)
-                    score3 = float(whales[2]['score'])
+                        name3 = whales[2]['nation']
+                        id3 = whales[2]['nationid']
+                        avg_infra3 = round(whales[2]['avg_infra'], 2)
+                        score3 = float(whales[2]['score'])
 
-                    name4 = whales[3]['nation']
-                    id4 = whales[3]['nationid']
-                    avg_infra4 = round(whales[3]['avg_infra'], 2)
-                    score4 = float(whales[3]['score'])
+                        name4 = whales[3]['nation']
+                        id4 = whales[3]['nationid']
+                        avg_infra4 = round(whales[3]['avg_infra'], 2)
+                        score4 = float(whales[3]['score'])
 
-                    name5 = whales[4]['nation']
-                    id5 = whales[4]['nationid']
-                    avg_infra5 = round(whales[4]['avg_infra'], 2)
-                    score5 = float(whales[4]['score'])
+                        name5 = whales[4]['nation']
+                        id5 = whales[4]['nationid']
+                        avg_infra5 = round(whales[4]['avg_infra'], 2)
+                        score5 = float(whales[4]['score'])
 
-                    embed = discord.Embed(title=f'Whales in {alliance}', color=0x000000)
-                    embed.add_field(name= '\u200b', value=f'[{name1}](https://politicsandwar.com/nation/id={id1})\nAvg Infra: {avg_infra1}\nDefensive Range: **{round((score1 / 1.75),2)} - {round((score1 / 0.75),2)}**', inline=False)
-                    embed.add_field(name= '\u200b', value=f'[{name2}](https://politicsandwar.com/nation/id={id2})\nAvg Infra: {avg_infra2}\nDefensive Range: **{round((score2 / 1.75),2)} - {round((score2 / 0.75),2)}**', inline=False)
-                    embed.add_field(name= '\u200b', value=f'[{name3}](https://politicsandwar.com/nation/id={id3})\nAvg Infra: {avg_infra3}\nDefensive Range: **{round((score3 / 1.75),2)} - {round((score3 / 0.75),2)}**', inline=False)
-                    embed.add_field(name= '\u200b', value=f'[{name4}](https://politicsandwar.com/nation/id={id4})\nAvg Infra: {avg_infra4}\nDefensive Range: **{round((score4 / 1.75),2)} - {round((score4 / 0.75),2)}**', inline=False)
-                    embed.add_field(name= '\u200b', value=f'[{name5}](https://politicsandwar.com/nation/id={id5})\nAvg Infra: {avg_infra5}\nDefensive Range: **{round((score5 / 1.75),2)} - {round((score5 / 0.75),2)}**', inline=False)
-                    embed.set_footer(text='DM Sam Cooper for help or to report a bug.', icon_url='https://i.ibb.co/qg5vp8w/dp-cropped.jpg')
+                        embed = discord.Embed(title=f'Whales in {alliance}', color=0x000000)
+                        embed.add_field(name= '\u200b', value=f'[{name1}](https://politicsandwar.com/nation/id={id1})\nAvg Infra: {avg_infra1}\nDefensive Range: **{round((score1 / 1.75),2)} - {round((score1 / 0.75),2)}**', inline=False)
+                        embed.add_field(name= '\u200b', value=f'[{name2}](https://politicsandwar.com/nation/id={id2})\nAvg Infra: {avg_infra2}\nDefensive Range: **{round((score2 / 1.75),2)} - {round((score2 / 0.75),2)}**', inline=False)
+                        embed.add_field(name= '\u200b', value=f'[{name3}](https://politicsandwar.com/nation/id={id3})\nAvg Infra: {avg_infra3}\nDefensive Range: **{round((score3 / 1.75),2)} - {round((score3 / 0.75),2)}**', inline=False)
+                        embed.add_field(name= '\u200b', value=f'[{name4}](https://politicsandwar.com/nation/id={id4})\nAvg Infra: {avg_infra4}\nDefensive Range: **{round((score4 / 1.75),2)} - {round((score4 / 0.75),2)}**', inline=False)
+                        embed.add_field(name= '\u200b', value=f'[{name5}](https://politicsandwar.com/nation/id={id5})\nAvg Infra: {avg_infra5}\nDefensive Range: **{round((score5 / 1.75),2)} - {round((score5 / 0.75),2)}**', inline=False)
+                        embed.set_footer(text='DM Sam Cooper for help or to report a bug.', icon_url='https://i.ibb.co/qg5vp8w/dp-cropped.jpg')
 
-                    await ctx.send(embed=embed)
-                else:
-                    await ctx.send('The alliance is too smol, go check manually.')
+                        await ctx.send(embed=embed)
+                    else:
+                        await ctx.send('The alliance is too smol, go check manually.')
+        else:
+            aa_list = [sub['alliance'] for sub in nations_v2]
+            aa = difflib.get_close_matches(aa_name, aa_list, n=1)
+            await ctx.send(f'No exact match, did you mean **{aa[0]}**?')
     else:
         await ctx.send('Wrong channel mate!')
 
