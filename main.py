@@ -698,26 +698,6 @@ async def swamptarget(ctx, nation_id:int):
 [{sorted_targets[14]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[14]["nation_id"]}) | [{sorted_targets[14]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[14]["alliance_id"]})
 ``🏙️ {sorted_targets[14]["cities"]} | Last Active : {timeago.format(sorted_targets[14]["last_active"], datetime.utcnow())}`` 
 ``💂 {sorted_targets[14]["soldiers"]} | ⚙️ {sorted_targets[14]["tanks"]} | ✈️ {sorted_targets[14]["aircraft"]} | 🚢 {sorted_targets[14]["ships"]}``
-
-[{sorted_targets[15]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[15]["nation_id"]}) | [{sorted_targets[15]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[15]["alliance_id"]})
-``🏙️ {sorted_targets[15]["cities"]} | Last Active : {timeago.format(sorted_targets[15]["last_active"], datetime.utcnow())}`` 
-``💂 {sorted_targets[15]["soldiers"]} | ⚙️ {sorted_targets[15]["tanks"]} | ✈️ {sorted_targets[15]["aircraft"]} | 🚢 {sorted_targets[15]["ships"]}``
-
-[{sorted_targets[16]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[16]["nation_id"]}) | [{sorted_targets[16]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[16]["alliance_id"]})
-``🏙️ {sorted_targets[16]["cities"]} | Last Active : {timeago.format(sorted_targets[16]["last_active"], datetime.utcnow())}`` 
-``💂 {sorted_targets[16]["soldiers"]} | ⚙️ {sorted_targets[16]["tanks"]} | ✈️ {sorted_targets[16]["aircraft"]} | 🚢 {sorted_targets[16]["ships"]}``
-
-[{sorted_targets[17]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[17]["nation_id"]}) | [{sorted_targets[17]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[17]["alliance_id"]})
-``🏙️ {sorted_targets[17]["cities"]} | Last Active : {timeago.format(sorted_targets[17]["last_active"], datetime.utcnow())}`` 
-``💂 {sorted_targets[17]["soldiers"]} | ⚙️ {sorted_targets[17]["tanks"]} | ✈️ {sorted_targets[17]["aircraft"]} | 🚢 {sorted_targets[17]["ships"]}``
-
-[{sorted_targets[18]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[18]["nation_id"]}) | [{sorted_targets[18]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[18]["alliance_id"]})
-``🏙️ {sorted_targets[18]["cities"]} | Last Active : {timeago.format(sorted_targets[18]["last_active"], datetime.utcnow())}`` 
-``💂 {sorted_targets[18]["soldiers"]} | ⚙️ {sorted_targets[18]["tanks"]} | ✈️ {sorted_targets[18]["aircraft"]} | 🚢 {sorted_targets[18]["ships"]}``
-
-[{sorted_targets[19]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[19]["nation_id"]}) | [{sorted_targets[19]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[19]["alliance_id"]})
-``🏙️ {sorted_targets[19]["cities"]} | Last Active : {timeago.format(sorted_targets[19]["last_active"], datetime.utcnow())}`` 
-``💂 {sorted_targets[19]["soldiers"]} | ⚙️ {sorted_targets[19]["tanks"]} | ✈️ {sorted_targets[19]["aircraft"]} | 🚢 {sorted_targets[19]["ships"]}``
 ''', color=0x000000)
 
                 await ctx.send(embed=embed)
@@ -800,26 +780,6 @@ async def swamptarget2(ctx, nation_id:int):
 [{sorted_targets[14]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[14]["nation_id"]}) | [{sorted_targets[14]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[14]["alliance_id"]})
 ``🏙️ {sorted_targets[14]["cities"]} | Last Active : {timeago.format(sorted_targets[14]["last_active"], datetime.utcnow())}`` 
 ``💂 {sorted_targets[14]["soldiers"]} | ⚙️ {sorted_targets[14]["tanks"]} | ✈️ {sorted_targets[14]["aircraft"]} | 🚢 {sorted_targets[14]["ships"]}``
-
-[{sorted_targets[15]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[15]["nation_id"]}) | [{sorted_targets[15]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[15]["alliance_id"]})
-``🏙️ {sorted_targets[15]["cities"]} | Last Active : {timeago.format(sorted_targets[15]["last_active"], datetime.utcnow())}`` 
-``💂 {sorted_targets[15]["soldiers"]} | ⚙️ {sorted_targets[15]["tanks"]} | ✈️ {sorted_targets[15]["aircraft"]} | 🚢 {sorted_targets[15]["ships"]}``
-
-[{sorted_targets[16]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[16]["nation_id"]}) | [{sorted_targets[16]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[16]["alliance_id"]})
-``🏙️ {sorted_targets[16]["cities"]} | Last Active : {timeago.format(sorted_targets[16]["last_active"], datetime.utcnow())}`` 
-``💂 {sorted_targets[16]["soldiers"]} | ⚙️ {sorted_targets[16]["tanks"]} | ✈️ {sorted_targets[16]["aircraft"]} | 🚢 {sorted_targets[16]["ships"]}``
-
-[{sorted_targets[17]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[17]["nation_id"]}) | [{sorted_targets[17]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[17]["alliance_id"]})
-``🏙️ {sorted_targets[17]["cities"]} | Last Active : {timeago.format(sorted_targets[17]["last_active"], datetime.utcnow())}`` 
-``💂 {sorted_targets[17]["soldiers"]} | ⚙️ {sorted_targets[17]["tanks"]} | ✈️ {sorted_targets[17]["aircraft"]} | 🚢 {sorted_targets[17]["ships"]}``
-
-[{sorted_targets[18]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[18]["nation_id"]}) | [{sorted_targets[18]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[18]["alliance_id"]})
-``🏙️ {sorted_targets[18]["cities"]} | Last Active : {timeago.format(sorted_targets[18]["last_active"], datetime.utcnow())}`` 
-``💂 {sorted_targets[18]["soldiers"]} | ⚙️ {sorted_targets[18]["tanks"]} | ✈️ {sorted_targets[18]["aircraft"]} | 🚢 {sorted_targets[18]["ships"]}``
-
-[{sorted_targets[19]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[19]["nation_id"]}) | [{sorted_targets[19]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[19]["alliance_id"]})
-``🏙️ {sorted_targets[19]["cities"]} | Last Active : {timeago.format(sorted_targets[19]["last_active"], datetime.utcnow())}`` 
-``💂 {sorted_targets[19]["soldiers"]} | ⚙️ {sorted_targets[19]["tanks"]} | ✈️ {sorted_targets[19]["aircraft"]} | 🚢 {sorted_targets[19]["ships"]}``
 ''', color=0x000000)
 
                 await ctx.send(embed=embed)
