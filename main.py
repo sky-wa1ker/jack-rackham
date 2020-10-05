@@ -54,7 +54,7 @@ async def on_ready():
     beige_alert.start()
     print('Online as {0.user}'.format(client))
 
-
+'''
 @client.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.MissingRequiredArgument):
@@ -65,7 +65,7 @@ async def on_command_error(ctx, error):
         await ctx.send(f'Try again in {round(error.retry_after)} seconds.')
     else:
         await ctx.send('There was some error, see if you\'re using the command right. (;help).')
-
+'''
 
 @tasks.loop(minutes=30)
 async def update_nation_dict():
@@ -531,11 +531,11 @@ async def counter(ctx, enemy_id):
                                 await ctx.send(embed=embed)
 
                         else:
-                            ctx.send('Couldn\'t find any counters.')
+                            await ctx.send('Couldn\'t find any counters.')
 
 
     else:
-        ctx.send('Wrong channel mate!')
+        await ctx.send('Wrong channel mate!')
 
 
 
