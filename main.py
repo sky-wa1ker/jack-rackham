@@ -623,7 +623,210 @@ async def trade(ctx, resource):
                 embed.set_footer(text="DM Sam Cooper for help or to report a bug.", icon_url='https://i.ibb.co/qg5vp8w/dp-cropped.jpg')
                 await ctx.send(embed=embed)
         
-        
+
+@client.command()
+async def swamptarget(ctx, nation_id:int):
+    nat_dict = next((item for item in nations_v2 if (item["nation_id"]) == nation_id), False)
+    if nat_dict:
+        min_score = round((nat_dict["score"] * 0.75),2)
+        max_score = round((nat_dict["score"] * 1.75),2)
+        async with aiohttp.ClientSession() as session:
+            async with session.get(f'https://politicsandwar.com/api/v2/nations/fe9ac05fb01f89/&min_score={min_score}&max_score={max_score}&v_mode=false&alliance_id=1246,5722,5875,7674,6126,7642,4638,1023,2594') as r:
+                json_obj = await r.json()
+                targets_dict = json_obj["data"]
+                for d in targets_dict: d['mil_score'] = float(d['soldiers']) * 0.001 + float(
+                                d['tanks']) * 0.005 + float(d['aircraft']) * 0.3 + float(d['ships']) * 0.75 + float(
+                                d['cities'] * 4.0 + float(d['score'] * 0.1))
+                sorted_targets = sorted(targets_dict, key = lambda i: i['mil_score'])
+                embed = discord.Embed(title=f"Swamp target search for {nat_dict['nation']}.", description=f'''
+[{sorted_targets[0]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[0]["nation_id"]}) | [{sorted_targets[0]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[0]["alliance_id"]})
+``🏙️ {sorted_targets[0]["cities"]} | Last Active : {timeago.format(sorted_targets[0]["last_active"], datetime.utcnow())}`` 
+``💂 {sorted_targets[0]["soldiers"]} | ⚙️ {sorted_targets[0]["tanks"]} | ✈️ {sorted_targets[0]["aircraft"]} | 🚢 {sorted_targets[0]["ships"]}``
+
+[{sorted_targets[1]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[1]["nation_id"]}) | [{sorted_targets[1]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[1]["alliance_id"]})
+``🏙️ {sorted_targets[1]["cities"]} | Last Active : {timeago.format(sorted_targets[1]["last_active"], datetime.utcnow())}`` 
+``💂 {sorted_targets[1]["soldiers"]} | ⚙️ {sorted_targets[1]["tanks"]} | ✈️ {sorted_targets[1]["aircraft"]} | 🚢 {sorted_targets[1]["ships"]}``
+
+[{sorted_targets[2]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[2]["nation_id"]}) | [{sorted_targets[2]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[2]["alliance_id"]})
+``🏙️ {sorted_targets[2]["cities"]} | Last Active : {timeago.format(sorted_targets[2]["last_active"], datetime.utcnow())}`` 
+``💂 {sorted_targets[2]["soldiers"]} | ⚙️ {sorted_targets[2]["tanks"]} | ✈️ {sorted_targets[2]["aircraft"]} | 🚢 {sorted_targets[2]["ships"]}``
+
+[{sorted_targets[3]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[3]["nation_id"]}) | [{sorted_targets[3]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[3]["alliance_id"]})
+``🏙️ {sorted_targets[3]["cities"]} | Last Active : {timeago.format(sorted_targets[3]["last_active"], datetime.utcnow())}`` 
+``💂 {sorted_targets[3]["soldiers"]} | ⚙️ {sorted_targets[3]["tanks"]} | ✈️ {sorted_targets[3]["aircraft"]} | 🚢 {sorted_targets[3]["ships"]}``
+
+[{sorted_targets[4]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[4]["nation_id"]}) | [{sorted_targets[4]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[4]["alliance_id"]})
+``🏙️ {sorted_targets[4]["cities"]} | Last Active : {timeago.format(sorted_targets[4]["last_active"], datetime.utcnow())}`` 
+``💂 {sorted_targets[4]["soldiers"]} | ⚙️ {sorted_targets[4]["tanks"]} | ✈️ {sorted_targets[4]["aircraft"]} | 🚢 {sorted_targets[4]["ships"]}``
+
+[{sorted_targets[5]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[5]["nation_id"]}) | [{sorted_targets[5]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[5]["alliance_id"]})
+``🏙️ {sorted_targets[5]["cities"]} | Last Active : {timeago.format(sorted_targets[5]["last_active"], datetime.utcnow())}`` 
+``💂 {sorted_targets[5]["soldiers"]} | ⚙️ {sorted_targets[5]["tanks"]} | ✈️ {sorted_targets[5]["aircraft"]} | 🚢 {sorted_targets[5]["ships"]}``
+
+[{sorted_targets[6]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[6]["nation_id"]}) | [{sorted_targets[6]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[6]["alliance_id"]})
+``🏙️ {sorted_targets[6]["cities"]} | Last Active : {timeago.format(sorted_targets[6]["last_active"], datetime.utcnow())}`` 
+``💂 {sorted_targets[6]["soldiers"]} | ⚙️ {sorted_targets[6]["tanks"]} | ✈️ {sorted_targets[6]["aircraft"]} | 🚢 {sorted_targets[6]["ships"]}``
+
+[{sorted_targets[7]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[7]["nation_id"]}) | [{sorted_targets[7]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[7]["alliance_id"]})
+``🏙️ {sorted_targets[7]["cities"]} | Last Active : {timeago.format(sorted_targets[7]["last_active"], datetime.utcnow())}`` 
+``💂 {sorted_targets[7]["soldiers"]} | ⚙️ {sorted_targets[7]["tanks"]} | ✈️ {sorted_targets[7]["aircraft"]} | 🚢 {sorted_targets[7]["ships"]}``
+
+[{sorted_targets[8]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[8]["nation_id"]}) | [{sorted_targets[8]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[8]["alliance_id"]})
+``🏙️ {sorted_targets[8]["cities"]} | Last Active : {timeago.format(sorted_targets[8]["last_active"], datetime.utcnow())}`` 
+``💂 {sorted_targets[8]["soldiers"]} | ⚙️ {sorted_targets[8]["tanks"]} | ✈️ {sorted_targets[8]["aircraft"]} | 🚢 {sorted_targets[8]["ships"]}``
+
+[{sorted_targets[9]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[9]["nation_id"]}) | [{sorted_targets[9]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[9]["alliance_id"]})
+``🏙️ {sorted_targets[9]["cities"]} | Last Active : {timeago.format(sorted_targets[9]["last_active"], datetime.utcnow())}`` 
+``💂 {sorted_targets[9]["soldiers"]} | ⚙️ {sorted_targets[9]["tanks"]} | ✈️ {sorted_targets[9]["aircraft"]} | 🚢 {sorted_targets[9]["ships"]}``
+
+[{sorted_targets[10]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[10]["nation_id"]}) | [{sorted_targets[10]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[10]["alliance_id"]})
+``🏙️ {sorted_targets[10]["cities"]} | Last Active : {timeago.format(sorted_targets[10]["last_active"], datetime.utcnow())}`` 
+``💂 {sorted_targets[10]["soldiers"]} | ⚙️ {sorted_targets[10]["tanks"]} | ✈️ {sorted_targets[10]["aircraft"]} | 🚢 {sorted_targets[10]["ships"]}``
+
+[{sorted_targets[11]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[11]["nation_id"]}) | [{sorted_targets[11]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[11]["alliance_id"]})
+``🏙️ {sorted_targets[11]["cities"]} | Last Active : {timeago.format(sorted_targets[11]["last_active"], datetime.utcnow())}`` 
+``💂 {sorted_targets[11]["soldiers"]} | ⚙️ {sorted_targets[11]["tanks"]} | ✈️ {sorted_targets[11]["aircraft"]} | 🚢 {sorted_targets[11]["ships"]}``
+
+[{sorted_targets[12]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[12]["nation_id"]}) | [{sorted_targets[12]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[12]["alliance_id"]})
+``🏙️ {sorted_targets[12]["cities"]} | Last Active : {timeago.format(sorted_targets[12]["last_active"], datetime.utcnow())}`` 
+``💂 {sorted_targets[12]["soldiers"]} | ⚙️ {sorted_targets[12]["tanks"]} | ✈️ {sorted_targets[12]["aircraft"]} | 🚢 {sorted_targets[12]["ships"]}``
+
+[{sorted_targets[13]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[13]["nation_id"]}) | [{sorted_targets[13]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[13]["alliance_id"]})
+``🏙️ {sorted_targets[13]["cities"]} | Last Active : {timeago.format(sorted_targets[13]["last_active"], datetime.utcnow())}`` 
+``💂 {sorted_targets[13]["soldiers"]} | ⚙️ {sorted_targets[13]["tanks"]} | ✈️ {sorted_targets[13]["aircraft"]} | 🚢 {sorted_targets[13]["ships"]}``
+
+[{sorted_targets[14]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[14]["nation_id"]}) | [{sorted_targets[14]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[14]["alliance_id"]})
+``🏙️ {sorted_targets[14]["cities"]} | Last Active : {timeago.format(sorted_targets[14]["last_active"], datetime.utcnow())}`` 
+``💂 {sorted_targets[14]["soldiers"]} | ⚙️ {sorted_targets[14]["tanks"]} | ✈️ {sorted_targets[14]["aircraft"]} | 🚢 {sorted_targets[14]["ships"]}``
+
+[{sorted_targets[15]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[15]["nation_id"]}) | [{sorted_targets[15]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[15]["alliance_id"]})
+``🏙️ {sorted_targets[15]["cities"]} | Last Active : {timeago.format(sorted_targets[15]["last_active"], datetime.utcnow())}`` 
+``💂 {sorted_targets[15]["soldiers"]} | ⚙️ {sorted_targets[15]["tanks"]} | ✈️ {sorted_targets[15]["aircraft"]} | 🚢 {sorted_targets[15]["ships"]}``
+
+[{sorted_targets[16]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[16]["nation_id"]}) | [{sorted_targets[16]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[16]["alliance_id"]})
+``🏙️ {sorted_targets[16]["cities"]} | Last Active : {timeago.format(sorted_targets[16]["last_active"], datetime.utcnow())}`` 
+``💂 {sorted_targets[16]["soldiers"]} | ⚙️ {sorted_targets[16]["tanks"]} | ✈️ {sorted_targets[16]["aircraft"]} | 🚢 {sorted_targets[16]["ships"]}``
+
+[{sorted_targets[17]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[17]["nation_id"]}) | [{sorted_targets[17]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[17]["alliance_id"]})
+``🏙️ {sorted_targets[17]["cities"]} | Last Active : {timeago.format(sorted_targets[17]["last_active"], datetime.utcnow())}`` 
+``💂 {sorted_targets[17]["soldiers"]} | ⚙️ {sorted_targets[17]["tanks"]} | ✈️ {sorted_targets[17]["aircraft"]} | 🚢 {sorted_targets[17]["ships"]}``
+
+[{sorted_targets[18]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[18]["nation_id"]}) | [{sorted_targets[18]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[18]["alliance_id"]})
+``🏙️ {sorted_targets[18]["cities"]} | Last Active : {timeago.format(sorted_targets[18]["last_active"], datetime.utcnow())}`` 
+``💂 {sorted_targets[18]["soldiers"]} | ⚙️ {sorted_targets[18]["tanks"]} | ✈️ {sorted_targets[18]["aircraft"]} | 🚢 {sorted_targets[18]["ships"]}``
+
+[{sorted_targets[19]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[19]["nation_id"]}) | [{sorted_targets[19]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[19]["alliance_id"]})
+``🏙️ {sorted_targets[19]["cities"]} | Last Active : {timeago.format(sorted_targets[19]["last_active"], datetime.utcnow())}`` 
+``💂 {sorted_targets[19]["soldiers"]} | ⚙️ {sorted_targets[19]["tanks"]} | ✈️ {sorted_targets[19]["aircraft"]} | 🚢 {sorted_targets[19]["ships"]}``
+''', color=0x000000)
+
+                await ctx.send(embed=embed)
+
+                
+    else:
+        await ctx.send(f"Your nation ID is not correct.")
+
+
+@client.command()
+async def swamptarget2(ctx, nation_id:int):
+    nat_dict = next((item for item in nations_v2 if (item["nation_id"]) == nation_id), False)
+    if nat_dict:
+        min_score = round((nat_dict["score"] * 0.75),2)
+        max_score = round((nat_dict["score"] * 1.75),2)
+        async with aiohttp.ClientSession() as session:
+            async with session.get(f'https://politicsandwar.com/api/v2/nations/fe9ac05fb01f89/&min_score={min_score}&max_score={max_score}&v_mode=false&alliance_id=1246,5722,5875,7674,6126,7642,4638,1023,2594') as r:
+                json_obj = await r.json()
+                targets_dict = json_obj["data"]
+                for d in targets_dict: d['mil_score'] = float(d['soldiers']) * 0.001 + float(
+                                d['tanks']) * 0.005 + float(d['aircraft']) * 0.3 + float(d['ships']) * 0.75
+                sorted_targets = sorted(targets_dict, key = lambda i: i['mil_score'])
+                embed = discord.Embed(title=f"Swamp target search for {nat_dict['nation']}.", description=f'''
+[{sorted_targets[0]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[0]["nation_id"]}) | [{sorted_targets[0]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[0]["alliance_id"]})
+``🏙️ {sorted_targets[0]["cities"]} | Last Active : {timeago.format(sorted_targets[0]["last_active"], datetime.utcnow())}`` 
+``💂 {sorted_targets[0]["soldiers"]} | ⚙️ {sorted_targets[0]["tanks"]} | ✈️ {sorted_targets[0]["aircraft"]} | 🚢 {sorted_targets[0]["ships"]}``
+
+[{sorted_targets[1]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[1]["nation_id"]}) | [{sorted_targets[1]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[1]["alliance_id"]})
+``🏙️ {sorted_targets[1]["cities"]} | Last Active : {timeago.format(sorted_targets[1]["last_active"], datetime.utcnow())}`` 
+``💂 {sorted_targets[1]["soldiers"]} | ⚙️ {sorted_targets[1]["tanks"]} | ✈️ {sorted_targets[1]["aircraft"]} | 🚢 {sorted_targets[1]["ships"]}``
+
+[{sorted_targets[2]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[2]["nation_id"]}) | [{sorted_targets[2]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[2]["alliance_id"]})
+``🏙️ {sorted_targets[2]["cities"]} | Last Active : {timeago.format(sorted_targets[2]["last_active"], datetime.utcnow())}`` 
+``💂 {sorted_targets[2]["soldiers"]} | ⚙️ {sorted_targets[2]["tanks"]} | ✈️ {sorted_targets[2]["aircraft"]} | 🚢 {sorted_targets[2]["ships"]}``
+
+[{sorted_targets[3]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[3]["nation_id"]}) | [{sorted_targets[3]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[3]["alliance_id"]})
+``🏙️ {sorted_targets[3]["cities"]} | Last Active : {timeago.format(sorted_targets[3]["last_active"], datetime.utcnow())}`` 
+``💂 {sorted_targets[3]["soldiers"]} | ⚙️ {sorted_targets[3]["tanks"]} | ✈️ {sorted_targets[3]["aircraft"]} | 🚢 {sorted_targets[3]["ships"]}``
+
+[{sorted_targets[4]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[4]["nation_id"]}) | [{sorted_targets[4]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[4]["alliance_id"]})
+``🏙️ {sorted_targets[4]["cities"]} | Last Active : {timeago.format(sorted_targets[4]["last_active"], datetime.utcnow())}`` 
+``💂 {sorted_targets[4]["soldiers"]} | ⚙️ {sorted_targets[4]["tanks"]} | ✈️ {sorted_targets[4]["aircraft"]} | 🚢 {sorted_targets[4]["ships"]}``
+
+[{sorted_targets[5]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[5]["nation_id"]}) | [{sorted_targets[5]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[5]["alliance_id"]})
+``🏙️ {sorted_targets[5]["cities"]} | Last Active : {timeago.format(sorted_targets[5]["last_active"], datetime.utcnow())}`` 
+``💂 {sorted_targets[5]["soldiers"]} | ⚙️ {sorted_targets[5]["tanks"]} | ✈️ {sorted_targets[5]["aircraft"]} | 🚢 {sorted_targets[5]["ships"]}``
+
+[{sorted_targets[6]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[6]["nation_id"]}) | [{sorted_targets[6]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[6]["alliance_id"]})
+``🏙️ {sorted_targets[6]["cities"]} | Last Active : {timeago.format(sorted_targets[6]["last_active"], datetime.utcnow())}`` 
+``💂 {sorted_targets[6]["soldiers"]} | ⚙️ {sorted_targets[6]["tanks"]} | ✈️ {sorted_targets[6]["aircraft"]} | 🚢 {sorted_targets[6]["ships"]}``
+
+[{sorted_targets[7]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[7]["nation_id"]}) | [{sorted_targets[7]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[7]["alliance_id"]})
+``🏙️ {sorted_targets[7]["cities"]} | Last Active : {timeago.format(sorted_targets[7]["last_active"], datetime.utcnow())}`` 
+``💂 {sorted_targets[7]["soldiers"]} | ⚙️ {sorted_targets[7]["tanks"]} | ✈️ {sorted_targets[7]["aircraft"]} | 🚢 {sorted_targets[7]["ships"]}``
+
+[{sorted_targets[8]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[8]["nation_id"]}) | [{sorted_targets[8]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[8]["alliance_id"]})
+``🏙️ {sorted_targets[8]["cities"]} | Last Active : {timeago.format(sorted_targets[8]["last_active"], datetime.utcnow())}`` 
+``💂 {sorted_targets[8]["soldiers"]} | ⚙️ {sorted_targets[8]["tanks"]} | ✈️ {sorted_targets[8]["aircraft"]} | 🚢 {sorted_targets[8]["ships"]}``
+
+[{sorted_targets[9]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[9]["nation_id"]}) | [{sorted_targets[9]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[9]["alliance_id"]})
+``🏙️ {sorted_targets[9]["cities"]} | Last Active : {timeago.format(sorted_targets[9]["last_active"], datetime.utcnow())}`` 
+``💂 {sorted_targets[9]["soldiers"]} | ⚙️ {sorted_targets[9]["tanks"]} | ✈️ {sorted_targets[9]["aircraft"]} | 🚢 {sorted_targets[9]["ships"]}``
+
+[{sorted_targets[10]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[10]["nation_id"]}) | [{sorted_targets[10]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[10]["alliance_id"]})
+``🏙️ {sorted_targets[10]["cities"]} | Last Active : {timeago.format(sorted_targets[10]["last_active"], datetime.utcnow())}`` 
+``💂 {sorted_targets[10]["soldiers"]} | ⚙️ {sorted_targets[10]["tanks"]} | ✈️ {sorted_targets[10]["aircraft"]} | 🚢 {sorted_targets[10]["ships"]}``
+
+[{sorted_targets[11]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[11]["nation_id"]}) | [{sorted_targets[11]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[11]["alliance_id"]})
+``🏙️ {sorted_targets[11]["cities"]} | Last Active : {timeago.format(sorted_targets[11]["last_active"], datetime.utcnow())}`` 
+``💂 {sorted_targets[11]["soldiers"]} | ⚙️ {sorted_targets[11]["tanks"]} | ✈️ {sorted_targets[11]["aircraft"]} | 🚢 {sorted_targets[11]["ships"]}``
+
+[{sorted_targets[12]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[12]["nation_id"]}) | [{sorted_targets[12]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[12]["alliance_id"]})
+``🏙️ {sorted_targets[12]["cities"]} | Last Active : {timeago.format(sorted_targets[12]["last_active"], datetime.utcnow())}`` 
+``💂 {sorted_targets[12]["soldiers"]} | ⚙️ {sorted_targets[12]["tanks"]} | ✈️ {sorted_targets[12]["aircraft"]} | 🚢 {sorted_targets[12]["ships"]}``
+
+[{sorted_targets[13]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[13]["nation_id"]}) | [{sorted_targets[13]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[13]["alliance_id"]})
+``🏙️ {sorted_targets[13]["cities"]} | Last Active : {timeago.format(sorted_targets[13]["last_active"], datetime.utcnow())}`` 
+``💂 {sorted_targets[13]["soldiers"]} | ⚙️ {sorted_targets[13]["tanks"]} | ✈️ {sorted_targets[13]["aircraft"]} | 🚢 {sorted_targets[13]["ships"]}``
+
+[{sorted_targets[14]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[14]["nation_id"]}) | [{sorted_targets[14]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[14]["alliance_id"]})
+``🏙️ {sorted_targets[14]["cities"]} | Last Active : {timeago.format(sorted_targets[14]["last_active"], datetime.utcnow())}`` 
+``💂 {sorted_targets[14]["soldiers"]} | ⚙️ {sorted_targets[14]["tanks"]} | ✈️ {sorted_targets[14]["aircraft"]} | 🚢 {sorted_targets[14]["ships"]}``
+
+[{sorted_targets[15]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[15]["nation_id"]}) | [{sorted_targets[15]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[15]["alliance_id"]})
+``🏙️ {sorted_targets[15]["cities"]} | Last Active : {timeago.format(sorted_targets[15]["last_active"], datetime.utcnow())}`` 
+``💂 {sorted_targets[15]["soldiers"]} | ⚙️ {sorted_targets[15]["tanks"]} | ✈️ {sorted_targets[15]["aircraft"]} | 🚢 {sorted_targets[15]["ships"]}``
+
+[{sorted_targets[16]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[16]["nation_id"]}) | [{sorted_targets[16]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[16]["alliance_id"]})
+``🏙️ {sorted_targets[16]["cities"]} | Last Active : {timeago.format(sorted_targets[16]["last_active"], datetime.utcnow())}`` 
+``💂 {sorted_targets[16]["soldiers"]} | ⚙️ {sorted_targets[16]["tanks"]} | ✈️ {sorted_targets[16]["aircraft"]} | 🚢 {sorted_targets[16]["ships"]}``
+
+[{sorted_targets[17]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[17]["nation_id"]}) | [{sorted_targets[17]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[17]["alliance_id"]})
+``🏙️ {sorted_targets[17]["cities"]} | Last Active : {timeago.format(sorted_targets[17]["last_active"], datetime.utcnow())}`` 
+``💂 {sorted_targets[17]["soldiers"]} | ⚙️ {sorted_targets[17]["tanks"]} | ✈️ {sorted_targets[17]["aircraft"]} | 🚢 {sorted_targets[17]["ships"]}``
+
+[{sorted_targets[18]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[18]["nation_id"]}) | [{sorted_targets[18]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[18]["alliance_id"]})
+``🏙️ {sorted_targets[18]["cities"]} | Last Active : {timeago.format(sorted_targets[18]["last_active"], datetime.utcnow())}`` 
+``💂 {sorted_targets[18]["soldiers"]} | ⚙️ {sorted_targets[18]["tanks"]} | ✈️ {sorted_targets[18]["aircraft"]} | 🚢 {sorted_targets[18]["ships"]}``
+
+[{sorted_targets[19]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[19]["nation_id"]}) | [{sorted_targets[19]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[19]["alliance_id"]})
+``🏙️ {sorted_targets[19]["cities"]} | Last Active : {timeago.format(sorted_targets[19]["last_active"], datetime.utcnow())}`` 
+``💂 {sorted_targets[19]["soldiers"]} | ⚙️ {sorted_targets[19]["tanks"]} | ✈️ {sorted_targets[19]["aircraft"]} | 🚢 {sorted_targets[19]["ships"]}``
+''', color=0x000000)
+
+                await ctx.send(embed=embed)
+
+                
+    else:
+        await ctx.send(f"Your nation ID is not correct.")
 
 
 client.run(token)
