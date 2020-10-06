@@ -630,7 +630,7 @@ async def swamptarget(ctx, nation_id:int):
         min_score = round((nat_dict["score"] * 0.75),2)
         max_score = round((nat_dict["score"] * 1.75),2)
         async with aiohttp.ClientSession() as session:
-            async with session.get(f'https://politicsandwar.com/api/v2/nations/fe9ac05fb01f89/&min_score={min_score}&max_score={max_score}&v_mode=false&alliance_id=1246,5722,5875,7674,6126,7642,4638,1023,2594') as r:
+            async with session.get(f'https://politicsandwar.com/api/v2/nations/{api_key}/&min_score={min_score}&max_score={max_score}&v_mode=false&alliance_id=1246,5722,5875,7674,6126,7642,4638,1023,2594') as r:
                 json_obj = await r.json()
                 targets_dict = json_obj["data"]
                 for d in targets_dict: d['mil_score'] = float(d['soldiers']) * 0.001 + float(
@@ -693,7 +693,7 @@ async def swamptarget2(ctx, nation_id:int):
         min_score = round((nat_dict["score"] * 0.75),2)
         max_score = round((nat_dict["score"] * 1.75),2)
         async with aiohttp.ClientSession() as session:
-            async with session.get(f'https://politicsandwar.com/api/v2/nations/fe9ac05fb01f89/&min_score={min_score}&max_score={max_score}&v_mode=false&alliance_id=1246,5722,5875,7674,6126,7642,4638,1023,2594') as r:
+            async with session.get(f'https://politicsandwar.com/api/v2/nations/{api_key}/&min_score={min_score}&max_score={max_score}&v_mode=false&alliance_id=1246,5722,5875,7674,6126,7642,4638,1023,2594') as r:
                 json_obj = await r.json()
                 targets_dict = json_obj["data"]
                 for d in targets_dict: d['mil_score'] = float(d['soldiers']) * 0.001 + float(
