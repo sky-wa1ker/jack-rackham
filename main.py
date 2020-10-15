@@ -632,7 +632,8 @@ async def swamptarget(ctx, nation_id:int):
         async with aiohttp.ClientSession() as session:
             async with session.get(f'https://politicsandwar.com/api/v2/nations/{api_key}/&min_score={min_score}&max_score={max_score}&v_mode=false&alliance_id=1246,5722,5875,7674,6126,7642,4638,1023,2594') as r:
                 json_obj = await r.json()
-                targets_dict = json_obj["data"]
+                raw_targets_dict = json_obj["data"]
+                targets_dict = [i for i in raw_targets_dict if (i['color'] != 0) and (i['defensive_wars'] != 3)]
                 for d in targets_dict: d['mil_score'] = float(d['soldiers']) * 0.001 + float(
                                 d['tanks']) * 0.005 + float(d['aircraft']) * 0.3 + float(d['ships']) * 0.75 + float(
                                 d['cities'] * 4.0 + float(d['score'] * 0.1))
@@ -695,7 +696,8 @@ async def swamptarget2(ctx, nation_id:int):
         async with aiohttp.ClientSession() as session:
             async with session.get(f'https://politicsandwar.com/api/v2/nations/{api_key}/&min_score={min_score}&max_score={max_score}&v_mode=false&alliance_id=1246,5722,5875,7674,6126,7642,4638,1023,2594') as r:
                 json_obj = await r.json()
-                targets_dict = json_obj["data"]
+                raw_targets_dict = json_obj["data"]
+                targets_dict = [i for i in raw_targets_dict if (i['color'] != 0) and (i['defensive_wars'] != 3)]
                 for d in targets_dict: d['mil_score'] = float(d['soldiers']) * 0.001 + float(
                                 d['tanks']) * 0.005 + float(d['aircraft']) * 0.3 + float(d['ships']) * 0.75
                 sorted_targets = sorted(targets_dict, key = lambda i: i['mil_score'])
