@@ -675,10 +675,6 @@ async def swamptarget(ctx, nation_id:int):
 [{sorted_targets[8]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[8]["nation_id"]}) | [{sorted_targets[8]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[8]["alliance_id"]})
 ``🏙️ {sorted_targets[8]["cities"]} | Last Active : {timeago.format(sorted_targets[8]["last_active"], datetime.utcnow())}`` 
 ``💂 {sorted_targets[8]["soldiers"]} | ⚙️ {sorted_targets[8]["tanks"]} | ✈️ {sorted_targets[8]["aircraft"]} | 🚢 {sorted_targets[8]["ships"]}``
-
-[{sorted_targets[9]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[9]["nation_id"]}) | [{sorted_targets[9]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[9]["alliance_id"]})
-``🏙️ {sorted_targets[9]["cities"]} | Last Active : {timeago.format(sorted_targets[9]["last_active"], datetime.utcnow())}`` 
-``💂 {sorted_targets[9]["soldiers"]} | ⚙️ {sorted_targets[9]["tanks"]} | ✈️ {sorted_targets[9]["aircraft"]} | 🚢 {sorted_targets[9]["ships"]}``
 ''', color=0x000000)
 
                 await ctx.send(embed=embed)
