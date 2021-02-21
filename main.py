@@ -366,11 +366,12 @@ Defender Military
 Find counters: `;counter {i["attackerID"]}`
                             ''', color=dcolor)
                             await channel.send(embed=embed)
+                            if i["defenderAA"]=="Arrgh" and type(db.discord_users.find_one({'nation_id':i["defenderID"]})) is dict:
+                                account = db.discord_users.find_one({'nation_id':i["defenderID"]})
+                                await channel.send(f"You have been attacked <@{account['_id']}>")
                 with open('last_war.txt', 'w') as f:
                     f.write(str(wars[0]['warID']))
-                    if i["defenderAA"]=="Arrgh" and type(db.discord_users.find_one({'nation_id':i["defenderID"]})) is dict:
-                        account = db.discord_users.find_one({'nation_id':i["defenderID"]})
-                        await channel.send(f"You have been attacked <@{account['_id']}>")
+                    
                         
 
 
