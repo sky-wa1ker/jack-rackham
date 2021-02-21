@@ -4,3 +4,8 @@ timeago
 datetime
 asyncio
 aiohttp
+difflib
+pymongo
+arrow
+dnspython
+bs4
