@@ -14,6 +14,7 @@ from pymongo import MongoClient
 from datetime import datetime
 
 
+
 token = os.environ['token']
 api_key = os.environ['api_key']
 db_client = MongoClient(os.environ["db_access_url"])
