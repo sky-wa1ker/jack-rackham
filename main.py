@@ -42,7 +42,7 @@ async def on_ready():
 
 
 
-'''
+
 @client.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.MissingRequiredArgument):
@@ -50,10 +50,7 @@ async def on_command_error(ctx, error):
     elif isinstance(error, TypeError):
         await ctx.send('Wrong argument type.')
     elif isinstance(error, commands.CommandOnCooldown):
-        await ctx.send(f'Try again in {round(error.retry_after)} seconds.')
-    else:
-        await ctx.send('There was some error, see if you\'re using the command right. (;help).')
-'''    
+        await ctx.send(f'Try again in {round(error.retry_after)} seconds.') 
 
 
 
