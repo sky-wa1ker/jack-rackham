@@ -35,6 +35,7 @@ async def on_ready():
     await get_member_list()
     member_alert.start()
     update_nations_data.start()
+    update_alliance_data.start()
     war_alert.start()
     print('Online as {0.user}'.format(client))
 
@@ -50,7 +51,7 @@ async def on_command_error(ctx, error):
     elif isinstance(error, TypeError):
         await ctx.send('Wrong argument type.')
     elif isinstance(error, commands.CommandOnCooldown):
-        await ctx.send(f'Try again in {round(error.retry_after)} seconds.') 
+        await ctx.send(f'Try again in {round(error.retry_after)} seconds.')
 
 
 
@@ -225,6 +226,42 @@ async def who(ctx, user:discord.User):
     else:
         await ctx.send("Could not find this user.")
 
+
+
+
+@client.command()
+async def me(ctx):
+    account = db.discord_users.find_one({'_id':ctx.author.id})
+    if account:
+        nation_dict_1 = db.nations.find_one({"nationid":account["nation_id"]})
+        if nation_dict_1:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(f'https://politicsandwar.com/api/nation/id={nation_dict_1["nationid"]}&key={api_key}') as r:
+                    nat_dict = await r.json()
+                    score = float(nat_dict["score"])
+                    member_rank_dict = {'1':'Applicant', '2':'Member', '3':'Officer', '4':'Heir', '5':'Leader'}
+                    time_ago = arrow.utcnow().shift(minutes=-(nat_dict['minutessinceactive'])).humanize()
+                    discord_id = db.discord_users.find_one({'nation_id':int((nat_dict["nationid"]))})          
+                    if discord_id:
+                        discord_id = discord_id["username"]
+                    embed=discord.Embed(title=f'{nat_dict["name"]}', url=f'https://politicsandwar.com/nation/id={nat_dict["nationid"]}', description=f'{nat_dict["leadername"]}', color=0x000000)
+                    embed.add_field(name="Alliance", value=f"[{nat_dict['alliance']}](https://politicsandwar.com/alliance/id={nat_dict['allianceid']}) | {member_rank_dict[(nat_dict['allianceposition'])]}", inline=False)
+                    embed.add_field(name="General", value=f"`ID: {nat_dict['nationid']} | 🏙️ {nat_dict['cities']} | Score: {score}` \n `{nat_dict['war_policy']} | Active: {time_ago} \n{nat_dict['daysold']} days old. | Discord: {discord_id} `", inline=False)
+                    embed.add_field(name="VM-Beige", value=f'`In VM: For {nat_dict["vmode"]} turns.\nIn Beige: For {nat_dict["beige_turns_left"]} turns.`', inline=False)
+                    embed.add_field(name="War Range", value=f'`⬆️ {round((score * 0.75),2)} to {round((score * 1.75),2)}\n\n⬇️ {round((score / 1.75),2)} to {round((score / 0.75),2)}`', inline=False)
+                    embed.add_field(name="Wars", value=f'`⬆️ {nat_dict["offensivewars"]} | ⬇️ {nat_dict["defensivewars"]}`', inline=False)
+                    embed.add_field(name="Military", value=f'`💂 {nat_dict["soldiers"]} | ⚙️ {nat_dict["tanks"]} | ✈️ {nat_dict["aircraft"]} | 🚢 {nat_dict["ships"]}\n🚀 {nat_dict["missiles"]} | ☢️ {nat_dict["nukes"]}`', inline=False)
+                    embed.set_image(url=f'{nat_dict["flagurl"]}')
+                    embed.set_footer(text="DM Sam Cooper for help or to report a bug                  .", icon_url='https://i.ibb.co/qg5vp8w/dp-cropped.jpg')
+
+                    await ctx.send(embed=embed)
+        else:
+            await ctx.send("Could not find your nation.")
+    else:
+        await ctx.send("You are not verified yet.")
+
+
+
         
 @tasks.loop(minutes=120)
 async def update_nations_data():
@@ -233,7 +270,21 @@ async def update_nations_data():
         async with session.get(f'https://politicsandwar.com/api/nations/?key={api_key}') as r:
             json_obj = await r.json()
             nations = json_obj["nations"]
+            for x in nations:
+                x["query_leader"] = (x["leader"]).lower()
+                x["query_nation"] = (x["nation"]).lower()
             db.nations.insert_many((nations))
+
+@tasks.loop(minutes=1440)
+async def update_alliance_data():
+    db.alliances.delete_many({})
+    async with aiohttp.ClientSession() as session:
+        async with session.get(f"https://politicsandwar.com/api/alliances/?key={api_key}") as r:
+            json_obj = await r.json()
+            alliances = json_obj["alliances"]
+            for x in alliances:
+                x["query_name"] = (x["name"]).lower()
+            db.nations.insert_many((alliances))
 
 
 @client.command()
