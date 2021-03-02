@@ -284,7 +284,7 @@ async def update_alliance_data():
             alliances = json_obj["alliances"]
             for x in alliances:
                 x["query_name"] = (x["name"]).lower()
-            db.nations.insert_many((alliances))
+            db.alliances.insert_many((alliances))
 
 
 @client.command()
