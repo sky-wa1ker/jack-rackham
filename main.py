@@ -165,9 +165,9 @@ async def nation(ctx, *, nation):
 
 @client.command()
 async def alliance(ctx, *, aa_name):
-    aa_dict = db.alliances.find({"query_name":aa_name.lower()})
+    aa_dict = db.alliances.find_one({"query_name":aa_name.lower()})
     if aa_dict:
-        aa_id = aa_dict["alliance_id"]
+        aa_id = aa_dict["id"]
         async with aiohttp.ClientSession() as session:
             async with session.get(f"https://politicsandwar.com/api/alliance/id={aa_id}&key={api_key}") as r:
                 aa_dict = await r.json()
