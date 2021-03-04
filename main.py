@@ -152,9 +152,15 @@ async def nation(ctx, *, nation):
                 await ctx.send(embed=embed)
     else:
         nations = db.nations.find()
-        nations_list = [[sub['nation'], sub['leader']] for sub in nations]
+        nations_list = []
+        for x in nations:
+            nations_list.append(x["nation"])
+            nations_list.append(x["leader"])
         match_nations = difflib.get_close_matches(nation, nations_list, n=1)
-        await ctx.send(f'No exact match, did you mean **{match_nations[0][1]}**?')
+        if len(match_nations) > 0:
+            await ctx.send(f'No exact match, did you mean **{match_nations[0]}**?')
+        else:
+            await ctx.send("Could not find this nation, no possible matches found.")
 
 
 @client.command()
