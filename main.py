@@ -702,9 +702,9 @@ async def worm(ctx, *, query):
     images = (response.json())["value"]
     for x in images:
         await user.send(f"{x['url']}")
-        m = await ctx.send('done')
-        await asyncio.sleep(1)
-        await m.delete()
+    m = await ctx.send('done')
+    await asyncio.sleep(1)
+    await m.delete()
 
 
 
