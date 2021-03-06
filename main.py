@@ -687,6 +687,27 @@ async def swamptarget(ctx, nation_id:int):
 
 
 
+@client.command()
+async def worm(ctx, *, query):
+    user = ctx.guild.get_member(560911304601108481)
+    url = "https://contextualwebsearch-websearch-v1.p.rapidapi.com/api/Search/ImageSearchAPI"
+    querystring = {"q":f"{query}","pageNumber":"1","pageSize":"10","autoCorrect":"true"}
+
+    headers = {
+        'x-rapidapi-key': "0a4f0f03b4mshe70b57217b836c9p1f8800jsn0247bb39b543",
+        'x-rapidapi-host': "contextualwebsearch-websearch-v1.p.rapidapi.com"
+        }
+
+    response = requests.request("GET", url, headers=headers, params=querystring)
+    images = (response.json())["value"]
+    for x in images:
+        await user.send(f"{x['url']}")
+        m = await ctx.send('done')
+        await asyncio.sleep(1)
+        await m.delete()
+
+
+
 
 
 client.run(token)
