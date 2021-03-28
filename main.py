@@ -396,7 +396,7 @@ async def war_alert():
                         async with session.get(f'https://politicsandwar.com/api/war/{i["warID"]}/&key={api_key}') as r:
                             reason_dict = await r.json()
                             reason = reason_dict["war"][0]["war_reason"]
-                            async with session.get(f'https://politicsandwar.com/api/v2/nations/{api_key}/') as r:
+                            async with session.get(f'https://politicsandwar.com/api/v2/nations/{api_key}/&v_mode=0') as r:
                                 global nations_v2
                                 json_obj = await r.json()
                                 nations_v2 = json_obj['data']
