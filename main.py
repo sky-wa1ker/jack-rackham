@@ -632,6 +632,127 @@ async def trade(ctx, resource):
                 await ctx.send(embed=embed)
 
 
+
+
+
+@tasks.loop(minutes=180)
+async def leaderboard():
+    channel = client.get_channel(825830741798813807)
+    await channel.purge()
+    async with aiohttp.ClientSession() as session:
+        async with session.get(f"https://politicsandwar.com/api/v2/nations/fe9ac05fb01f89/&alliance_id=913&v_mode=0&alliance_position=2,3,4,5") as r:
+            json_obj = await r.json()
+            nations = json_obj["data"]
+            captains = []
+            for nation in nations:
+                async with aiohttp.ClientSession() as session2:
+                    async with session2.get(f"https://politicsandwar.com/api/nation/id={nation['nation_id']}&key=fe9ac05fb01f89") as r2:
+                        nat_dict = await r2.json()
+                        captains.append(nat_dict)
+            await channel.send(f'''
+            **Arrgh Leaderboards**
+Last Updated : {datetime.now().strftime("%Y-%m-%d %H:%M:%S")} UTC
+            ''')
+            moneylooted = sorted(captains, key = lambda i: float(i['moneyLooted']),reverse=True)
+            embed = discord.Embed(title='Money Looted', color=0x000000, description=f'''
+1. {moneylooted[0]["name"]} - {moneylooted[0]["leadername"]} - {"${:,.2f}".format(float(moneylooted[0]["moneyLooted"]))}
+2. {moneylooted[1]["name"]} - {moneylooted[1]["leadername"]} - {"${:,.2f}".format(float(moneylooted[1]["moneyLooted"]))}
+3. {moneylooted[2]["name"]} - {moneylooted[2]["leadername"]} - {"${:,.2f}".format(float(moneylooted[2]["moneyLooted"]))}
+4. {moneylooted[3]["name"]} - {moneylooted[3]["leadername"]} - {"${:,.2f}".format(float(moneylooted[3]["moneyLooted"]))}
+5. {moneylooted[4]["name"]} - {moneylooted[4]["leadername"]} - {"${:,.2f}".format(float(moneylooted[4]["moneyLooted"]))}
+6. {moneylooted[5]["name"]} - {moneylooted[5]["leadername"]} - {"${:,.2f}".format(float(moneylooted[5]["moneyLooted"]))}
+7. {moneylooted[6]["name"]} - {moneylooted[6]["leadername"]} - {"${:,.2f}".format(float(moneylooted[6]["moneyLooted"]))}
+8. {moneylooted[7]["name"]} - {moneylooted[7]["leadername"]} - {"${:,.2f}".format(float(moneylooted[7]["moneyLooted"]))}
+9. {moneylooted[8]["name"]} - {moneylooted[8]["leadername"]} - {"${:,.2f}".format(float(moneylooted[8]["moneyLooted"]))}
+10. {moneylooted[9]["name"]} - {moneylooted[9]["leadername"]} - {"${:,.2f}".format(float(moneylooted[9]["moneyLooted"]))}
+11. {moneylooted[10]["name"]} - {moneylooted[10]["leadername"]} - {"${:,.2f}".format(float(moneylooted[10]["moneyLooted"]))}
+12. {moneylooted[11]["name"]} - {moneylooted[11]["leadername"]} - {"${:,.2f}".format(float(moneylooted[11]["moneyLooted"]))}
+13. {moneylooted[12]["name"]} - {moneylooted[12]["leadername"]} - {"${:,.2f}".format(float(moneylooted[12]["moneyLooted"]))}
+14. {moneylooted[13]["name"]} - {moneylooted[13]["leadername"]} - {"${:,.2f}".format(float(moneylooted[13]["moneyLooted"]))}
+15. {moneylooted[14]["name"]} - {moneylooted[14]["leadername"]} - {"${:,.2f}".format(float(moneylooted[14]["moneyLooted"]))}
+16. {moneylooted[15]["name"]} - {moneylooted[15]["leadername"]} - {"${:,.2f}".format(float(moneylooted[15]["moneyLooted"]))}
+17. {moneylooted[16]["name"]} - {moneylooted[16]["leadername"]} - {"${:,.2f}".format(float(moneylooted[16]["moneyLooted"]))}
+18. {moneylooted[17]["name"]} - {moneylooted[17]["leadername"]} - {"${:,.2f}".format(float(moneylooted[17]["moneyLooted"]))}
+19. {moneylooted[18]["name"]} - {moneylooted[18]["leadername"]} - {"${:,.2f}".format(float(moneylooted[18]["moneyLooted"]))}
+20. {moneylooted[19]["name"]} - {moneylooted[19]["leadername"]} - {"${:,.2f}".format(float(moneylooted[19]["moneyLooted"]))}
+''')
+            await channel.send(embed=embed)
+            
+            infradestroyed = sorted(captains, key = lambda i: float(i['infdesttot']),reverse=True)
+            embed = discord.Embed(title='Infrastructure Destroyed', color=0x000000, description=f'''
+1. {infradestroyed[0]["name"]} - {infradestroyed[0]["leadername"]} - {infradestroyed[0]["infdesttot"]}
+2. {infradestroyed[1]["name"]} - {infradestroyed[1]["leadername"]} - {infradestroyed[1]["infdesttot"]}
+3. {infradestroyed[2]["name"]} - {infradestroyed[2]["leadername"]} - {infradestroyed[2]["infdesttot"]}
+4. {infradestroyed[3]["name"]} - {infradestroyed[3]["leadername"]} - {infradestroyed[3]["infdesttot"]}
+5. {infradestroyed[4]["name"]} - {infradestroyed[4]["leadername"]} - {infradestroyed[4]["infdesttot"]}
+6. {infradestroyed[5]["name"]} - {infradestroyed[5]["leadername"]} - {infradestroyed[5]["infdesttot"]}
+7. {infradestroyed[6]["name"]} - {infradestroyed[6]["leadername"]} - {infradestroyed[6]["infdesttot"]}
+8. {infradestroyed[7]["name"]} - {infradestroyed[7]["leadername"]} - {infradestroyed[7]["infdesttot"]}
+9. {infradestroyed[8]["name"]} - {infradestroyed[8]["leadername"]} - {infradestroyed[8]["infdesttot"]}
+10. {infradestroyed[9]["name"]} - {infradestroyed[9]["leadername"]} - {infradestroyed[9]["infdesttot"]}
+11. {infradestroyed[10]["name"]} - {infradestroyed[10]["leadername"]} - {infradestroyed[10]["infdesttot"]}
+12. {infradestroyed[11]["name"]} - {infradestroyed[11]["leadername"]} - {infradestroyed[11]["infdesttot"]}
+13. {infradestroyed[12]["name"]} - {infradestroyed[12]["leadername"]} - {infradestroyed[12]["infdesttot"]}
+14. {infradestroyed[13]["name"]} - {infradestroyed[13]["leadername"]} - {infradestroyed[13]["infdesttot"]}
+15. {infradestroyed[14]["name"]} - {infradestroyed[14]["leadername"]} - {infradestroyed[14]["infdesttot"]}
+16. {infradestroyed[15]["name"]} - {infradestroyed[15]["leadername"]} - {infradestroyed[15]["infdesttot"]}
+17. {infradestroyed[16]["name"]} - {infradestroyed[16]["leadername"]} - {infradestroyed[16]["infdesttot"]}
+18. {infradestroyed[17]["name"]} - {infradestroyed[17]["leadername"]} - {infradestroyed[17]["infdesttot"]}
+19. {infradestroyed[18]["name"]} - {infradestroyed[18]["leadername"]} - {infradestroyed[18]["infdesttot"]}
+20. {infradestroyed[19]["name"]} - {infradestroyed[19]["leadername"]} - {infradestroyed[19]["infdesttot"]}
+            ''')
+
+            await channel.send(embed=embed)
+
+            nukeslaunched = sorted(captains, key = lambda i: int(i['nukeslaunched']),reverse=True)
+            embed = discord.Embed(title='Nukes Launched', color=0x000000, description=f'''
+1. {nukeslaunched[0]["name"]} - {nukeslaunched[0]["leadername"]} - {nukeslaunched[0]["nukeslaunched"]}
+2. {nukeslaunched[1]["name"]} - {nukeslaunched[1]["leadername"]} - {nukeslaunched[1]["nukeslaunched"]}
+3. {nukeslaunched[2]["name"]} - {nukeslaunched[2]["leadername"]} - {nukeslaunched[2]["nukeslaunched"]}
+4. {nukeslaunched[3]["name"]} - {nukeslaunched[3]["leadername"]} - {nukeslaunched[3]["nukeslaunched"]}
+5. {nukeslaunched[4]["name"]} - {nukeslaunched[4]["leadername"]} - {nukeslaunched[4]["nukeslaunched"]}
+6. {nukeslaunched[5]["name"]} - {nukeslaunched[5]["leadername"]} - {nukeslaunched[5]["nukeslaunched"]}
+7. {nukeslaunched[6]["name"]} - {nukeslaunched[6]["leadername"]} - {nukeslaunched[6]["nukeslaunched"]}
+8. {nukeslaunched[7]["name"]} - {nukeslaunched[7]["leadername"]} - {nukeslaunched[7]["nukeslaunched"]}
+9. {nukeslaunched[8]["name"]} - {nukeslaunched[8]["leadername"]} - {nukeslaunched[8]["nukeslaunched"]}
+10. {nukeslaunched[9]["name"]} - {nukeslaunched[9]["leadername"]} - {nukeslaunched[9]["nukeslaunched"]}
+            ''')
+
+            await channel.send(embed=embed)
+
+
+            missileslaunched = sorted(captains, key = lambda i: int(i['missilelaunched']),reverse=True)
+            embed = discord.Embed(title='Missiles Launched', color=0x000000, description=f'''
+1. {missileslaunched[0]["name"]} - {missileslaunched[0]["leadername"]} - {missileslaunched[0]["missilelaunched"]}
+2. {missileslaunched[1]["name"]} - {missileslaunched[1]["leadername"]} - {missileslaunched[1]["missilelaunched"]}
+3. {missileslaunched[2]["name"]} - {missileslaunched[2]["leadername"]} - {missileslaunched[2]["missilelaunched"]}
+4. {missileslaunched[3]["name"]} - {missileslaunched[3]["leadername"]} - {missileslaunched[3]["missilelaunched"]}
+5. {missileslaunched[4]["name"]} - {missileslaunched[4]["leadername"]} - {missileslaunched[4]["missilelaunched"]}
+6. {missileslaunched[5]["name"]} - {missileslaunched[5]["leadername"]} - {missileslaunched[5]["missilelaunched"]}
+7. {missileslaunched[6]["name"]} - {missileslaunched[6]["leadername"]} - {missileslaunched[6]["missilelaunched"]}
+8. {missileslaunched[7]["name"]} - {missileslaunched[7]["leadername"]} - {missileslaunched[7]["missilelaunched"]}
+9. {missileslaunched[8]["name"]} - {missileslaunched[8]["leadername"]} - {missileslaunched[8]["missilelaunched"]}
+10. {missileslaunched[9]["name"]} - {missileslaunched[9]["leadername"]} - {missileslaunched[9]["missilelaunched"]}
+11. {missileslaunched[10]["name"]} - {missileslaunched[10]["leadername"]} - {missileslaunched[10]["missilelaunched"]}
+12. {missileslaunched[11]["name"]} - {missileslaunched[11]["leadername"]} - {missileslaunched[11]["missilelaunched"]}
+13. {missileslaunched[12]["name"]} - {missileslaunched[12]["leadername"]} - {missileslaunched[12]["missilelaunched"]}
+14. {missileslaunched[13]["name"]} - {missileslaunched[13]["leadername"]} - {missileslaunched[13]["missilelaunched"]}
+15. {missileslaunched[14]["name"]} - {missileslaunched[14]["leadername"]} - {missileslaunched[14]["missilelaunched"]}
+16. {missileslaunched[15]["name"]} - {missileslaunched[15]["leadername"]} - {missileslaunched[15]["missilelaunched"]}
+17. {missileslaunched[16]["name"]} - {missileslaunched[16]["leadername"]} - {missileslaunched[16]["missilelaunched"]}
+18. {missileslaunched[17]["name"]} - {missileslaunched[17]["leadername"]} - {missileslaunched[17]["missilelaunched"]}
+19. {missileslaunched[18]["name"]} - {missileslaunched[18]["leadername"]} - {missileslaunched[18]["missilelaunched"]}
+20. {missileslaunched[19]["name"]} - {missileslaunched[19]["leadername"]} - {missileslaunched[19]["missilelaunched"]}
+            ''')
+
+            await channel.send(embed=embed)
+
+
+
+
+
+
+
 @client.command()
 async def swamptarget(ctx, nation_id:int):
     nat_dict = next((item for item in nations_v2 if (item["nation_id"]) == nation_id), False)
