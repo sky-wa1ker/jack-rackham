@@ -655,7 +655,7 @@ async def leaderboard():
 Last Updated : {datetime.now().strftime("%Y-%m-%d %H:%M:%S")} UTC
             ''')
             moneylooted = sorted(captains, key = lambda i: float(i['moneyLooted']),reverse=True)
-            embed = discord.Embed(title='Money Looted', color=0x000000, description=f'''
+            embed = discord.Embed(title='Money Looted - All Time', color=0x000000, description=f'''
 1. {moneylooted[0]["name"]} - {moneylooted[0]["leadername"]} - {"${:,.2f}".format(float(moneylooted[0]["moneyLooted"]))}
 2. {moneylooted[1]["name"]} - {moneylooted[1]["leadername"]} - {"${:,.2f}".format(float(moneylooted[1]["moneyLooted"]))}
 3. {moneylooted[2]["name"]} - {moneylooted[2]["leadername"]} - {"${:,.2f}".format(float(moneylooted[2]["moneyLooted"]))}
@@ -680,7 +680,7 @@ Last Updated : {datetime.now().strftime("%Y-%m-%d %H:%M:%S")} UTC
             await channel.send(embed=embed)
             
             infradestroyed = sorted(captains, key = lambda i: float(i['infdesttot']),reverse=True)
-            embed = discord.Embed(title='Infrastructure Destroyed', color=0x000000, description=f'''
+            embed = discord.Embed(title='Infrastructure Destroyed - All Time', color=0x000000, description=f'''
 1. {infradestroyed[0]["name"]} - {infradestroyed[0]["leadername"]} - {infradestroyed[0]["infdesttot"]}
 2. {infradestroyed[1]["name"]} - {infradestroyed[1]["leadername"]} - {infradestroyed[1]["infdesttot"]}
 3. {infradestroyed[2]["name"]} - {infradestroyed[2]["leadername"]} - {infradestroyed[2]["infdesttot"]}
@@ -706,7 +706,7 @@ Last Updated : {datetime.now().strftime("%Y-%m-%d %H:%M:%S")} UTC
             await channel.send(embed=embed)
 
             nukeslaunched = sorted(captains, key = lambda i: int(i['nukeslaunched']),reverse=True)
-            embed = discord.Embed(title='Nukes Launched', color=0x000000, description=f'''
+            embed = discord.Embed(title='Nukes Launched - All Time', color=0x000000, description=f'''
 1. {nukeslaunched[0]["name"]} - {nukeslaunched[0]["leadername"]} - {nukeslaunched[0]["nukeslaunched"]}
 2. {nukeslaunched[1]["name"]} - {nukeslaunched[1]["leadername"]} - {nukeslaunched[1]["nukeslaunched"]}
 3. {nukeslaunched[2]["name"]} - {nukeslaunched[2]["leadername"]} - {nukeslaunched[2]["nukeslaunched"]}
@@ -723,7 +723,7 @@ Last Updated : {datetime.now().strftime("%Y-%m-%d %H:%M:%S")} UTC
 
 
             missileslaunched = sorted(captains, key = lambda i: int(i['missilelaunched']),reverse=True)
-            embed = discord.Embed(title='Missiles Launched', color=0x000000, description=f'''
+            embed = discord.Embed(title='Missiles Launched - All Time', color=0x000000, description=f'''
 1. {missileslaunched[0]["name"]} - {missileslaunched[0]["leadername"]} - {missileslaunched[0]["missilelaunched"]}
 2. {missileslaunched[1]["name"]} - {missileslaunched[1]["leadername"]} - {missileslaunched[1]["missilelaunched"]}
 3. {missileslaunched[2]["name"]} - {missileslaunched[2]["leadername"]} - {missileslaunched[2]["missilelaunched"]}
