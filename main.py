@@ -37,6 +37,7 @@ async def on_ready():
     update_nations_data.start()
     update_alliance_data.start()
     war_alert.start()
+    leaderboard.start()
     print('Online as {0.user}'.format(client))
 
 
@@ -640,13 +641,13 @@ async def leaderboard():
     channel = client.get_channel(825830741798813807)
     await channel.purge()
     async with aiohttp.ClientSession() as session:
-        async with session.get(f"https://politicsandwar.com/api/v2/nations/fe9ac05fb01f89/&alliance_id=913&v_mode=0&alliance_position=2,3,4,5") as r:
+        async with session.get(f"https://politicsandwar.com/api/v2/nations/{api_key}/&alliance_id=913&v_mode=0&alliance_position=2,3,4,5") as r:
             json_obj = await r.json()
             nations = json_obj["data"]
             captains = []
             for nation in nations:
                 async with aiohttp.ClientSession() as session2:
-                    async with session2.get(f"https://politicsandwar.com/api/nation/id={nation['nation_id']}&key=fe9ac05fb01f89") as r2:
+                    async with session2.get(f"https://politicsandwar.com/api/nation/id={nation['nation_id']}&key={api_key}") as r2:
                         nat_dict = await r2.json()
                         captains.append(nat_dict)
             await channel.send(f'''
