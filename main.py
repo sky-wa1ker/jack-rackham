@@ -38,6 +38,7 @@ async def on_ready():
     update_alliance_data.start()
     war_alert.start()
     leaderboard.start()
+    recruitment.start()
     print('Online as {0.user}'.format(client))
 
 
@@ -633,6 +634,34 @@ async def trade(ctx, resource):
                 await ctx.send(embed=embed)
 
 
+@tasks.loop(minutes=15)
+async def recruitment():
+    message = """
+<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://i.ibb.co/s5MYDwf/Arrgh-Flag.jpg" alt="Arrgh-Flag" class="center" border="0" /></p>
+<p style="text-align: center;">Hello and welcome to Politics and War<br />Now I know you are getting a lot of messages like this one and you have to read them all so I'll keep it short</p>
+<p style="text-align: center;">This is Arrgh, the only pirate alliance in the game, join us. Don't be a soulless soldier in another man's army. Wage war. Destroy as you like. We have your back. Many others will sell you an idea of power. You...make your own power. We work together to loot and maim this planet as we see fit. You have the potential, don't waste it taking orders from an idiot.</p>
+<p style="text-align: center;"><strong>Arrgh!!!</strong></p>
+<p style="text-align: center;"><a href="https://politicsandwar.com/alliance/join/id=913"><strong>Click here to join us</strong></a></p>
+<p style="text-align: center;"><a href="https://politicsandwar.fandom.com/wiki/Arrgh#The_Pirate_Code" target="_blank"><strong>Know more about us (The Pirate Code)</strong></a></p>
+<p style="text-align: center;"><a href="https://discord.gg/rKSST5d"><strong>Join our Discord server (manadatory)</strong></a></p>
+"""
+    today = datetime.utcnow().strftime('%Y%m%d')
+    channel = client.get_channel(312420656312614912)
+    async with aiohttp.ClientSession() as session:
+        async with session.get(f"https://politicsandwar.com/api/v2/nations/{api_key}/&date_created={today}&alliance=none") as r:
+            json_obj = r.json()
+            nations = json_obj["data"]
+            for x in nations:
+                if type(db.recruitment.find_one({"nation_id": x["nation_id"]})) is not dict:
+                    data = {'key': api_key, 'to': f'{x["nation_id"]}', 'subject': 'Have you considered piracy?', 'message': message}
+                    async with session.post("https://politicsandwar.com/api/send-message", data = data) as p:
+                        if p.status == 200:
+                            await channel.send(f'Sent message to https://politicsandwar.com/nation/id={x["nation_id"]}')
+                            db.recruitment.insert_one(x)
+                        else:
+                            await channel.send(f'Could not send message to https://politicsandwar.com/nation/id={x["nation_id"]}')
+
+            
 
 
 
