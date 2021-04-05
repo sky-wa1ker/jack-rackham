@@ -649,7 +649,7 @@ async def recruitment():
     channel = client.get_channel(312420656312614912)
     async with aiohttp.ClientSession() as session:
         async with session.get(f"https://politicsandwar.com/api/v2/nations/{api_key}/&date_created={today}&alliance=none") as r:
-            json_obj = r.json()
+            json_obj = await r.json()
             nations = json_obj["data"]
             for x in nations:
                 if type(db.recruitment.find_one({"nation_id": x["nation_id"]})) is not dict:
