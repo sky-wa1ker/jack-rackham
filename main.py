@@ -656,10 +656,10 @@ async def recruitment():
                     data = {'key': api_key, 'to': f'{x["nation_id"]}', 'subject': 'Have you considered piracy?', 'message': message}
                     async with session.post("https://politicsandwar.com/api/send-message", data = data) as p:
                         if p.status == 200:
-                            await channel.send(f'Sent message to https://politicsandwar.com/nation/id={x["nation_id"]}')
+                            await channel.send(f'Sent message to {x["leader"]} of {x["nation"]} ({x["nation_id"]})')
                             db.recruitment.insert_one(x)
                         else:
-                            await channel.send(f'Could not send message to https://politicsandwar.com/nation/id={x["nation_id"]}')
+                            await channel.send(f'Could not send message to {x["leader"]} of {x["nation"]} ({x["nation_id"]}')
 
             
 
