@@ -852,10 +852,10 @@ async def vm_beige_alert():
             for x in vm_nations:
                 if x:
                     date = datetime.strptime(x['last_active'], '%Y-%m-%d %H:%M:%S')
-                    embed = discord.Embed(title=f"{x['nation']} is leaving VM next turn.", description=f'''
+                    embed = discord.Embed(title=f"[{x['nation']} is leaving VM next turn.](https://politicsandwar.com/nation/id={x['nation_id']})", description=f'''
 Last Active : {timeago.format(date, datetime.utcnow())}
 Alliance : [{x['alliance']}](https://politicsandwar.com/alliance/id={x['alliance_id']})
-Military : `💂 {x["soldiers"]} | ⚙️ {x["tanks"]} | ✈️ {x["aircraft"]} | 🚢 {x["ships"]}\n🚀 {x["missiles"]} | ☢️ {x["nukes"]}`
+Military : `💂 {x["soldiers"]} | ⚙️ {x["tanks"]} | ✈️ {x["aircraft"]} | 🚢 {x["ships"]} | 🚀 {x["missiles"]} | ☢️ {x["nukes"]}`
 Defensive Range : `{round((x['score'] / 1.75),2)} to {round((x['score'] / 0.75),2)}`
 ''')
                     await channel.send(embed=embed)
@@ -865,7 +865,7 @@ Defensive Range : `{round((x['score'] / 1.75),2)} to {round((x['score'] / 0.75),
                     embed = discord.Embed(title=f"{x['nation']} is leaving Beige next turn.", description=f'''
 Last Active : {timeago.format(date, datetime.utcnow())}
 Alliance : [{x['alliance']}](https://politicsandwar.com/alliance/id={x['alliance_id']})
-Military : `💂 {x["soldiers"]} | ⚙️ {x["tanks"]} | ✈️ {x["aircraft"]} | 🚢 {x["ships"]}\n🚀 {x["missiles"]} | ☢️ {x["nukes"]}`
+Military : `💂 {x["soldiers"]} | ⚙️ {x["tanks"]} | ✈️ {x["aircraft"]} | 🚢 {x["ships"]} | 🚀 {x["missiles"]} | ☢️ {x["nukes"]}`
 Defensive Range : `{round((x['score'] / 1.75),2)} to {round((x['score'] / 0.75),2)}`
 ''')
                     await channel.send(embed=embed)
