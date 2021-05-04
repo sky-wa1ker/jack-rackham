@@ -635,7 +635,7 @@ async def trade(ctx, resource):
                 await ctx.send(embed=embed)
 
 
-@tasks.loop(minutes=15)
+@tasks.loop(minutes=3)
 async def recruitment():
     message = """
 <p><span style="color: rgb(228, 182, 174);">-------------------------------------------------------------</span> <img src="https://i.ibb.co/s5MYDwf/Arrgh-Flag.jpg" alt="Arrgh-Flag" class="center" border="0"><span style="color: rgb(228, 182, 174);">------------------------------------------------------------</span></p>
