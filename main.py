@@ -638,13 +638,15 @@ async def trade(ctx, resource):
 @tasks.loop(minutes=15)
 async def recruitment():
     message = """
-<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://i.ibb.co/s5MYDwf/Arrgh-Flag.jpg" alt="Arrgh-Flag" class="center" border="0" /></p>
-<p style="text-align: center;">Hello and welcome to Politics and War<br />Now I know you are getting a lot of messages like this one and you have to read them all so I'll keep it short</p>
-<p style="text-align: center;">This is Arrgh, the only pirate alliance in the game, join us. Don't be a soulless soldier in another man's army. Wage war. Destroy as you like. We have your back. Many others will sell you an idea of power. You...make your own power. We work together to loot and maim this planet as we see fit. You have the potential, don't waste it taking orders from an idiot.</p>
+<p><span style="color: rgb(228, 182, 174);">-------------------------------------------------------------</span> <img src="https://i.ibb.co/s5MYDwf/Arrgh-Flag.jpg" alt="Arrgh-Flag" class="center" border="0"><span style="color: rgb(228, 182, 174);">------------------------------------------------------------</span></p>
+<p style="text-align: center;">Hello and welcome to Politics and War<br>Now I know you are getting a lot of messages like this one and you have to read them all so I&apos;ll keep it short</p>
+<p style="text-align: center;">Do you like taking orders? insane taxes? do you like receiving a portion of your own taxes in the name of free money (grants)? and being hunted down when you don&apos;t pay them back? if yes, please join any other alliance than Arrgh.</p>
+<p style="text-align: center;">If you like pirates, raiding, no taxes whatsoever, freedom to wage wars as you like, join Arrgh!. Don&apos;t be a soulless soldier in another man&apos;s army. Wage war. Destroy as you like. Many others will sell you an idea of power. You...make your own power. We work together to loot and maim this planet as we see fit. You have the potential, don&apos;t waste it taking orders from an idiot.&nbsp;</p>
 <p style="text-align: center;"><strong>Arrgh!!!</strong></p>
-<p style="text-align: center;"><a href="https://politicsandwar.com/alliance/join/id=913"><strong>Click here to join us</strong></a></p>
-<p style="text-align: center;"><a href="https://politicsandwar.fandom.com/wiki/Arrgh#The_Pirate_Code" target="_blank"><strong>Know more about us (The Pirate Code)</strong></a></p>
-<p style="text-align: center;"><a href="https://discord.gg/rKSST5d"><strong>Join our Discord server (manadatory)</strong></a></p>
+<p style="text-align: center;"><strong>How to join:</strong><br>1. <a href="https://politicsandwar.com/alliance/join/id=913" target="_blank" rel="noopener noreferrer"></a><a href="https://politicsandwar.com/alliance/join/id=913" rel="noopener noreferrer" target="_blank">Click here to join in-game</a></p>
+<p style="text-align: center;">2.&nbsp;<a href="https://discord.gg/rKSST5d">Join our Discord server and open a ticket (manadatory)</a></p>
+<p style="text-align: center;"><br></p>
+<p style="text-align: center;"><a href="https://politicsandwar.fandom.com/wiki/Arrgh#The_Pirate_Code" rel="noopener noreferrer" target="_blank"><strong>Know more about us (The Pirate Code)</strong></a></p>
 """
     today = datetime.utcnow().strftime('%Y%m%d')
     channel = client.get_channel(312420656312614912)
