@@ -876,6 +876,46 @@ Defensive Range : `{round((x['score'] / 1.75),2)} to {round((x['score'] / 0.75),
 
 
 
+@client.command()
+async def piratebuild(ctx):
+    await ctx.send('''
+```
+{
+    "infra_needed": 850,
+    "imp_total": 17,
+    "imp_coalpower": 0,
+    "imp_oilpower": 0,
+    "imp_windpower": 0,
+    "imp_nuclearpower": 1,
+    "imp_coalmine": 0,
+    "imp_oilwell": 0,
+    "imp_uramine": 0,
+    "imp_leadmine": 0,
+    "imp_ironmine": 0,
+    "imp_bauxitemine": 0,
+    "imp_farm": 0,
+    "imp_gasrefinery": 0,
+    "imp_aluminumrefinery": 0,
+    "imp_munitionsfactory": 0,
+    "imp_steelmill": 0,
+    "imp_policestation": 1,
+    "imp_hospital": 1,
+    "imp_recyclingcenter": 0,
+    "imp_subway": 0,
+    "imp_supermarket": 0,
+    "imp_bank": 0,
+    "imp_mall": 0,
+    "imp_stadium": 0,
+    "imp_barracks": 5,
+    "imp_factory": 3,
+    "imp_hangars": 5,
+    "imp_drydock": 1
+}
+``` 
+    ''')
+
+
+
 
 
 
