@@ -141,7 +141,7 @@ async def nation(ctx, *, nation):
                 time_ago = arrow.utcnow().shift(minutes=-(nat_dict['minutessinceactive'])).humanize()
                 discord_id = db.discord_users.find_one({'nation_id':int((nat_dict["nationid"]))})          
                 if discord_id:
-                    discord_id = discord_id["username"]
+                    discord_username = discord_id["username"]
                     user = client.get_user(discord_id)
                 embed=discord.Embed(title=f'{nat_dict["name"]}', url=f'https://politicsandwar.com/nation/id={nat_dict["nationid"]}', description=f'{nat_dict["leadername"]}', color=0x000000)
                 embed.add_field(name="Alliance", value=f"[{nat_dict['alliance']}](https://politicsandwar.com/alliance/id={nat_dict['allianceid']}) | {member_rank_dict[(nat_dict['allianceposition'])]}", inline=False)
