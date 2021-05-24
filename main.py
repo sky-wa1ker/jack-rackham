@@ -730,27 +730,26 @@ Last Updated : {datetime.now().strftime("%Y-%m-%d %H:%M:%S")} UTC
             await channel.send(embed=embed)
 
 
-
-
-
-
-
 @client.command()
-async def swamptarget(ctx, nation_id:int):
-    nat_dict = next((item for item in nations_v2 if (item["nation_id"]) == nation_id), False)
-    if nat_dict:
-        min_score = round((nat_dict["score"] * 0.75),2)
-        max_score = round((nat_dict["score"] * 1.75),2)
-        async with aiohttp.ClientSession() as session:
-            async with session.get(f'https://politicsandwar.com/api/v2/nations/{api_key}/&min_score={min_score}&max_score={max_score}&v_mode=false&alliance_id=1246,5722,5875,7674,6126,7642,4638,1023,2594') as r:
-                json_obj = await r.json()
-                raw_targets_dict = json_obj["data"]
-                targets_dict = [i for i in raw_targets_dict if (i['color'] != 0) and (i['defensive_wars'] != 3)]
-                for d in targets_dict: d['mil_score'] = float(d['soldiers']) * 0.001 + float(
-                                d['tanks']) * 0.005 + float(d['aircraft']) * 0.3 + float(d['ships']) * 0.75 + float(
-                                d['cities'] * 4.0 + float(d['score'] * 0.1))
-                sorted_targets = sorted(targets_dict, key = lambda i: i['mil_score'])
-                embed = discord.Embed(title=f"Swamp target search for {nat_dict['nation']}.", description=f'''
+async def findtarget(ctx):
+    role = discord.utils.get(ctx.guild.roles, name="Captain")
+    if role in ctx.author.roles:
+        account = db.discord_users.find_one({'_id':ctx.author.id})
+        if account:
+            nat_dict = db.nations.find_one({"nationid":account["nation_id"]})
+            if nat_dict:
+                min_score = round((nat_dict["score"] * 0.75),2)
+                max_score = round((nat_dict["score"] * 1.75),2)
+                async with aiohttp.ClientSession() as session:
+                    async with session.get(f'https://politicsandwar.com/api/v2/nations/{api_key}/&min_score={min_score}&max_score={max_score}&v_mode=false&alliance_id=5875,1023,1742,622,4221,8343') as r:
+                        json_obj = await r.json()
+                        raw_targets_dict = json_obj["data"]
+                        targets_dict = [i for i in raw_targets_dict if (i['color'] != 0) and (i['defensive_wars'] != 3)]
+                        for d in targets_dict: d['mil_score'] = float(d['soldiers']) * 0.01 + float(
+                                        d['tanks']) * 0.05 + float(d['aircraft']) * 0.25 + float(d['ships']) * 0.5 + float(
+                                        d['cities'] * 4.0 + float(d['score'] * 0.1))
+                        sorted_targets = sorted(targets_dict, key = lambda i: i['mil_score'])
+                        embed = discord.Embed(title=f"Target search for {nat_dict['nation']}.", description=f'''
 [{sorted_targets[0]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[0]["nation_id"]}) | [{sorted_targets[0]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[0]["alliance_id"]})
 ``🏙️ {sorted_targets[0]["cities"]} | Last Active : {timeago.format(sorted_targets[0]["last_active"], datetime.utcnow())}`` 
 ``💂 {sorted_targets[0]["soldiers"]} | ⚙️ {sorted_targets[0]["tanks"]} | ✈️ {sorted_targets[0]["aircraft"]} | 🚢 {sorted_targets[0]["ships"]}``
@@ -781,10 +780,13 @@ async def swamptarget(ctx, nation_id:int):
 ''', color=0x000000)
 
                 await ctx.send(embed=embed)
-
-                
+        else:
+            await ctx.send("You need to verif yourself before you can use this command.")
     else:
-        await ctx.send(f"Your nation ID is not correct.")
+        await ctx.send("Not serving landlubbers, sorry.")
+
+
+
 
 
 
