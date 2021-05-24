@@ -779,7 +779,7 @@ async def findtarget(ctx):
 ``💂 {sorted_targets[8]["soldiers"]} | ⚙️ {sorted_targets[8]["tanks"]} | ✈️ {sorted_targets[8]["aircraft"]} | 🚢 {sorted_targets[8]["ships"]}``
 ''', color=0x000000)
 
-                await ctx.send(embed=embed)
+                    await ctx.send(embed=embed)
         else:
             await ctx.send("You need to verif yourself before you can use this command.")
     else:
