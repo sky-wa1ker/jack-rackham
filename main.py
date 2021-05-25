@@ -741,7 +741,7 @@ async def findtarget(ctx):
                 min_score = round((nat_dict["score"] * 0.75),2)
                 max_score = round((nat_dict["score"] * 1.75),2)
                 async with aiohttp.ClientSession() as session:
-                    async with session.get(f'https://politicsandwar.com/api/v2/nations/{api_key}/&min_score={min_score}&max_score={max_score}&v_mode=false&alliance_id=5875,1023,7674,622,8343') as r:
+                    async with session.get(f'https://politicsandwar.com/api/v2/nations/{api_key}/&min_score={min_score}&max_score={max_score}&v_mode=false&alliance_id=5875,1023,7674,622,8343&alliance_position=2,3,4,5') as r:
                         json_obj = await r.json()
                         raw_targets_dict = json_obj["data"]
                         targets_dict = [i for i in raw_targets_dict if (i['color'] != 0) and (i['defensive_wars'] != 3)]
