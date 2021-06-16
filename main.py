@@ -616,7 +616,7 @@ async def recruitment():
 
 
 @client.command()
-async def findtarget(ctx):
+async def quack(ctx):
     role = discord.utils.get(ctx.guild.roles, name="Captain")
     if role in ctx.author.roles:
         account = db.discord_users.find_one({'_id':ctx.author.id})
@@ -671,6 +671,10 @@ async def findtarget(ctx):
         await ctx.send("Not serving landlubbers, sorry.")
 
 
+
+@client.command()
+async def findtarget(ctx):
+    await ctx.send("The war is over, go back to usual raiding.")
 
 
 
