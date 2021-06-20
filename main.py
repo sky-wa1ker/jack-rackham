@@ -689,8 +689,8 @@ async def vm_beige_alert():
         async with session.get(f"https://politicsandwar.com/api/v2/nations/{api_key}/&colour=beige&v_mode=1") as r:
             json_obj = await r.json()
             nations = json_obj["data"]
-            vm_nations = [i for i in nations if i['v_mode_turns'] == 1]
-            beige_nations = [i for i in nations if i['beige_turns'] == 1]
+            vm_nations = [i for i in nations if i['v_mode_turns'] == 1 and i["alliance"] != "None"]
+            beige_nations = [i for i in nations if i['beige_turns'] == 1 and i["alliance"] != "None"]
             for x in vm_nations:
                 if x:
                     date = datetime.strptime(x['last_active'], '%Y-%m-%d %H:%M:%S')
