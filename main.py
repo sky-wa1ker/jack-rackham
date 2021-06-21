@@ -275,7 +275,7 @@ async def me(ctx):
 async def update_nations_data():
     db.nations.delete_many({})
     async with aiohttp.ClientSession() as session:
-        async with session.get(f'https://politicsandwar.com/api/nations/?key={api_key}') as r:
+        async with session.get(f'https://politicsandwar.com/api/nations/?key={api_key}&vm_mode=true') as r:
             json_obj = await r.json()
             nations = json_obj["nations"]
             for x in nations:
