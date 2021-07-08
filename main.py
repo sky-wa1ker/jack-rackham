@@ -8,6 +8,7 @@ import asyncio
 import aiohttp
 import difflib
 import pymongo
+import re
 from discord.ext import commands, tasks
 import arrow
 from pymongo import MongoClient
@@ -711,6 +712,51 @@ Defensive Range : `{round((x['score'] / 1.75),2)} to {round((x['score'] / 0.75),
 ''')
                     await channel.send(embed=embed)
 
+
+def get_loot_value(loot_note):
+    loot_note = loot_note.split("looted",1)[1]
+    string_list = re.findall('[0-9]+', loot_note.replace(',', ''))
+    x = [int(i) for i in string_list]
+    loot_value = x[0] + (x[1]*2600) + (x[2]*3000) + (x[3]*2200) + (x[4]*2600) + (x[5]*3500) + (x[6]*3500) + (x[7]*3000) + (x[8]*2000) + (x[9]*3600) + (x[10]*3000) + (x[11]*100)
+    return loot_value
+
+
+@tasks.loop(minutes=360)
+async def the_menu():
+    channel = client.get_channel(858725272279187467)
+    await channel.purge()
+    async with aiohttp.ClientSession() as session:
+        async with session.get(f'https://politicsandwar.com/api/wars/?key={api_key}&limit=5000') as r:
+                    wars_dict = await r.json()
+                    last_war_id = wars_dict["wars"][4999]["warID"]
+                    async with session.get(f'https://politicsandwar.com/api/war-attacks/key={api_key}&war_id={last_war_id}') as r2:
+                        last_war_dict = await r2.json()
+                        last_war_attack_id = last_war_dict["war_attacks"][0]["war_attack_id"]
+                        async with session.get(f'https://politicsandwar.com/api/war-attacks/key={api_key}&min_war_attack_id={last_war_attack_id}') as r3:
+                            war_attacks_json = await r3.json()
+                            war_attacks_dict = war_attacks_json["war_attacks"]
+                            victory_attacks = [i for i in war_attacks_dict if i['attack_type'] == 'victory']
+                            menu_targets = []
+                            for x in victory_attacks:
+                                menu_targets.append({'nation_id' : x['defender_nation_id'], 'est_loot' : get_loot_value(x['note']), 'date':(x["date"])})
+                            menu_targets = sorted(menu_targets, key = lambda i: i['est_loot'],reverse=True)
+                            posted_targets = []
+                            count = 0
+                            for i in menu_targets:
+                                if count != 30:
+                                    async with session.get(f'https://politicsandwar.com/api/nation/id={i["nation_id"]}&key={api_key}') as r4:
+                                        x = await r4.json()
+                                        if i["nation_id"] not in posted_targets:
+                                            embed = discord.Embed(title=f"{x['name']}", url=f'https://politicsandwar.com/nation/id={x["nationid"]}', description=f'''
+Estimated Loot : **{"${:,.2f}".format(i["est_loot"])}**
+Last Defeat Date : {i["date"]}
+Last Active : {arrow.utcnow().shift(minutes=-(x['minutessinceactive'])).humanize()}
+Defensive Range : `{round((float(x['score']) / 1.75),2)} to {round((float(x['score']) / 0.75),2)}`
+VM/Beige : `VM: {x["vmode"]} turns | Beige: {x["beige_turns_left"]} turns.`
+                                            ''')
+                                            await channel.send(embed=embed)
+                                            posted_targets.append(i["nation_id"])
+                                            count = count + 1
 
 
 
