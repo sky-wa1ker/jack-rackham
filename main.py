@@ -752,6 +752,7 @@ async def the_menu():
 Estimated Loot : **{"${:,.2f}".format(i["est_loot"])}**
 Last Defeat Date : {i["date"]}
 Last Active : {arrow.utcnow().shift(minutes=-(x['minutessinceactive'])).humanize()}
+Military : `💂 {x["soldiers"]} | ⚙️ {x["tanks"]} | ✈️ {x["aircraft"]} | 🚢 {x["ships"]}`
 Defensive Range : `{round((float(x['score']) / 1.75),2)} to {round((float(x['score']) / 0.75),2)}`
 VM/Beige : `VM: {x["vmode"]} turns | Beige: {x["beige_turns_left"]} turns.`
                                             ''')
