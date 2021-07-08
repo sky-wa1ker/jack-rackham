@@ -744,7 +744,7 @@ async def the_menu():
                             posted_targets = []
                             count = 0
                             for i in menu_targets:
-                                if count != 30:
+                                if count != 50:
                                     async with session.get(f'https://politicsandwar.com/api/nation/id={i["nation_id"]}&key={api_key}') as r4:
                                         x = await r4.json()
                                         if i["nation_id"] not in posted_targets:
