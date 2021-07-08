@@ -39,6 +39,7 @@ async def on_ready():
     update_alliance_data.start()
     war_alert.start()
     recruitment.start()
+    the_menu.start()
     print('Online as {0.user}'.format(client))
 
 
