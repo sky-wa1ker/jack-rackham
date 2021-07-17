@@ -40,6 +40,7 @@ async def on_ready():
     war_alert.start()
     recruitment.start()
     the_menu.start()
+    vm_beige_alert.start()
     print('Online as {0.user}'.format(client))
 
 
