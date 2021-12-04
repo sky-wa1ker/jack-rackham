@@ -684,6 +684,10 @@ async def on_message_delete(message):
         return
     elif message.author.bot == True:
         return
+    elif message.author.id in [343397899369054219, 356444851803389952]:
+        return
+    elif message.channel.category_id in [797754859100045332, 520548149698494464, 360585064024768523, 653197917774938123]:
+        return
     now = datetime.now() 
     current_time=now.strftime("%H:%M:%S") 
     current_date=now.strftime("%d/%m/%Y") 
@@ -704,6 +708,10 @@ async def on_message_edit(message_before, message_after):
     if message_before.author == client.user:
         return
     elif message_before.author.bot == True:
+        return
+    elif message_before.author.id in [343397899369054219, 356444851803389952]:
+        return
+    elif message_before.channel.category_id in [797754859100045332, 520548149698494464, 360585064024768523, 653197917774938123]:
         return
     now = datetime.now()
     current_time=now.strftime("%H:%M:%S")
