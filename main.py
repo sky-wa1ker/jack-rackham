@@ -41,6 +41,7 @@ async def on_ready():
     recruitment.start()
     the_menu.start()
     vm_beige_alert.start()
+    myoasis_beige.start()
     print('Online as {0.user}'.format(client))
 
 
