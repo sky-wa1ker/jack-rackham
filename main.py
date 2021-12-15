@@ -618,7 +618,7 @@ async def recruitment():
 
 
 @client.command()
-async def findtarget(ctx):
+async def nopelmao(ctx):
     role = discord.utils.get(ctx.guild.roles, name="Captain")
     if role in ctx.author.roles:
         account = db.discord_users.find_one({'_id':ctx.author.id})
@@ -674,9 +674,7 @@ async def findtarget(ctx):
 
 
 
-@client.command()
-async def quack(ctx):
-    await ctx.send("The war is over, go back to usual raiding.")
+
 
 @client.event
 async def on_message_delete(message):
@@ -730,7 +728,7 @@ async def on_message_edit(message_before, message_after):
 async def vm_beige_alert():
     channel = client.get_channel(526632259520954390)
     async with aiohttp.ClientSession() as session:
-        async with session.get(f"https://politicsandwar.com/api/v2/nations/{api_key}/&colour=beige&v_mode=1") as r:
+        async with session.get(f"https://politicsandwar.com/api/v2/nations/{api_key}/&color=beige") as r:
             json_obj = await r.json()
             nations = json_obj["data"]
             vm_nations = [i for i in nations if i['v_mode_turns'] == 1 and i["alliance"] != "None"]
@@ -843,6 +841,43 @@ async def piratebuild(ctx):
 }
 ``` 
     ''')
+
+
+#Tojo commands
+
+@tasks.loop(minutes=120)
+async def myoasis_beige():
+    channel = client.get_channel(893981941186068480)
+    async with aiohttp.ClientSession() as session:
+        async with session.get(f"https://politicsandwar.com/api/v2/nations/{api_key}/&color=beige&alliance_id=8261,7484,5658,5722,8586,8888,1246,2594,7366,3427,8280,5039,8343,1023,4397,4221,8926,622,1742,8520,5875,7674,8777,7399,5326,7750,4638,9169,9256") as r:
+            json_obj = await r.json()
+            nations = json_obj["data"]
+            vm_nations = [i for i in nations if i['v_mode_turns'] == 1 and i["alliance"] != "None"]
+            beige_nations = [i for i in nations if i['beige_turns'] == 1 and i["alliance"] != "None"]
+            for x in vm_nations:
+                if x:
+                    date = datetime.strptime(x['last_active'], '%Y-%m-%d %H:%M:%S')
+                    embed = discord.Embed(title=f"{x['nation']} is leaving VM next turn.", url=f'https://politicsandwar.com/nation/id={x["nation_id"]}', description=f'''
+Last Active : {timeago.format(date, datetime.utcnow())}
+Alliance : [{x['alliance']}](https://politicsandwar.com/alliance/id={x['alliance_id']})
+Military : `💂 {x["soldiers"]} | ⚙️ {x["tanks"]} | ✈️ {x["aircraft"]} | 🚢 {x["ships"]} | 🚀 {x["missiles"]} | ☢️ {x["nukes"]}`
+Defensive Range : `{round((x['score'] / 1.75),2)} to {round((x['score'] / 0.75),2)}`
+''')
+                    await channel.send(embed=embed)
+            for x in beige_nations:
+                if x:
+                    date = datetime.strptime(x['last_active'], '%Y-%m-%d %H:%M:%S')
+                    embed = discord.Embed(title=f"{x['nation']} is leaving Beige next turn.",  url=f'https://politicsandwar.com/nation/id={x["nation_id"]}', description=f'''
+Last Active : {timeago.format(date, datetime.utcnow())}
+Alliance : [{x['alliance']}](https://politicsandwar.com/alliance/id={x['alliance_id']})
+Military : `💂 {x["soldiers"]} | ⚙️ {x["tanks"]} | ✈️ {x["aircraft"]} | 🚢 {x["ships"]} | 🚀 {x["missiles"]} | ☢️ {x["nukes"]}`
+Defensive Range : `{round((x['score'] / 1.75),2)} to {round((x['score'] / 0.75),2)}`
+''')
+                    await channel.send(embed=embed)
+
+
+
+
 
 
 
