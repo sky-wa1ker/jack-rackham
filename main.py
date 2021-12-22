@@ -41,7 +41,7 @@ async def on_ready():
     recruitment.start()
     the_menu.start()
     vm_beige_alert.start()
-    myoasis_beige.start()
+    rose_beige.start()
     print('Online as {0.user}'.format(client))
 
 
@@ -847,10 +847,10 @@ async def piratebuild(ctx):
 #Tojo commands
 
 @tasks.loop(minutes=120)
-async def myoasis_beige():
+async def rose_beige():
     channel = client.get_channel(893981941186068480)
     async with aiohttp.ClientSession() as session:
-        async with session.get(f"https://politicsandwar.com/api/v2/nations/{api_key}/&color=beige&min_score=2500&alliance_id=8261,7484,5658,5722,8586,8888,1246,2594,7366,3427,8280,5039,8343,1023,4397,4221,8926,622,1742,8520,5875,7674,8777,7399,5326,7750,4638,9169,9256") as r:
+        async with session.get(f"https://politicsandwar.com/api/v2/nations/{api_key}/&color=beige&min_score=2500&alliance_id=790,6877,8804,9110,2358,4729,8368,5012") as r:
             json_obj = await r.json()
             nations = json_obj["data"]
             vm_nations = [i for i in nations if i['v_mode_turns'] == 1 and i["alliance"] != "None"]
