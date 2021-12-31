@@ -41,7 +41,6 @@ async def on_ready():
     recruitment.start()
     the_menu.start()
     vm_beige_alert.start()
-    rose_beige.start()
     print('Online as {0.user}'.format(client))
 
 
@@ -842,75 +841,6 @@ async def piratebuild(ctx):
 }
 ``` 
     ''')
-
-
-#Tojo commands
-
-@tasks.loop(minutes=120)
-async def rose_beige():
-    channel = client.get_channel(893981941186068480)
-    async with aiohttp.ClientSession() as session:
-        async with session.get(f"https://politicsandwar.com/api/v2/nations/{api_key}/&color=beige&min_score=2500&alliance_id=790,6877,8804,9110,2358,4729,8368,5012") as r:
-            json_obj = await r.json()
-            nations = json_obj["data"]
-            vm_nations = [i for i in nations if i['v_mode_turns'] == 1 and i["alliance"] != "None"]
-            beige_nations = [i for i in nations if i['beige_turns'] == 1 and i["alliance"] != "None"]
-            for x in vm_nations:
-                if x:
-                    date = datetime.strptime(x['last_active'], '%Y-%m-%d %H:%M:%S')
-                    embed = discord.Embed(title=f"{x['nation']} is leaving VM next turn.", url=f'https://politicsandwar.com/nation/id={x["nation_id"]}', description=f'''
-Last Active : {timeago.format(date, datetime.utcnow())}
-Alliance : [{x['alliance']}](https://politicsandwar.com/alliance/id={x['alliance_id']})
-Military : `💂 {x["soldiers"]} | ⚙️ {x["tanks"]} | ✈️ {x["aircraft"]} | 🚢 {x["ships"]} | 🚀 {x["missiles"]} | ☢️ {x["nukes"]}`
-Defensive Range : `{round((x['score'] / 1.75),2)} to {round((x['score'] / 0.75),2)}`
-''')
-                    await channel.send(embed=embed)
-            for x in beige_nations:
-                if x:
-                    date = datetime.strptime(x['last_active'], '%Y-%m-%d %H:%M:%S')
-                    embed = discord.Embed(title=f"{x['nation']} is leaving Beige next turn.",  url=f'https://politicsandwar.com/nation/id={x["nation_id"]}', description=f'''
-Last Active : {timeago.format(date, datetime.utcnow())}
-Alliance : [{x['alliance']}](https://politicsandwar.com/alliance/id={x['alliance_id']})
-Military : `💂 {x["soldiers"]} | ⚙️ {x["tanks"]} | ✈️ {x["aircraft"]} | 🚢 {x["ships"]} | 🚀 {x["missiles"]} | ☢️ {x["nukes"]}`
-Defensive Range : `{round((x['score'] / 1.75),2)} to {round((x['score'] / 0.75),2)}`
-''')
-                    await channel.send(embed=embed)
-
-
-
-
-@client.command()
-async def nextturn(ctx):
-    async with aiohttp.ClientSession() as session:
-        async with session.get(f"https://politicsandwar.com/api/v2/nations/{api_key}/&color=beige&min_score=2500") as r:
-            json_obj = await r.json()
-            nations = json_obj["data"]
-            vm_nations = [i for i in nations if i['v_mode_turns'] == 1 and i["alliance"] != "None"]
-            beige_nations = [i for i in nations if i['beige_turns'] == 1 and i["alliance"] != "None"]
-            for x in vm_nations:
-                if x:
-                    date = datetime.strptime(x['last_active'], '%Y-%m-%d %H:%M:%S')
-                    embed = discord.Embed(title=f"{x['nation']} is leaving VM next turn.", url=f'https://politicsandwar.com/nation/id={x["nation_id"]}', description=f'''
-Last Active : {timeago.format(date, datetime.utcnow())}
-Alliance : [{x['alliance']}](https://politicsandwar.com/alliance/id={x['alliance_id']})
-Military : `💂 {x["soldiers"]} | ⚙️ {x["tanks"]} | ✈️ {x["aircraft"]} | 🚢 {x["ships"]} | 🚀 {x["missiles"]} | ☢️ {x["nukes"]}`
-Defensive Range : `{round((x['score'] / 1.75),2)} to {round((x['score'] / 0.75),2)}`
-''')
-                    await ctx.send(embed=embed)
-            for x in beige_nations:
-                if x:
-                    date = datetime.strptime(x['last_active'], '%Y-%m-%d %H:%M:%S')
-                    embed = discord.Embed(title=f"{x['nation']} is leaving Beige next turn.",  url=f'https://politicsandwar.com/nation/id={x["nation_id"]}', description=f'''
-Last Active : {timeago.format(date, datetime.utcnow())}
-Alliance : [{x['alliance']}](https://politicsandwar.com/alliance/id={x['alliance_id']})
-Military : `💂 {x["soldiers"]} | ⚙️ {x["tanks"]} | ✈️ {x["aircraft"]} | 🚢 {x["ships"]} | 🚀 {x["missiles"]} | ☢️ {x["nukes"]}`
-Defensive Range : `{round((x['score'] / 1.75),2)} to {round((x['score'] / 0.75),2)}`
-''')
-                    await ctx.send(embed=embed)
-
-
-
-
 
 
 
