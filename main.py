@@ -41,6 +41,7 @@ async def on_ready():
     recruitment.start()
     the_menu.start()
     vm_beige_alert.start()
+    bb_reminder.start()
     print('Online as {0.user}'.format(client))
 
 
@@ -801,8 +802,11 @@ VM/Beige : `VM: {x["vmode"]} turns | Beige: {x["beige_turns_left"]} turns.`
                                             posted_targets.append(i["nation_id"])
                                             count = count + 1
 
-
-
+@tasks.loop(hours=12)
+async def bb_reminder():
+    channel = client.get_channel(526632259520954390)
+    await channel.send("<@224343542548398091> check you MAPs! \nhttps://politicsandwar.com/nation/war/")
+    
 
 @client.command()
 async def piratebuild(ctx):
