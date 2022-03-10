@@ -804,7 +804,7 @@ VM/Beige : `VM: {x["vmode"]} turns | Beige: {x["beige_turns_left"]} turns.`
 
 @tasks.loop(hours=12)
 async def bb_reminder():
-    channel = client.get_channel(526632259520954390)
+    channel = client.get_channel(308132001758838784)
     await channel.send("<@224343542548398091> check you MAPs! \nhttps://politicsandwar.com/nation/war/")
     
 
