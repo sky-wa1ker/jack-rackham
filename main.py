@@ -278,7 +278,7 @@ async def me(ctx):
 async def update_nations_data():
     db.nations.delete_many({})
     async with aiohttp.ClientSession() as session:
-        async with session.get(f'https://politicsandwar.com/api/nations/?key={api_key}&vm_mode=true') as r:
+        async with session.get(f'https://politicsandwar.com/api/nations/?key={api_key}&vm=true') as r:
             json_obj = await r.json()
             nations = json_obj["nations"]
             for x in nations:
@@ -729,7 +729,7 @@ async def on_message_edit(message_before, message_after):
 async def vm_beige_alert():
     channel = client.get_channel(526632259520954390)
     async with aiohttp.ClientSession() as session:
-        async with session.get(f"https://politicsandwar.com/api/v2/nations/{api_key}//&min_score=500") as r:
+        async with session.get(f"https://politicsandwar.com/api/v2/nations/{api_key}/&min_score=500") as r:
             json_obj = await r.json()
             nations = json_obj["data"]
             vm_nations = [i for i in nations if i['v_mode_turns'] == 1 and i["alliance"] != "None"]
