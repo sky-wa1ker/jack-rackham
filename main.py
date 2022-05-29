@@ -728,7 +728,7 @@ async def on_message_edit(message_before, message_after):
 @tasks.loop(minutes=120)
 async def vm_beige_alert():
     channel = client.get_channel(526632259520954390)
-    await asyncio.sleep(120)
+    await asyncio.sleep(600)
     async with aiohttp.ClientSession() as session:
         async with session.get(f"https://politicsandwar.com/api/v2/nations/{api_key}/&min_score=500") as r:
             json_obj = await r.json()
