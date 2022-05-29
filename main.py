@@ -35,12 +35,12 @@ async def on_ready():
     await get_last_war()
     await get_member_list()
     member_alert.start()
+    vm_beige_alert.start()
     update_nations_data.start()
     update_alliance_data.start()
     war_alert.start()
     recruitment.start()
     the_menu.start()
-    vm_beige_alert.start()
     bb_reminder.start()
     print('Online as {0.user}'.format(client))
 
