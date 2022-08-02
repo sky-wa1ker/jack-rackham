@@ -36,12 +36,10 @@ async def on_ready():
     await get_member_list()
     member_alert.start()
     vm_beige_alert.start()
-    update_nations_data.start()
     update_alliance_data.start()
     war_alert.start()
     recruitment.start()
     the_menu.start()
-    bb_reminder.start()
     print('Online as {0.user}'.format(client))
 
 
@@ -117,57 +115,6 @@ async def unregister(ctx):
         await ctx.send('https://i.kym-cdn.com/photos/images/original/001/535/068/29d.jpg')
 
 
-def find_nation(nation):
-    if nation.isnumeric():
-        nation = int(nation)
-        return db.nations.find_one({"nationid":nation})
-    else:
-        result = db.nations.find_one({"query_nation":nation.lower()})
-        if result:
-            return result
-        else:
-            return db.nations.find_one({"query_leader":nation.lower()})
-
-
-
-
-@client.command()
-async def nation(ctx, *, nation):
-    nation_dict_1 = find_nation(nation)
-    if nation_dict_1:
-        async with aiohttp.ClientSession() as session:
-            async with session.get(f'https://politicsandwar.com/api/nation/id={nation_dict_1["nationid"]}&key={api_key}') as r:
-                nat_dict = await r.json()
-                score = float(nat_dict["score"])
-                member_rank_dict = {'1':'Applicant', '2':'Member', '3':'Officer', '4':'Heir', '5':'Leader'}
-                time_ago = arrow.utcnow().shift(minutes=-(nat_dict['minutessinceactive'])).humanize()
-                discord_id = db.discord_users.find_one({'nation_id':int((nat_dict["nationid"]))})          
-                if discord_id:
-                    discord_id = discord_id["username"]
-                embed=discord.Embed(title=f'{nat_dict["name"]}', url=f'https://politicsandwar.com/nation/id={nat_dict["nationid"]}', description=f'{nat_dict["leadername"]}', color=0x000000)
-                embed.add_field(name="Alliance", value=f"[{nat_dict['alliance']}](https://politicsandwar.com/alliance/id={nat_dict['allianceid']}) | {member_rank_dict[(nat_dict['allianceposition'])]}", inline=False)
-                embed.add_field(name="General", value=f"`ID: {nat_dict['nationid']} | 🏙️ {nat_dict['cities']} | Score: {score}` \n `{nat_dict['war_policy']} | Active: {time_ago} \n{nat_dict['daysold']} days old. | Discord: {discord_id} `", inline=False)
-                embed.add_field(name="VM-Beige", value=f'`In VM: For {nat_dict["vmode"]} turns.\nIn Beige: For {nat_dict["beige_turns_left"]} turns.`', inline=False)
-                embed.add_field(name="War Range", value=f'`⬆️ {round((score * 0.75),2)} to {round((score * 1.75),2)}\n\n⬇️ {round((score / 1.75),2)} to {round((score / 0.75),2)}`', inline=False)
-                embed.add_field(name="Wars", value=f'`⬆️ {nat_dict["offensivewars"]} | ⬇️ {nat_dict["defensivewars"]}`', inline=False)
-                embed.add_field(name="Military", value=f'`💂 {nat_dict["soldiers"]} | ⚙️ {nat_dict["tanks"]} | ✈️ {nat_dict["aircraft"]} | 🚢 {nat_dict["ships"]}\n🚀 {nat_dict["missiles"]} | ☢️ {nat_dict["nukes"]}`', inline=False)
-                embed.set_image(url=f'{nat_dict["flagurl"]}')
-                embed.set_footer(text="DM Sam Cooper for help or to report a bug                  .", icon_url='https://i.ibb.co/qg5vp8w/dp-cropped.jpg')
-
-                await ctx.send(embed=embed)
-    else:
-        nations = db.nations.find()
-        nations_list = []
-        for x in nations:
-            nations_list.append(x["nation"])
-            nations_list.append(x["leader"])
-        match_nations = difflib.get_close_matches(nation, nations_list, n=1)
-        if len(match_nations) > 0:
-            await ctx.send(f'No exact match, did you mean **{match_nations[0]}**?')
-        else:
-            await ctx.send("Could not find this nation, no possible matches found.")
-
-
 @client.command()
 async def alliance(ctx, *, aa_name):
     aa_dict = db.alliances.find_one({"query_name":aa_name.lower()})
@@ -210,20 +157,16 @@ Nukes : {aa_dict["nukes"]}
 async def who(ctx, user:discord.User):
     account = db.discord_users.find_one({'_id':user.id})
     if account:
-        nation_dict_1 = db.nations.find_one({"nationid":account["nation_id"]})
-        if nation_dict_1:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(f'https://politicsandwar.com/api/nation/id={nation_dict_1["nationid"]}&key={api_key}') as r:
-                    nat_dict = await r.json()
+        async with aiohttp.ClientSession() as session:
+            async with session.get(f'https://politicsandwar.com/api/nation/id={account["nation_id"]}&key={api_key}') as r:
+                nat_dict = await r.json()
+                if nat_dict["success"]:
                     score = float(nat_dict["score"])
                     member_rank_dict = {'1':'Applicant', '2':'Member', '3':'Officer', '4':'Heir', '5':'Leader'}
                     time_ago = arrow.utcnow().shift(minutes=-(nat_dict['minutessinceactive'])).humanize()
-                    discord_id = db.discord_users.find_one({'nation_id':int((nat_dict["nationid"]))})          
-                    if discord_id:
-                        discord_id = discord_id["username"]
                     embed=discord.Embed(title=f'{nat_dict["name"]}', url=f'https://politicsandwar.com/nation/id={nat_dict["nationid"]}', description=f'{nat_dict["leadername"]}', color=0x000000)
                     embed.add_field(name="Alliance", value=f"[{nat_dict['alliance']}](https://politicsandwar.com/alliance/id={nat_dict['allianceid']}) | {member_rank_dict[(nat_dict['allianceposition'])]}", inline=False)
-                    embed.add_field(name="General", value=f"`ID: {nat_dict['nationid']} | 🏙️ {nat_dict['cities']} | Score: {score}` \n `{nat_dict['war_policy']} | Active: {time_ago} \n{nat_dict['daysold']} days old. | Discord: {discord_id} `", inline=False)
+                    embed.add_field(name="General", value=f"`ID: {nat_dict['nationid']} | 🏙️ {nat_dict['cities']} | Score: {score}` \n `{nat_dict['war_policy']} | Active: {time_ago} \n{nat_dict['daysold']} days old. | Discord: {user.display_name} `", inline=False)
                     embed.add_field(name="VM-Beige", value=f'`In VM: For {nat_dict["vmode"]} turns.\nIn Beige: For {nat_dict["beige_turns_left"]} turns.`', inline=False)
                     embed.add_field(name="War Range", value=f'`⬆️ {round((score * 0.75),2)} to {round((score * 1.75),2)}\n\n⬇️ {round((score / 1.75),2)} to {round((score / 0.75),2)}`', inline=False)
                     embed.add_field(name="Wars", value=f'`⬆️ {nat_dict["offensivewars"]} | ⬇️ {nat_dict["defensivewars"]}`', inline=False)
@@ -232,8 +175,8 @@ async def who(ctx, user:discord.User):
                     embed.set_footer(text="DM Sam Cooper for help or to report a bug                  .", icon_url='https://i.ibb.co/qg5vp8w/dp-cropped.jpg')
 
                     await ctx.send(embed=embed)
-        else:
-            await ctx.send("Could not find the nation attached to this user.")
+                else:
+                    await ctx.send(nat_dict["error"])
     else:
         await ctx.send("Could not find this user.")
 
@@ -244,20 +187,16 @@ async def who(ctx, user:discord.User):
 async def me(ctx):
     account = db.discord_users.find_one({'_id':ctx.author.id})
     if account:
-        nation_dict_1 = db.nations.find_one({"nationid":account["nation_id"]})
-        if nation_dict_1:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(f'https://politicsandwar.com/api/nation/id={nation_dict_1["nationid"]}&key={api_key}') as r:
-                    nat_dict = await r.json()
+        async with aiohttp.ClientSession() as session:
+            async with session.get(f'https://politicsandwar.com/api/nation/id={account["nation_id"]}&key={api_key}') as r:
+                nat_dict = await r.json()
+                if nat_dict["success"]:
                     score = float(nat_dict["score"])
                     member_rank_dict = {'1':'Applicant', '2':'Member', '3':'Officer', '4':'Heir', '5':'Leader'}
                     time_ago = arrow.utcnow().shift(minutes=-(nat_dict['minutessinceactive'])).humanize()
-                    discord_id = db.discord_users.find_one({'nation_id':int((nat_dict["nationid"]))})          
-                    if discord_id:
-                        discord_id = discord_id["username"]
                     embed=discord.Embed(title=f'{nat_dict["name"]}', url=f'https://politicsandwar.com/nation/id={nat_dict["nationid"]}', description=f'{nat_dict["leadername"]}', color=0x000000)
                     embed.add_field(name="Alliance", value=f"[{nat_dict['alliance']}](https://politicsandwar.com/alliance/id={nat_dict['allianceid']}) | {member_rank_dict[(nat_dict['allianceposition'])]}", inline=False)
-                    embed.add_field(name="General", value=f"`ID: {nat_dict['nationid']} | 🏙️ {nat_dict['cities']} | Score: {score}` \n `{nat_dict['war_policy']} | Active: {time_ago} \n{nat_dict['daysold']} days old. | Discord: {discord_id} `", inline=False)
+                    embed.add_field(name="General", value=f"`ID: {nat_dict['nationid']} | 🏙️ {nat_dict['cities']} | Score: {score}` \n `{nat_dict['war_policy']} | Active: {time_ago} \n{nat_dict['daysold']} days old. | Discord: {ctx.author.display_name} `", inline=False)
                     embed.add_field(name="VM-Beige", value=f'`In VM: For {nat_dict["vmode"]} turns.\nIn Beige: For {nat_dict["beige_turns_left"]} turns.`', inline=False)
                     embed.add_field(name="War Range", value=f'`⬆️ {round((score * 0.75),2)} to {round((score * 1.75),2)}\n\n⬇️ {round((score / 1.75),2)} to {round((score / 0.75),2)}`', inline=False)
                     embed.add_field(name="Wars", value=f'`⬆️ {nat_dict["offensivewars"]} | ⬇️ {nat_dict["defensivewars"]}`', inline=False)
@@ -266,25 +205,10 @@ async def me(ctx):
                     embed.set_footer(text="DM Sam Cooper for help or to report a bug                  .", icon_url='https://i.ibb.co/qg5vp8w/dp-cropped.jpg')
 
                     await ctx.send(embed=embed)
-        else:
-            await ctx.send("Could not find your nation.")
+                else:
+                    await ctx.send(nat_dict["error"])
     else:
-        await ctx.send("You are not verified yet.")
-
-
-
-        
-@tasks.loop(minutes=120)
-async def update_nations_data():
-    db.nations.delete_many({})
-    async with aiohttp.ClientSession() as session:
-        async with session.get(f'https://politicsandwar.com/api/nations/?key={api_key}&vm=true') as r:
-            json_obj = await r.json()
-            nations = json_obj["nations"]
-            for x in nations:
-                x["query_leader"] = (x["leader"]).lower()
-                x["query_nation"] = (x["nation"]).lower()
-            db.nations.insert_many((nations))
+        await ctx.send("Could not find this user.")
 
 @tasks.loop(minutes=1440)
 async def update_alliance_data():
@@ -329,7 +253,7 @@ async def get_last_war():
                 f.write(str(wars[0]["warID"]))
 
 
-@tasks.loop(minutes=30)
+@tasks.loop(minutes=3)
 async def war_alert():
     await asyncio.sleep(120)
     channel = client.get_channel(514689777778294785)
@@ -393,7 +317,7 @@ async def get_member_list():
             or_members_list = json_obj["member_id_list"]
 
 
-@tasks.loop(hours=5)
+@tasks.loop(hours=2)
 async def member_alert():
     global or_members_list
     channel = client.get_channel(220580210251137024) #channel where alerts are sent
@@ -616,67 +540,6 @@ async def recruitment():
                             await channel.send(f'Could not send message to {x["leader"]} of {x["nation"]} ({x["nation_id"]}')
 
 
-
-
-@client.command()
-async def nopelmao(ctx):
-    role = discord.utils.get(ctx.guild.roles, name="Captain")
-    if role in ctx.author.roles:
-        account = db.discord_users.find_one({'_id':ctx.author.id})
-        if account:
-            nat_dict = db.nations.find_one({"nationid":account["nation_id"]})
-            if nat_dict:
-                min_score = round((nat_dict["score"] * 0.75),2)
-                max_score = round((nat_dict["score"] * 1.75),2)
-                async with aiohttp.ClientSession() as session:
-                    async with session.get(f'https://politicsandwar.com/api/v2/nations/{api_key}/&min_score={min_score}&max_score={max_score}&v_mode=false&alliance_id=877&alliance_position=2,3,4,5') as r:
-                        json_obj = await r.json()
-                        raw_targets_dict = json_obj["data"]
-                        targets_dict = [i for i in raw_targets_dict if (i['color'] != 0) and (i['defensive_wars'] != 3)]
-                        for d in targets_dict: d['mil_score'] = float(d['soldiers']) * 0.01 + float(
-                                        d['tanks']) * 0.05 + float(d['aircraft']) * 0.25 + float(d['ships']) * 0.5 + float(
-                                        d['cities'] * 4.0 + float(d['score'] * 0.1))
-                        sorted_targets = sorted(targets_dict, key = lambda i: i['mil_score'])
-                        embed = discord.Embed(title=f"Target search for {nat_dict['nation']}.", description=f'''
-[{sorted_targets[0]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[0]["nation_id"]}) | [{sorted_targets[0]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[0]["alliance_id"]})
-``🏙️ {sorted_targets[0]["cities"]} | Last Active : {timeago.format(sorted_targets[0]["last_active"], datetime.utcnow())}`` 
-``💂 {sorted_targets[0]["soldiers"]} | ⚙️ {sorted_targets[0]["tanks"]} | ✈️ {sorted_targets[0]["aircraft"]} | 🚢 {sorted_targets[0]["ships"]}``
-[{sorted_targets[1]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[1]["nation_id"]}) | [{sorted_targets[1]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[1]["alliance_id"]})
-``🏙️ {sorted_targets[1]["cities"]} | Last Active : {timeago.format(sorted_targets[1]["last_active"], datetime.utcnow())}`` 
-``💂 {sorted_targets[1]["soldiers"]} | ⚙️ {sorted_targets[1]["tanks"]} | ✈️ {sorted_targets[1]["aircraft"]} | 🚢 {sorted_targets[1]["ships"]}``
-[{sorted_targets[2]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[2]["nation_id"]}) | [{sorted_targets[2]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[2]["alliance_id"]})
-``🏙️ {sorted_targets[2]["cities"]} | Last Active : {timeago.format(sorted_targets[2]["last_active"], datetime.utcnow())}`` 
-``💂 {sorted_targets[2]["soldiers"]} | ⚙️ {sorted_targets[2]["tanks"]} | ✈️ {sorted_targets[2]["aircraft"]} | 🚢 {sorted_targets[2]["ships"]}``
-[{sorted_targets[3]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[3]["nation_id"]}) | [{sorted_targets[3]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[3]["alliance_id"]})
-``🏙️ {sorted_targets[3]["cities"]} | Last Active : {timeago.format(sorted_targets[3]["last_active"], datetime.utcnow())}`` 
-``💂 {sorted_targets[3]["soldiers"]} | ⚙️ {sorted_targets[3]["tanks"]} | ✈️ {sorted_targets[3]["aircraft"]} | 🚢 {sorted_targets[3]["ships"]}``
-[{sorted_targets[4]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[4]["nation_id"]}) | [{sorted_targets[4]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[4]["alliance_id"]})
-``🏙️ {sorted_targets[4]["cities"]} | Last Active : {timeago.format(sorted_targets[4]["last_active"], datetime.utcnow())}`` 
-``💂 {sorted_targets[4]["soldiers"]} | ⚙️ {sorted_targets[4]["tanks"]} | ✈️ {sorted_targets[4]["aircraft"]} | 🚢 {sorted_targets[4]["ships"]}``
-[{sorted_targets[5]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[5]["nation_id"]}) | [{sorted_targets[5]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[5]["alliance_id"]})
-``🏙️ {sorted_targets[5]["cities"]} | Last Active : {timeago.format(sorted_targets[5]["last_active"], datetime.utcnow())}`` 
-``💂 {sorted_targets[5]["soldiers"]} | ⚙️ {sorted_targets[5]["tanks"]} | ✈️ {sorted_targets[5]["aircraft"]} | 🚢 {sorted_targets[5]["ships"]}``
-[{sorted_targets[6]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[6]["nation_id"]}) | [{sorted_targets[6]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[6]["alliance_id"]})
-``🏙️ {sorted_targets[6]["cities"]} | Last Active : {timeago.format(sorted_targets[6]["last_active"], datetime.utcnow())}`` 
-``💂 {sorted_targets[6]["soldiers"]} | ⚙️ {sorted_targets[6]["tanks"]} | ✈️ {sorted_targets[6]["aircraft"]} | 🚢 {sorted_targets[6]["ships"]}``
-[{sorted_targets[7]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[7]["nation_id"]}) | [{sorted_targets[7]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[7]["alliance_id"]})
-``🏙️ {sorted_targets[7]["cities"]} | Last Active : {timeago.format(sorted_targets[7]["last_active"], datetime.utcnow())}`` 
-``💂 {sorted_targets[7]["soldiers"]} | ⚙️ {sorted_targets[7]["tanks"]} | ✈️ {sorted_targets[7]["aircraft"]} | 🚢 {sorted_targets[7]["ships"]}``
-[{sorted_targets[8]["nation"]}](https://politicsandwar.com/nation/id={sorted_targets[8]["nation_id"]}) | [{sorted_targets[8]["alliance"]}](https://politicsandwar.com/alliance/id={sorted_targets[8]["alliance_id"]})
-``🏙️ {sorted_targets[8]["cities"]} | Last Active : {timeago.format(sorted_targets[8]["last_active"], datetime.utcnow())}`` 
-``💂 {sorted_targets[8]["soldiers"]} | ⚙️ {sorted_targets[8]["tanks"]} | ✈️ {sorted_targets[8]["aircraft"]} | 🚢 {sorted_targets[8]["ships"]}``
-''', color=0x000000)
-
-                    await ctx.send(embed=embed)
-        else:
-            await ctx.send("You need to verif yourself before you can use this command.")
-    else:
-        await ctx.send("Not serving landlubbers, sorry.")
-
-
-
-
-
 @client.event
 async def on_message_delete(message):
     if message.author == client.user:
@@ -791,12 +654,6 @@ VM/Beige : `VM: {x["vmode"]} turns | Beige: {x["beige_turns_left"]} turns.`
                                             await channel.send(embed=embed)
                                             posted_targets.append(i["nation_id"])
                                             count = count + 1
-
-@tasks.loop(hours=12)
-async def bb_reminder():
-    channel = client.get_channel(308132001758838784)
-    await channel.send("<@224343542548398091> check you MAPs! \nhttps://politicsandwar.com/nation/war/")
-    
 
 @client.command()
 async def piratebuild(ctx):
