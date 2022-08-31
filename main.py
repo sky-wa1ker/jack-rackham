@@ -181,6 +181,19 @@ async def who(ctx, user:discord.User):
 
 
 
+@client.command()
+async def user(ctx, nation:int):
+    account = db.discord_users.find_one({'nation_id':nation})
+    if account:
+        user = client.get_user(account["_id"])
+        await ctx.send(f'''
+Username : `{user.display_name}`
+ID : `{user.id}`
+        ''')
+    else:
+        await ctx.send('There was an error.')
+
+
 
 @client.command()
 async def me(ctx):
