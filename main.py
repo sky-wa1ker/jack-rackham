@@ -21,8 +21,7 @@ db_client = MongoClient(os.environ["db_access_url"])
 db = db_client.get_database('jack_rackham_db')
 
 
-intents = discord.Intents.default()
-intents.members = True
+intents = discord.Intents.all()
 client = commands.Bot(command_prefix = ';', intents = intents)         #  << change it before pushing it live
 client.remove_command('help')
 
@@ -103,6 +102,25 @@ async def ad_verify(ctx, user:discord.User, nation_id:int):
     else:
         await ctx.send(f'This command is only for {role.name}')
     
+
+@client.command(aliases=['ad_register'])
+async def updateuser(ctx, user:discord.User, nation_id:int):
+    role = discord.utils.get(ctx.guild.roles, name="Admiralty")
+    if role in ctx.author.roles:
+        if type(db.discord_users.find_one({'_id':user.id})) is dict:
+            db.discord_users.insert_one({'_id':user.id, 'username':user.name, 'nation_id':nation_id, 'nation_link': f'https://politicsandwar.com/nation/id={nation_id}'})
+            await ctx.send("Success!, the user has been verified and registered.")
+            member = ctx.guild.get_member(user.id)
+            await member.add_roles(discord.utils.get(ctx.guild.roles, name='Jack Approves! ✅'))
+        elif db.discord_users.find_one({'_id':user.id}) == None:
+            await ctx.send('The user is not verified yet.')
+        else:
+            await ctx.send('Something went wrong...')
+    else:
+        await ctx.send(f'This command is only for {role.name}')
+
+
+
 
 @client.command()
 async def unregister(ctx):
