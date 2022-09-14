@@ -569,7 +569,7 @@ async def on_message_delete(message):
     current_date=now.strftime("%d/%m/%Y") 
     delete_embed=discord.Embed(title = f"Message Deleted", description= f'**User:** <@{message.author.id}>\n**Channel:** <#{message.channel.id}>\n**Message:** \n{message.content}', color=0)
     delete_embed.set_footer(text=f"Message ID: {message.id}\nDate: {current_date} • Time: {current_time}")
-    delete_embed.set_author(name =f"{message.author}", icon_url=f"{message.author.avatar_url}") 
+    delete_embed.set_author(name =f"{message.author}", icon_url=f"{message.author.avatar}") 
     archive_delete=client.get_channel(312420656312614912)
     try:
         delete_embed.set_image(url=message.attachments[0].proxy_url)
@@ -594,7 +594,7 @@ async def on_message_edit(message_before, message_after):
     current_date=now.strftime("%d/%m/%Y") 
     delete_embed=discord.Embed(title = f"Message Edited", description= f'**User:** <@{message_before.author.id}>\n**Channel:** <#{message_before.channel.id}>\n**Old Message:** \n{message_before.content}\n**New Message:** \n{message_after.content}', color=0)
     delete_embed.set_footer(text=f"Date: {current_date} • Time: {current_time}")
-    delete_embed.set_author(name =f"{message_before.author}", icon_url=f"{message_before.author.avatar_url}") 
+    delete_embed.set_author(name =f"{message_before.author}", icon_url=f"{message_before.author.avatar}") 
     archive_delete=client.get_channel(312420656312614912)
     await archive_delete.send(embed=delete_embed)
 
