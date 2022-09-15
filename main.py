@@ -356,7 +356,6 @@ async def member_alert():
                 await channel.send(f'<@&{role}> Following nations have left Arrgh.')
                 for x in changes:
                     await channel.send(f'https://politicsandwar.com/nation/id={x}')
-                global or_members_list
                 or_members_list = new_members_list
 
 
