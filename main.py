@@ -336,8 +336,8 @@ def list_diff(old_list, new_list):
 async def get_member_list():
     async with aiohttp.ClientSession() as session:
         async with session.get(f'https://politicsandwar.com/api/alliance/id=913&key={api_key}') as r:
-            global or_members_list
             json_obj = await r.json()
+            global or_members_list
             or_members_list = json_obj["member_id_list"]
 
 
@@ -350,6 +350,7 @@ async def member_alert():
         async with session.get(f'https://politicsandwar.com/api/alliance/id=913&key={api_key}') as r:
             json_obj = await r.json()
             new_members_list = json_obj["member_id_list"]
+            global or_members_list
             changes = list_diff(or_members_list, new_members_list)
             if len(changes) > 0:
                 await channel.send(f'<@&{role}> Following nations have left Arrgh.')
