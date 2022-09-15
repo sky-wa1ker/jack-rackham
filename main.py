@@ -32,10 +32,10 @@ async def on_ready():
     await client.change_presence(status=discord.Status.online, activity=game)
     await get_last_war()
     await get_member_list()
-    member_alert.start()
-    update_alliance_data.start()
-    war_alert.start()
-    recruitment.start()
+    await member_alert.start()
+    await update_alliance_data.start()
+    await war_alert.start()
+    await recruitment.start()
     print('Online as {0.user}'.format(client))
 
 
@@ -274,12 +274,12 @@ async def get_last_war():
             last_war = int(wars[0]["warID"])
 
 
-@tasks.loop(minutes=3)
+@tasks.loop(minutes=2)
 async def war_alert():
-    await asyncio.sleep(120)
+    await asyncio.sleep(20)
     channel = client.get_channel(514689777778294785)
     async with aiohttp.ClientSession() as session:
-        async with session.get(f'https://politicsandwar.com/api/wars/?key={api_key}&limit=500&alliance_id=913') as r:
+        async with session.get(f'https://politicsandwar.com/api/wars/?key={api_key}&limit=200&alliance_id=913') as r:
             json_obj = await r.json()
             wars = json_obj['wars']
             last_war_ind = wars.index(next(item for item in wars if item["warID"] == last_war))
@@ -289,21 +289,28 @@ async def war_alert():
                 await m.delete()
             else:
                 final_wars = wars[0:last_war_ind]
-                async with session.get(f'https://politicsandwar.com/api/v2/nations/{api_key}/&v_mode=0') as r2:
-                    json_obj = await r2.json()
-                    nations_v2 = json_obj['data']
                 for i in final_wars:
-                    a_nation_dict = next(item for item in nations_v2 if item["nation_id"] == i["attackerID"])
-                    d_nation_dict = next(item for item in nations_v2 if item["nation_id"] == i["defenderID"])
+                    async with session.get(f"https://politicsandwar.com/api/nation/id={i['attackerID']}&key={api_key}") as r2:
+                        a_nation_dict = await r2.json()
+                        if a_nation_dict["pirate_economy"] == "1":
+                            a_off_slots = "6"
+                        else:
+                            a_off_slots = "5"
+                    async with session.get(f"https://politicsandwar.com/api/nation/id={i['defenderID']}&key={api_key}") as r3:
+                        d_nation_dict = await r3.json()
+                        if d_nation_dict["pirate_economy"] == "1":
+                            d_off_slots = "6"
+                        else:
+                            d_off_slots = "5"
                     if i["defenderAA"] in ("Arrgh", "Arrgh Applicant"):
                         dcolor = 15158332
                     else:
                         dcolor = 3066993
                     embed = discord.Embed(title=f'''{i['attackerAA']} on {i['defenderAA']}''', description=f'''
-[{a_nation_dict["nation"]}](https://politicsandwar.com/nation/id={i["attackerID"]}) declared a(n) {i['war_type']} war on [{d_nation_dict["nation"]}](https://politicsandwar.com/nation/id={i["defenderID"]})
+[{a_nation_dict["name"]}](https://politicsandwar.com/nation/id={i["attackerID"]}) declared a(n) {i['war_type']} war on [{d_nation_dict["name"]}](https://politicsandwar.com/nation/id={i["defenderID"]})
                 
 Score: `{a_nation_dict['score']}` on `{d_nation_dict['score']}`
-Slots: `{a_nation_dict["offensive_wars"]}/5 | {a_nation_dict["defensive_wars"]}/3` on `{d_nation_dict["offensive_wars"]}/5 | {d_nation_dict["defensive_wars"]}/3`
+Slots: `{str(a_nation_dict["offensivewars"])}/{a_off_slots} | {str(a_nation_dict["defensivewars"])}/3` on `{str(d_nation_dict["offensivewars"])}/{d_off_slots} | {str(d_nation_dict["defensivewars"])}/3`
 Cities: `{a_nation_dict["cities"]}` on `{d_nation_dict["cities"]}`
 Attacker Military
 `💂 {a_nation_dict["soldiers"]} | ⚙️ {a_nation_dict["tanks"]} | ✈️ {a_nation_dict["aircraft"]} | 🚢 {a_nation_dict["ships"]}\n🚀 {a_nation_dict["missiles"]} | ☢️ {a_nation_dict["nukes"]}`
@@ -311,11 +318,13 @@ Defender Military
 `💂 {d_nation_dict["soldiers"]} | ⚙️ {d_nation_dict["tanks"]} | ✈️ {d_nation_dict["aircraft"]} | 🚢 {d_nation_dict["ships"]}\n🚀 {d_nation_dict["missiles"]} | ☢️ {d_nation_dict["nukes"]}`
 [Go to war page.](https://politicsandwar.com/nation/war/timeline/war={i["warID"]})
 Find counters: `;counter {i["attackerID"]}`
+[Counters with slotter](https://slotter.bsnk.dev/search?nation={i["attackerID"]}&alliances=913&countersMode=true&threatsMode=false&vm=false&grey=true&beige=true)
                     ''', color=dcolor)
                     await channel.send(embed=embed)
                     if i["defenderAA"]=="Arrgh" and type(db.discord_users.find_one({'nation_id':i["defenderID"]})) is dict:
                         account = db.discord_users.find_one({'nation_id':i["defenderID"]})
                         await channel.send(f"You have been attacked <@{account['_id']}>")
+            global last_war
             last_war = int(wars[0]['warID'])
                     
                         
@@ -332,7 +341,7 @@ async def get_member_list():
             or_members_list = json_obj["member_id_list"]
 
 
-@tasks.loop(hours=2)
+@tasks.loop(hours=1)
 async def member_alert():
     channel = client.get_channel(220580210251137024) #channel where alerts are sent
     role = 576711897328386069 #role that gets pinged
@@ -346,6 +355,7 @@ async def member_alert():
                 await channel.send(f'<@&{role}> Following nations have left Arrgh.')
                 for x in changes:
                     await channel.send(f'https://politicsandwar.com/nation/id={x}')
+                global or_members_list
                 or_members_list = new_members_list
 
 
