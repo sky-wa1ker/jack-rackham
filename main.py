@@ -32,10 +32,10 @@ async def on_ready():
     await client.change_presence(status=discord.Status.online, activity=game)
     await get_last_war()
     await get_member_list()
-    await member_alert.start()
-    await update_alliance_data.start()
-    await war_alert.start()
-    await recruitment.start()
+    member_alert.start()
+    update_alliance_data.start()
+    war_alert.start()
+    recruitment.start()
     print('Online as {0.user}'.format(client))
 
 
