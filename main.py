@@ -375,141 +375,29 @@ async def counter(ctx, enemy_id):
                 else:
                     min_score = round(float(enemy_data['score']) / 1.75, 2)
                     max_score = round(float(enemy_data['score']) / 0.75, 2)
-                    e_name = enemy_data['name']
-                    e_leader = enemy_data['leadername']
-                    e_alliance = enemy_data['alliance']
-                    e_war_policy = enemy_data['war_policy']
-                    e_city_count = enemy_data['cities']
-                    e_score = enemy_data['score']
-                    e_soldiers = enemy_data['soldiers']
-                    e_tanks = enemy_data['tanks']
-                    e_aircraft = enemy_data['aircraft']
-                    e_ships = enemy_data['ships']
-                    e_missiles = enemy_data['missiles']
-                    e_nukes = enemy_data['nukes']
                     async with session.get(f'https://politicsandwar.com/api/v2/nations/{api_key}/&alliance_id=913&v_mode=0&min_score={min_score}&max_score={max_score}&alliance_position=2,3,4,5') as r2:
                         test_request = await r2.json()
                         in_range_members = test_request['data']
-
                         if test_request['api_request']['success'] is True:
                             for d in in_range_members: d['mil_score'] = float(d['soldiers']) * 0.001 + float(
-                                d['tanks']) * 0.005 + float(d['aircraft']) * 0.3 + float(d['ships']) * 0.75 + float(
+                                d['tanks']) * 0.008 + float(d['aircraft']) * 0.4 + float(d['ships']) * 0.60 + float(
                                 d['cities'] * 4.0 + float(d['score'] * 0.1))
                             counters = sorted(in_range_members, key = lambda i: i['mil_score'],reverse=True)
-                            if len(counters) == 1:
-                                name1 = (counters[0]).get('nation')
-                                id1 = (counters[0]).get('nation_id')
-                                leader1 = (counters[0]).get('leader')
-                                score1 = (counters[0]).get('score')
-                                city_count1 = (counters[0]).get('cities')
-                                soldiers1 = (counters[0]).get('soldiers')
-                                tanks1 = (counters[0]).get('tanks')
-                                aircraft1 = (counters[0]).get('aircraft')
-                                ships1 = (counters[0]).get('ships')
-
-                                embed = discord.Embed(title='Counter Search', color=0x000000)
-                                embed.add_field(name="Enemy",
-                                                value=f"[{e_leader} of {e_name}](https://politicsandwar.com/nation/id={enemy_id}) \n `{e_alliance} | {e_war_policy} | 🏙️ {e_city_count} | NS: {e_score}` \n`💂 {e_soldiers} | ⚙️ {e_tanks} | ✈️ {e_aircraft} | 🚢 {e_ships}\n🚀 {e_missiles} | ☢️ {e_nukes}`",
-                                                inline=False)
-                                embed.add_field(name='Counter 1',
-                                                value=f'[{name1}](https://politicsandwar.com/nation/id={id1}) \n `{leader1} | 🏙️ {city_count1} | Score: {score1}` \n `💂 {soldiers1} | ⚙️ {tanks1} | ✈️ {aircraft1} | 🚢 {ships1}`',
-                                                inline=False)
-                                embed.set_footer(text="DM Sam Cooper for help or to report a bug                     .",
-                                                 icon_url='https://i.ibb.co/qg5vp8w/dp-cropped.jpg')
-
-                                await ctx.send(embed=embed)
-
-                            elif len(counters) == 2:
-                                name1 = (counters[0]).get('nation')
-                                id1 = (counters[0]).get('nation_id')
-                                leader1 = (counters[0]).get('leader')
-                                score1 = (counters[0]).get('score')
-                                city_count1 = (counters[0]).get('cities')
-                                soldiers1 = (counters[0]).get('soldiers')
-                                tanks1 = (counters[0]).get('tanks')
-                                aircraft1 = (counters[0]).get('aircraft')
-                                ships1 = (counters[0]).get('ships')
-
-                                name2 = (counters[1]).get('nation')
-                                id2 = (counters[1]).get('nation_id')
-                                leader2 = (counters[1]).get('leader')
-                                score2 = (counters[1]).get('score')
-                                city_count2 = (counters[1]).get('cities')
-                                soldiers2 = (counters[1]).get('soldiers')
-                                tanks2 = (counters[1]).get('tanks')
-                                aircraft2 = (counters[1]).get('aircraft')
-                                ships2 = (counters[1]).get('ships')
-
-                                embed = discord.Embed(title='Counter Search', color=0x000000)
-                                embed.add_field(name="Enemy",
-                                                value=f"[{e_leader} of {e_name}](https://politicsandwar.com/nation/id={enemy_id}) \n `{e_alliance} | {e_war_policy} | 🏙️ {e_city_count} | NS: {e_score}` \n`💂 {e_soldiers} | ⚙️ {e_tanks} | ✈️ {e_aircraft} | 🚢 {e_ships}\n🚀 {e_missiles} | ☢️ {e_nukes}`",
-                                                inline=False)
-                                embed.add_field(name='Counter 1',
-                                                value=f'[{name1}](https://politicsandwar.com/nation/id={id1}) \n `{leader1} | 🏙️ {city_count1} | Score: {score1}` \n `💂 {soldiers1} | ⚙️ {tanks1} | ✈️ {aircraft1} | 🚢 {ships1}`',
-                                                inline=False)
-                                embed.add_field(name='Counter 2',
-                                                value=f'[{name2}](https://politicsandwar.com/nation/id={id2}) \n `{leader2} | 🏙️ {city_count2} | Score: {score2}` \n `💂 {soldiers2} | ⚙️ {tanks2} | ✈️ {aircraft2} | 🚢 {ships2}`',
-                                                inline=False)
-                                embed.set_footer(text="DM Sam Cooper for help or to report a bug                     .",
-                                                 icon_url='https://i.ibb.co/qg5vp8w/dp-cropped.jpg')
-
-                                await ctx.send(embed=embed)
-
+                            if len(counters) >= 5:
+                                n = 5
                             else:
-                                name1 = (counters[0]).get('nation')
-                                id1 = (counters[0]).get('nation_id')
-                                leader1 = (counters[0]).get('leader')
-                                score1 = (counters[0]).get('score')
-                                city_count1 = (counters[0]).get('cities')
-                                soldiers1 = (counters[0]).get('soldiers')
-                                tanks1 = (counters[0]).get('tanks')
-                                aircraft1 = (counters[0]).get('aircraft')
-                                ships1 = (counters[0]).get('ships')
-
-                                name2 = (counters[1]).get('nation')
-                                id2 = (counters[1]).get('nation_id')
-                                leader2 = (counters[1]).get('leader')
-                                score2 = (counters[1]).get('score')
-                                city_count2 = (counters[1]).get('cities')
-                                soldiers2 = (counters[1]).get('soldiers')
-                                tanks2 = (counters[1]).get('tanks')
-                                aircraft2 = (counters[1]).get('aircraft')
-                                ships2 = (counters[1]).get('ships')
-
-                                name3 = (counters[2]).get('nation')
-                                id3 = (counters[2]).get('nation_id')
-                                leader3 = (counters[2]).get('leader')
-                                score3 = (counters[2]).get('score')
-                                city_count3 = (counters[2]).get('cities')
-                                soldiers3 = (counters[2]).get('soldiers')
-                                tanks3 = (counters[2]).get('tanks')
-                                aircraft3 = (counters[2]).get('aircraft')
-                                ships3 = (counters[2]).get('ships')
-
-                                embed = discord.Embed(title='Counter Search', color=0x000000)
-                                embed.add_field(name="Enemy",
-                                                value=f"[{e_leader} of {e_name}](https://politicsandwar.com/nation/id={enemy_id}) \n `{e_alliance} | {e_war_policy} | 🏙️ {e_city_count} | NS: {e_score}` \n`💂 {e_soldiers} | ⚙️ {e_tanks} | ✈️ {e_aircraft} | 🚢 {e_ships}\n🚀 {e_missiles} | ☢️ {e_nukes}`",
-                                                inline=False)
-                                embed.add_field(name='Counter 1',
-                                                value=f'[{name1}](https://politicsandwar.com/nation/id={id1}) \n `{leader1} | 🏙️ {city_count1} | Score: {score1}` \n `💂 {soldiers1} | ⚙️ {tanks1} | ✈️ {aircraft1} | 🚢 {ships1}`',
-                                                inline=False)
-                                embed.add_field(name='Counter 2',
-                                                value=f'[{name2}](https://politicsandwar.com/nation/id={id2}) \n `{leader2} | 🏙️ {city_count2} | Score: {score2}` \n `💂 {soldiers2} | ⚙️ {tanks2} | ✈️ {aircraft2} | 🚢 {ships2}`',
-                                                inline=False)
-                                embed.add_field(name='Counter 3',
-                                                value=f'[{name3}](https://politicsandwar.com/nation/id={id3}) \n `{leader3} | 🏙️ {city_count3} | Score: {score3}` \n `💂 {soldiers3} | ⚙️ {tanks3} | ✈️ {aircraft3} | 🚢 {ships3}`',
-                                                inline=False)
-                                embed.set_footer(text="DM Sam Cooper for help or to report a bug                     .",
-                                                 icon_url='https://i.ibb.co/qg5vp8w/dp-cropped.jpg')
-
-                                await ctx.send(embed=embed)
-
+                                n = len(counters)
+                            enemy_embed = discord.Embed(title='Enemy', description=f'''
+[{enemy_data['name']} of {enemy_data['leadername']}](https://politicsandwar.com/nation/id={enemy_id}) \n `{enemy_data['alliance']} | {enemy_data['war_policy']} | 🏙️ {enemy_data['cities']} | NS: {enemy_data['score']}` \n`💂 {enemy_data['soldiers']} | ⚙️ {enemy_data['tanks']} | ✈️ {enemy_data['aircraft']} | 🚢 {enemy_data['ships']}\n🚀 {enemy_data['missiles']} | ☢️ {enemy_data['nukes']}`
+                            ''')
+                            await ctx.send(embed=enemy_embed)
+                            for x in counters[0:n]:
+                                counter_embed = discord.Embed(title=f"Counter {counters.index(x)}", description=f'''
+[{x['nation']}](https://politicsandwar.com/nation/id={x['nation_id']}) \n `{x['leader']} | 🏙️ {x['cities']} | Score: {x['score']}` \n `💂 {x['soldiers']} | ⚙️ {x['tanks']} | ✈️ {x['aircraft']} | 🚢 {x['ships']}`
+                                ''')
+                                await ctx.send(embed=counter_embed)
                         else:
                             await ctx.send('Couldn\'t find any counters.')
-
-
-    else:
-        await ctx.send('Wrong channel mate!')
 
 
 
