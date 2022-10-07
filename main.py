@@ -30,11 +30,9 @@ client.remove_command('help')
 async def on_ready():
     game = discord.Game("it cool. type ;help")
     await client.change_presence(status=discord.Status.online, activity=game)
-    await get_last_war()
     await get_member_list()
     member_alert.start()
     update_alliance_data.start()
-    war_alert.start()
     recruitment.start()
     print('Online as {0.user}'.format(client))
 
@@ -263,69 +261,6 @@ async def api(ctx):
     else:
         await ctx.send('This command can only be used by my master.')
 
-
-
-async def get_last_war():
-    async with aiohttp.ClientSession() as session:
-        async with session.get(f'https://politicsandwar.com/api/wars/?key={api_key}&limit=5&alliance_id=913') as r:
-            json_obj = await r.json()
-            wars = json_obj['wars']
-            global last_war
-            last_war = int(wars[0]["warID"])
-
-
-@tasks.loop(minutes=2)
-async def war_alert():
-    await asyncio.sleep(20)
-    channel = client.get_channel(514689777778294785)
-    async with aiohttp.ClientSession() as session:
-        async with session.get(f'https://politicsandwar.com/api/wars/?key={api_key}&limit=200&alliance_id=913') as r:
-            json_obj = await r.json()
-            wars = json_obj['wars']
-            last_war_ind = wars.index(next(item for item in wars if item["warID"] == last_war))
-            if last_war_ind == 0:
-                m = await channel.send('No new wars declared....')
-                await asyncio.sleep(15)
-                await m.delete()
-            else:
-                final_wars = wars[0:last_war_ind]
-                for i in final_wars:
-                    async with session.get(f"https://politicsandwar.com/api/nation/id={i['attackerID']}&key={api_key}") as r2:
-                        a_nation_dict = await r2.json()
-                        if a_nation_dict["pirate_economy"] == "1":
-                            a_off_slots = "6"
-                        else:
-                            a_off_slots = "5"
-                    async with session.get(f"https://politicsandwar.com/api/nation/id={i['defenderID']}&key={api_key}") as r3:
-                        d_nation_dict = await r3.json()
-                        if d_nation_dict["pirate_economy"] == "1":
-                            d_off_slots = "6"
-                        else:
-                            d_off_slots = "5"
-                    if i["defenderAA"] in ("Arrgh", "Arrgh Applicant"):
-                        dcolor = 15158332
-                    else:
-                        dcolor = 3066993
-                    embed = discord.Embed(title=f'''{i['attackerAA']} on {i['defenderAA']}''', description=f'''
-[{a_nation_dict["name"]}](https://politicsandwar.com/nation/id={i["attackerID"]}) declared a(n) {i['war_type']} war on [{d_nation_dict["name"]}](https://politicsandwar.com/nation/id={i["defenderID"]})
-                
-Score: `{a_nation_dict['score']}` on `{d_nation_dict['score']}`
-Slots: `{str(a_nation_dict["offensivewars"])}/{a_off_slots} | {str(a_nation_dict["defensivewars"])}/3` on `{str(d_nation_dict["offensivewars"])}/{d_off_slots} | {str(d_nation_dict["defensivewars"])}/3`
-Cities: `{a_nation_dict["cities"]}` on `{d_nation_dict["cities"]}`
-Attacker Military
-`💂 {a_nation_dict["soldiers"]} | ⚙️ {a_nation_dict["tanks"]} | ✈️ {a_nation_dict["aircraft"]} | 🚢 {a_nation_dict["ships"]}\n🚀 {a_nation_dict["missiles"]} | ☢️ {a_nation_dict["nukes"]}`
-Defender Military
-`💂 {d_nation_dict["soldiers"]} | ⚙️ {d_nation_dict["tanks"]} | ✈️ {d_nation_dict["aircraft"]} | 🚢 {d_nation_dict["ships"]}\n🚀 {d_nation_dict["missiles"]} | ☢️ {d_nation_dict["nukes"]}`
-[Go to war page.](https://politicsandwar.com/nation/war/timeline/war={i["warID"]})
-Find counters: `;counter {i["attackerID"]}`
-[Counters with slotter](https://slotter.bsnk.dev/search?nation={i["attackerID"]}&alliances=913&countersMode=true&threatsMode=false&vm=false&grey=true&beige=true)
-                    ''', color=dcolor)
-                    await channel.send(embed=embed)
-                    if i["defenderAA"]=="Arrgh" and type(db.discord_users.find_one({'nation_id':i["defenderID"]})) is dict:
-                        account = db.discord_users.find_one({'nation_id':i["defenderID"]})
-                        await channel.send(f"You have been attacked <@{account['_id']}>")
-            global last_war
-            last_war = int(wars[0]['warID'])
                     
                         
 
