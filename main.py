@@ -387,50 +387,6 @@ async def recruitment():
                             await channel.send(f'Could not send message to {x["leader"]} of {x["nation"]} ({x["nation_id"]}')
 
 
-@client.event
-async def on_message_delete(message):
-    if message.author == client.user:
-        return
-    elif message.author.bot == True:
-        return
-    elif message.author.id in [343397899369054219, 356444851803389952]:
-        return
-    elif message.channel.category_id in [797754859100045332, 520548149698494464, 360585064024768523, 653197917774938123]:
-        return
-    now = datetime.now() 
-    current_time=now.strftime("%H:%M:%S") 
-    current_date=now.strftime("%d/%m/%Y") 
-    delete_embed=discord.Embed(title = f"Message Deleted", description= f'**User:** <@{message.author.id}>\n**Channel:** <#{message.channel.id}>\n**Message:** \n{message.content}', color=0)
-    delete_embed.set_footer(text=f"Message ID: {message.id}\nDate: {current_date} • Time: {current_time}")
-    delete_embed.set_author(name =f"{message.author}", icon_url=f"{message.author.avatar}") 
-    archive_delete=client.get_channel(312420656312614912)
-    try:
-        delete_embed.set_image(url=message.attachments[0].proxy_url)
-    except IndexError:
-        pass
-    await archive_delete.send(embed=delete_embed)
-
-
-
-@client.event
-async def on_message_edit(message_before, message_after):
-    if message_before.author == client.user:
-        return
-    elif message_before.author.bot == True:
-        return
-    elif message_before.author.id in [343397899369054219, 356444851803389952]:
-        return
-    elif message_before.channel.category_id in [797754859100045332, 520548149698494464, 360585064024768523, 653197917774938123]:
-        return
-    now = datetime.now()
-    current_time=now.strftime("%H:%M:%S")
-    current_date=now.strftime("%d/%m/%Y") 
-    delete_embed=discord.Embed(title = f"Message Edited", description= f'**User:** <@{message_before.author.id}>\n**Channel:** <#{message_before.channel.id}>\n**Old Message:** \n{message_before.content}\n**New Message:** \n{message_after.content}', color=0)
-    delete_embed.set_footer(text=f"Date: {current_date} • Time: {current_time}")
-    delete_embed.set_author(name =f"{message_before.author}", icon_url=f"{message_before.author.avatar}") 
-    archive_delete=client.get_channel(312420656312614912)
-    await archive_delete.send(embed=delete_embed)
-
 
 @client.command()
 async def piratebuild(ctx):
