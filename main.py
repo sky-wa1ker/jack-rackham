@@ -71,7 +71,7 @@ async def verify(ctx, nation_id:int):
             except AttributeError:
                 await ctx.send('Verification failed, make sure your nation ID is correct and you have your discord username (not server nickname) on your nation page exactly the way you see it on discord.')
             if username == str(ctx.message.author):
-                db.discord_users.insert_one({'_id':ctx.author.id, 'username':ctx.author.name, 'nation_id':nation_id, 'nation_link':f'https://politicsandwar.com/nation/id={nation_id}'})
+                db.discord_users.insert_one({'_id':ctx.author.id, 'username':ctx.author.name, 'nation_id':nation_id})
                 await ctx.send('Registration successful! you\'ve been verified.')
                 await ctx.author.add_roles(discord.utils.get(ctx.author.guild.roles, name='Jack Approves! ✅'))
             else:
@@ -89,7 +89,7 @@ async def ad_verify(ctx, user:discord.User, nation_id:int):
         if type(db.discord_users.find_one({'_id':user.id})) is dict:
             await ctx.send('The user has already been registered.')
         elif db.discord_users.find_one({'_id':user.id}) == None:
-            db.discord_users.insert_one({'_id':user.id, 'username':user.name, 'nation_id':nation_id, 'nation_link': f'https://politicsandwar.com/nation/id={nation_id}'})
+            db.discord_users.insert_one({'_id':user.id, 'username':user.name, 'nation_id':nation_id})
             await ctx.send("Success!, the user has been verified and registered.")
             member = ctx.guild.get_member(user.id)
             await member.add_roles(discord.utils.get(ctx.guild.roles, name='Jack Approves! ✅'))
@@ -105,7 +105,7 @@ async def update_verify(ctx, user:discord.User, nation_id:int):
     if role in ctx.author.roles:
         if type(db.discord_users.find_one({'_id':user.id})) is dict:
             filter = { '_id':user.id }
-            db.discord_users.update_one(filter, {"$set": {'username':user.name, 'nation_id':nation_id, 'nation_link': f'https://politicsandwar.com/nation/id={nation_id}'}})
+            db.discord_users.update_one(filter, {"$set": {'username':user.name, 'nation_id':nation_id}})
             await ctx.send("Success!, the verification details for this user have been updated.")
         elif db.discord_users.find_one({'_id':user.id}) == None:
             await ctx.send('The user is not verified yet.')
