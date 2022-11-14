@@ -19,6 +19,7 @@ token = os.environ['token']
 api_key = os.environ['api_key']
 db_client = MongoClient(os.environ["db_access_url"])
 db = db_client.get_database('jack_rackham_db')
+graphql = f"https://api.politicsandwar.com/graphql?api_key={api_key}"
 
 
 intents = discord.Intents.all()
@@ -31,9 +32,12 @@ async def on_ready():
     game = discord.Game("it cool. type ;help")
     await client.change_presence(status=discord.Status.online, activity=game)
     await get_member_list()
-    member_alert.start()
-    update_alliance_data.start()
-    recruitment.start()
+    if not member_alert.is_running():
+        member_alert.start()
+    if not recruitment.is_running():
+        recruitment.start()
+    if not war_alert.is_running():
+        war_alert.start()
     print('Online as {0.user}'.format(client))
 
 
@@ -127,44 +131,6 @@ async def unregister(ctx):
         await ctx.send('https://i.kym-cdn.com/photos/images/original/001/535/068/29d.jpg')
 
 
-@client.command()
-async def alliance(ctx, *, aa_name):
-    aa_dict = db.alliances.find_one({"query_name":aa_name.lower()})
-    if aa_dict:
-        aa_id = aa_dict["id"]
-        async with aiohttp.ClientSession() as session:
-            async with session.get(f"https://politicsandwar.com/api/alliance/id={aa_id}&key={api_key}") as r:
-                aa_dict = await r.json()
-                soldiers = aa_dict["soldiers"]
-                tanks = aa_dict["tanks"]
-                aircraft = aa_dict["aircraft"]
-                ships = aa_dict["ships"]
-                embed = discord.Embed(title=f'{aa_dict["name"]}({aa_dict["acronym"]})', url=f'https://politicsandwar.com/alliance/id={aa_dict["allianceid"]}', description=f'''
-**General**
-ID : {aa_dict["allianceid"]}
-Score : {aa_dict["score"]}
-Members : {aa_dict["members"]} ({aa_dict["vmodemembers"]} of them in VM.)
-Applicants : {aa_dict["applicants"]}
-[Discord Link]({aa_dict["irc"]})
-**Military (Militarization %)**
-Soldiers : {soldiers:,} ({str(round(soldiers/(15000*(aa_dict["cities"])), 2)*100)+"%"})
-Tanks : {tanks:,} ({str(round(tanks/(1250*(aa_dict["cities"])), 2)*100)+"%"})
-Aircraft : {aircraft:,} ({str(round(aircraft/(75*(aa_dict["cities"])), 2)*100)+"%"})
-Ships : {ships:,} ({str(round(ships/(15*(aa_dict["cities"])), 2)*100)+"%"})
-Missiles : {aa_dict["missiles"]}
-Nukes : {aa_dict["nukes"]}
-                ''')
-                embed.set_image(url=f"{aa_dict['flagurl']}")
-                embed.set_footer(text="DM Sam Cooper for help or to report a bug.", icon_url='https://i.ibb.co/qg5vp8w/dp-cropped.jpg')
-                await ctx.send(embed=embed)
-    else:
-        alliances = db.alliances.find()
-        aa_list = [sub['name'] for sub in alliances]
-        aa = difflib.get_close_matches(aa_name, aa_list, n=1)
-        await ctx.send(f'No exact match, did you mean **{aa[0]}**?')
-
-
-
 @client.command(aliases=["whois"])
 async def who(ctx, user:discord.User):
     account = db.discord_users.find_one({'_id':user.id})
@@ -234,17 +200,6 @@ async def me(ctx):
                     await ctx.send(nat_dict["error"])
     else:
         await ctx.send("Could not find this user.")
-
-@tasks.loop(minutes=1380)
-async def update_alliance_data():
-    db.alliances.delete_many({})
-    async with aiohttp.ClientSession() as session:
-        async with session.get(f"https://politicsandwar.com/api/alliances/?key={api_key}") as r:
-            json_obj = await r.json()
-            alliances = json_obj["alliances"]
-            for x in alliances:
-                x["query_name"] = (x["name"]).lower()
-            db.alliances.insert_many((alliances))
 
 
 @client.command()
@@ -428,7 +383,53 @@ async def piratebuild(ctx):
 
 
 
+@tasks.loop(minutes=3)
+async def war_alert():
+    channel = client.get_channel(514689777778294785)
+    misc = db.misc.find_one({'_id':True})
+    async with aiohttp.ClientSession() as session:
+             async with session.post(graphql, json={'query':f"{{wars(alliance_id:913, min_id:{misc['last_arrgh_war']}, orderBy:{{column:ID, order:ASC}}){{data{{id date war_type reason attacker{{id leader_name nation_name alliance_id score num_cities soldiers tanks aircraft ships missiles nukes alliance{{name}}alliance_position}}defender{{ id leader_name nation_name alliance_id score num_cities soldiers tanks aircraft ships missiles nukes alliance{{name}}alliance_position}}}}}}}}"}) as r:
+                json_obj = await r.json()
+                wars = json_obj["data"]["wars"]["data"]
+                if len(wars) > 0:
+                    for war in wars:
+                        attacker = war["attacker"]
+                        defender = war["defender"]
+                        if defender["alliance_id"] == '913':
+                            dcolor = 15158332
+                        else:
+                            dcolor = 3066993
+                                
+                            embed = discord.Embed(title=f'''{attacker["alliance"]["name"]} {attacker["alliance_position"]} on {defender["alliance"]["name"]} {{attacker["alliance_position"]}}''', description=f'''
+[{attacker["nation_name"]}](https://politicsandwar.com/nation/id={attacker["id"]}) declared a(n) {war['war_type']} war on [{defender["nation_name"]}](https://politicsandwar.com/nation/id={defender["id"]})
+Reason: `{war["reaosn"]}`
+                        
+Score: `{attacker['score']}` on `{defender['score']}`
+Cities: `{attacker["num_cities"]}` on `{defender["num_cities"]}`
+Attacker Military
+ `💂 {attacker["soldiers"]} | ⚙️ {attacker["tanks"]} | ✈️ {attacker["aircraft"]} | 🚢 {attacker["ships"]}\n🚀 {attacker["missiles"]} | ☢️ {attacker["nukes"]}`
+Defender Military
+ `💂 {defender["soldiers"]} | ⚙️ {defender["tanks"]} | ✈️ {defender["aircraft"]} | 🚢 {defender["ships"]}\n🚀 {defender["missiles"]} | ☢️ {defender["nukes"]}`
+[Go to war page](https://politicsandwar.com/nation/war/timeline/war={war["id"]})
+Find counters: `;counter {attacker["id"]}`
+[Counters with slotter](https://slotter.bsnk.dev/search?nation={attacker["id"]}&alliances=913&countersMode=true&threatsMode=false&vm=false&grey=true&beige=true)
+                            ''', color=dcolor)
+                            await channel.send(embed=embed)
+                            if defender["alliance_id"] == '913' and type(db.discord_users.find_one({'nation_id':int(defender["id"])})) is dict:
+                                account = db.discord_users.find_one({'nation_id':int(defender["id"])})
+                                await channel.send(f"You have been attacked <@{account['_id']}>")
+                                last_war = int(war["id"]) + 1
+                                db.misc.update_one({'_id':True}, {"$set": {'last_arrgh_war':last_war}})
+
+
+
+
+
+
+
 
 
 
 client.run(token)
+
+
