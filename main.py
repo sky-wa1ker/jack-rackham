@@ -400,26 +400,26 @@ async def war_alert():
                         else:
                             dcolor = 3066993
                                 
-                            embed = discord.Embed(title=f'''{attacker["alliance"]["name"]} {attacker["alliance_position"]} on {defender["alliance"]["name"]} {defender["alliance_position"]}''', description=f'''
+                        embed = discord.Embed(title=f'''{attacker["alliance"]["name"]} {attacker["alliance_position"]} on {defender["alliance"]["name"]} {defender["alliance_position"]}''', description=f'''
 [{attacker["nation_name"]}](https://politicsandwar.com/nation/id={attacker["id"]}) declared a(n) {war['war_type']} war on [{defender["nation_name"]}](https://politicsandwar.com/nation/id={defender["id"]})
 Reason: `{war["reason"]}`
-                        
+                    
 Score: `{attacker['score']}` on `{defender['score']}`
 Cities: `{attacker["num_cities"]}` on `{defender["num_cities"]}`
 Attacker Military
- `💂 {attacker["soldiers"]} | ⚙️ {attacker["tanks"]} | ✈️ {attacker["aircraft"]} | 🚢 {attacker["ships"]}\n🚀 {attacker["missiles"]} | ☢️ {attacker["nukes"]}`
+`💂 {attacker["soldiers"]} | ⚙️ {attacker["tanks"]} | ✈️ {attacker["aircraft"]} | 🚢 {attacker["ships"]}\n🚀 {attacker["missiles"]} | ☢️ {attacker["nukes"]}`
 Defender Military
- `💂 {defender["soldiers"]} | ⚙️ {defender["tanks"]} | ✈️ {defender["aircraft"]} | 🚢 {defender["ships"]}\n🚀 {defender["missiles"]} | ☢️ {defender["nukes"]}`
+`💂 {defender["soldiers"]} | ⚙️ {defender["tanks"]} | ✈️ {defender["aircraft"]} | 🚢 {defender["ships"]}\n🚀 {defender["missiles"]} | ☢️ {defender["nukes"]}`
 [Go to war page](https://politicsandwar.com/nation/war/timeline/war={war["id"]})
 Find counters: `;counter {attacker["id"]}`
 [Counters with slotter](https://slotter.bsnk.dev/search?nation={attacker["id"]}&alliances=913&countersMode=true&threatsMode=false&vm=false&grey=true&beige=true)
-                            ''', color=dcolor)
-                            await channel.send(embed=embed)
-                            if defender["alliance_id"] == '913' and type(db.discord_users.find_one({'nation_id':int(defender["id"])})) is dict:
-                                account = db.discord_users.find_one({'nation_id':int(defender["id"])})
-                                await channel.send(f"You have been attacked <@{account['_id']}>")
-                                last_war = int(war["id"]) + 1
-                                db.misc.update_one({'_id':True}, {"$set": {'last_arrgh_war':last_war}})
+                        ''', color=dcolor)
+                        await channel.send(embed=embed)
+                        if defender["alliance_id"] == '913' and type(db.discord_users.find_one({'nation_id':int(defender["id"])})) is dict:
+                            account = db.discord_users.find_one({'nation_id':int(defender["id"])})
+                            await channel.send(f"You have been attacked <@{account['_id']}>")
+                        last_war = int(war["id"]) + 1
+                        db.misc.update_one({'_id':True}, {"$set": {'last_arrgh_war':last_war}})
 
 
 
