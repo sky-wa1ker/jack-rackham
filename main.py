@@ -400,7 +400,7 @@ async def war_alert():
                         else:
                             dcolor = 3066993
                                 
-                            embed = discord.Embed(title=f'''{attacker["alliance"]["name"]} {attacker["alliance_position"]} on {defender["alliance"]["name"]} {{attacker["alliance_position"]}}''', description=f'''
+                            embed = discord.Embed(title=f'''{attacker["alliance"]["name"]} {attacker["alliance_position"]} on {defender["alliance"]["name"]} {defender["alliance_position"]}''', description=f'''
 [{attacker["nation_name"]}](https://politicsandwar.com/nation/id={attacker["id"]}) declared a(n) {war['war_type']} war on [{defender["nation_name"]}](https://politicsandwar.com/nation/id={defender["id"]})
 Reason: `{war["reason"]}`
                         
