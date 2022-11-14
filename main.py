@@ -402,7 +402,7 @@ async def war_alert():
                                 
                             embed = discord.Embed(title=f'''{attacker["alliance"]["name"]} {attacker["alliance_position"]} on {defender["alliance"]["name"]} {{attacker["alliance_position"]}}''', description=f'''
 [{attacker["nation_name"]}](https://politicsandwar.com/nation/id={attacker["id"]}) declared a(n) {war['war_type']} war on [{defender["nation_name"]}](https://politicsandwar.com/nation/id={defender["id"]})
-Reason: `{war["reaosn"]}`
+Reason: `{war["reason"]}`
                         
 Score: `{attacker['score']}` on `{defender['score']}`
 Cities: `{attacker["num_cities"]}` on `{defender["num_cities"]}`
