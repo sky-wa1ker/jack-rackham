@@ -385,6 +385,7 @@ async def piratebuild(ctx):
 
 @tasks.loop(minutes=3)
 async def war_alert():
+    await asyncio.sleep(6)
     channel = client.get_channel(514689777778294785)
     misc = db.misc.find_one({'_id':True})
     async with aiohttp.ClientSession() as session:
