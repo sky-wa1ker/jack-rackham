@@ -402,9 +402,11 @@ async def war_alert():
                             dcolor = 3066993
                         try:
                             a_alliance = attacker["alliance"]["name"]
-                            d_alliance = defender["alliance"]["name"]
                         except:
                             a_alliance = 'None'
+                        try:
+                            d_alliance = defender["alliance"]["name"]
+                        except:
                             d_alliance = 'None'
                         embed = discord.Embed(title=f'''{a_alliance} {attacker["alliance_position"]} on {d_alliance} {defender["alliance_position"]}''', description=f'''
 [{attacker["nation_name"]}](https://politicsandwar.com/nation/id={attacker["id"]}) declared a(n) {war['war_type']} war on [{defender["nation_name"]}](https://politicsandwar.com/nation/id={defender["id"]})
