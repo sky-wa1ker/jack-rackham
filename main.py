@@ -399,6 +399,7 @@ async def war_alert():
                             dcolor = 15158332
                         else:
                             dcolor = 3066993
+                        global a_alliance, d_alliance
                         if attacker["alliance"] is None:
                             a_alliance = 'None'
                         elif defender["alliance"] is None:
