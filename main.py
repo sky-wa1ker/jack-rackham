@@ -38,6 +38,8 @@ async def on_ready():
         recruitment.start()
     if not war_alert.is_running():
         war_alert.start()
+    if not the_menu.is_running():
+        the_menu.start()
     print('Online as {0.user}'.format(client))
 
 
@@ -430,7 +432,47 @@ Find counters: `;counter {attacker["id"]}`
                         db.misc.update_one({'_id':True}, {"$set": {'last_arrgh_war':last_war}})
 
 
-
+@tasks.loop(minutes=360)
+async def the_menu():
+    channel = client.get_channel(858725272279187467)
+    await channel.purge()
+    async with aiohttp.ClientSession() as session:
+        async with session.post(graphql, json={'query':"{wars(first:1, orderBy:{column:DATE, order:ASC}){data{id}}}"}) as war_query:
+                    last_war_json = await war_query.json()
+                    last_war_id = int(last_war_json["data"]["wars"]["data"][0]["id"])
+                    async with session.get(f'https://politicsandwar.com/api/war-attacks/key={api_key}&war_id={last_war_id}') as r2:
+                        last_war_dict = await r2.json()
+                        last_war_attack_id = last_war_dict["war_attacks"][0]["war_attack_id"]
+                        async with session.get(f'https://politicsandwar.com/api/war-attacks/key={api_key}&min_war_attack_id={last_war_attack_id}') as r3:
+                            war_attacks_json = await r3.json()
+                            war_attacks_dict = war_attacks_json["war_attacks"]
+                            victory_attacks = [i for i in war_attacks_dict if i['attack_type'] == 'victory']
+                            menu_targets = []
+                            for x in victory_attacks:
+                                menu_targets.append({'nation_id' : x['defender_nation_id'], 'est_loot' : get_loot_value(x['note']), 'date':(x["date"]), 'war_id':x["war_id"]})
+                            menu_targets = sorted(menu_targets, key = lambda i: i['est_loot'],reverse=True)
+                            posted_targets = []
+                            count = 0
+                            for i in menu_targets:
+                                if count != 50:
+                                    try:
+                                        async with session.get(f'https://politicsandwar.com/api/nation/id={i["nation_id"]}&key={api_key}') as r4:
+                                            x = await r4.json()
+                                            if i["nation_id"] not in posted_targets:
+                                                embed = discord.Embed(title=f"{x['name']}", url=f'https://politicsandwar.com/nation/id={x["nationid"]}', description=f'''
+Estimated Loot : **{"${:,.2f}".format(i["est_loot"])}**
+Last Defeat Date : {i["date"]}
+Last Active : {arrow.utcnow().shift(minutes=-(x['minutessinceactive'])).humanize()}
+Military : `💂 {x["soldiers"]} | ⚙️ {x["tanks"]} | ✈️ {x["aircraft"]} | 🚢 {x["ships"]}`
+Defensive Range : `{round((float(x['score']) / 1.75),2)} to {round((float(x['score']) / 0.75),2)}`
+VM/Beige : `VM: {x["vmode"]} turns | Beige: {x["beige_turns_left"]} turns.`
+[War Link](https://politicsandwar.com/nation/war/timeline/war={i["war_id"]})
+                                            ''')
+                                                await channel.send(embed=embed)
+                                                posted_targets.append(i["nation_id"])
+                                                count = count + 1
+                                    except:
+                                        continue
 
 
 
