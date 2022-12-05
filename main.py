@@ -432,6 +432,16 @@ Find counters: `;counter {attacker["id"]}`
                         db.misc.update_one({'_id':True}, {"$set": {'last_arrgh_war':last_war}})
 
 
+
+
+def get_loot_value(loot_note):
+    loot_note = loot_note.split("looted",1)[1]
+    string_list = re.findall('[0-9]+', loot_note.replace(',', ''))
+    x = [int(i) for i in string_list]
+    loot_value = x[0] + (x[1]*2600) + (x[2]*3000) + (x[3]*2800) + (x[4]*2400) + (x[5]*3700) + (x[6]*3500) + (x[7]*3000) + (x[8]*2000) + (x[9]*3600) + (x[10]*3000) + (x[11]*130)
+    return loot_value
+
+
 @tasks.loop(minutes=360)
 async def the_menu():
     channel = client.get_channel(858725272279187467)
@@ -473,7 +483,6 @@ VM/Beige : `VM: {x["vmode"]} turns | Beige: {x["beige_turns_left"]} turns.`
                                                 count = count + 1
                                     except:
                                         continue
-
 
 
 
