@@ -477,7 +477,7 @@ def get_raid_value(attack):
 
 
 def iso_to_unix(iso_string):
-    date_time = datetime.datetime.fromisoformat(iso_string)
+    date_time = datetime.fromisoformat(iso_string)
     return calendar.timegm(date_time.utctimetuple())
 
 
