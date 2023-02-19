@@ -509,9 +509,10 @@ Beiged : <t:{raid["beige_unix"]}:R>
 Last Active : <t:{iso_to_unix(defender["last_active"])}:R>
 Military : `💂 {defender["soldiers"]} | ⚙️ {defender["tanks"]} | ✈️ {defender["aircraft"]} | 🚢 {defender["ships"]}`
 Defensive Range : `{round((float(defender['score']) / 1.75),2)} to {round((float(defender['score']) / 0.75),2)}`
-VM/Beige : `VM: {defender["vacation_mode_turns"]} turns | Beige: {defender["beige_turns"]} turns. (<t:{(raid["beige_unix"])+(defender["beige_turns"]*7200)}:R>)`
-[War Link](https://politicsandwar.com/nation/war/timeline/war={attack["war"]["id"]})
-[Nation's war page](https://politicsandwar.com/nation/id={defender["id"]}&display=war)
+VM/Beige : `VM: {defender["vacation_mode_turns"]} turns | Beige: {defender["beige_turns"]} turns.` Out of beige (<t:{(raid["beige_unix"])+(defender["beige_turns"]*7200)}:R>)
+[War Link.](https://politicsandwar.com/nation/war/timeline/war={attack["war"]["id"]})
+[Nation's war page.](https://politicsandwar.com/nation/id={defender["id"]}&display=war)
+Set beige reminder with Autolycus: `/reminders add nation: {defender["id"]}`
                                             ''')
                         await channel.send(embed=embed)
 
