@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import requests
 import discord
+import calendar
 import timeago
 import os
 import json
@@ -28,7 +29,7 @@ client.remove_command('help')
 
 @client.event
 async def on_ready():
-    game = discord.Game("it cool. type ;help")
+    game = discord.Game("it cool.")
     await client.change_presence(status=discord.Status.online, activity=game)
     if not recruitment.is_running():
         recruitment.start()
@@ -36,10 +37,9 @@ async def on_ready():
         war_alert.start()
     if not member_updates.is_running():
         member_updates.start()
+    if not menu_v3.is_running():
+        menu_v3.start()
     print('Online as {0.user}'.format(client))
-
-
-
 
 
 
@@ -464,7 +464,68 @@ async def member_updates():
             db.captains.insert_many(captains)
 
 
+def get_raid_value(attack):
+    loot_info = attack["loot_info"]
+    loot_note = loot_info.split("looted",1)[1]
+    string_list = re.findall('[0-9]+', loot_note.replace(',', ''))
+    x = [int(i) for i in string_list]
+    basic_loot_value = x[0] + (x[1]*2000) + (x[2]*2000) + (x[3]*2400) + (x[4]*2000) + (x[5]*2500) + (x[6]*2700) + (x[7]*3000) + (x[8]*1800) + (x[9]*3400) + (x[10]*2700) + (x[11]*130)
+    war_type_modifier = {'RAID': 1, 'ORDINARY': 2, 'ATTRITION':4}
+    loot_value = lambda basic_loot_value: basic_loot_value*war_type_modifier[attack["war"]["war_type"]]
+    beige_unix = iso_to_unix(attack["date"])
+    return {'loot_value': int(loot_value(basic_loot_value)), 'beige_unix': beige_unix}
 
+
+def iso_to_unix(iso_string):
+    date_time = datetime.datetime.fromisoformat(iso_string)
+    return calendar.timegm(date_time.utctimetuple())
+
+
+def get_alliance_loot_value(loot_note):
+    alliance_name = re.findall(r"(?<=% of )(.*)(?='s )", loot_note)
+    string_list = re.findall(r'[\d]+', (loot_note.split("taking",1)[1]).replace(',', '')) 
+    x = [int(i) for i in string_list]
+    loot_value = x[0] + (x[1]*2000) + (x[2]*2000) + (x[3]*2400) + (x[4]*2000) + (x[5]*2500) + (x[6]*2700) + (x[7]*3000) + (x[8]*1800) + (x[9]*3400) + (x[10]*2700) + (x[11]*130)
+    return (alliance_name[0], int(loot_value))
+
+
+
+@tasks.loop(minutes = 10)
+async def menu_v3():
+    channel = client.get_channel(858725272279187467) #menu channel
+    misc = db.misc.find_one({'_id':True})
+    async with aiohttp.ClientSession() as session:
+        async with session.post(graphql, json={'query':f"{{warattacks(orderBy:{{column:ID, order:DESC}}, min_id:{misc['last_menu_id']}){{data{{id date type loot_info war{{id war_type}}defender{{id nation_name leader_name score num_cities beige_turns vacation_mode_turns last_active alliance_id soldiers tanks aircraft ships}}}}}}}}"}) as r:
+            json_obj = await r.json()
+            attacks = json_obj["data"]["warattacks"]["data"]
+            for attack in attacks:
+                if attack["type"] == "VICTORY":
+                    raid = get_raid_value(attack)
+                    if raid['loot_value'] > 20000000:
+                        defender = attack["defender"]
+                        embed = discord.Embed(title=f"{defender['nation_name']}", url=f'https://politicsandwar.com/nation/id={defender["id"]}', description=f'''
+Estimated Loot : **{"${:,.2f}".format(raid["loot_value"])}**
+Beiged : <t:{raid["beige_unix"]}:R>
+Last Active : <t:{iso_to_unix(defender["last_active"])}:R>
+Military : `💂 {defender["soldiers"]} | ⚙️ {defender["tanks"]} | ✈️ {defender["aircraft"]} | 🚢 {defender["ships"]}`
+Defensive Range : `{round((float(defender['score']) / 1.75),2)} to {round((float(defender['score']) / 0.75),2)}`
+VM/Beige : `VM: {defender["vacation_mode_turns"]} turns | Beige: {defender["beige_turns"]} turns. (<t:{(raid["beige_unix"])+(defender["beige_turns"]*7200)}:R>)`
+[War Link](https://politicsandwar.com/nation/war/timeline/war={attack["war"]["id"]})
+[Nation's war page](https://politicsandwar.com/nation/id={defender["id"]}&display=war)
+                                            ''')
+                        await channel.send(embed=embed)
+
+                if attack["type"] == "ALLIANCELOOT":
+                    alliance = get_alliance_loot_value(attack)
+                    if alliance["loot_value"] > 20000000:
+                        embed = discord.Embed(title='Alliance loot', description=f'''
+`{alliance[0]}`'s bank was looted for:
+{"${:,.2f}".format(alliance[1])}
+[Visit war page.]([War Link](https://politicsandwar.com/nation/war/timeline/war={attack["war"]["id"]}))                        
+                        ''')
+                        await channel.send(embed=embed)
+            last_menu_id = attacks[0]["id"] + 1
+            db.misc.update_one({'_id':True}, {"$set": {'last_menu_id':last_menu_id}})
 
 
 
