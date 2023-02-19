@@ -525,7 +525,7 @@ Set beige reminder with Autolycus: `/reminders add nation: {defender["id"]}`
 [Visit war page.]([War Link](https://politicsandwar.com/nation/war/timeline/war={attack["war"]["id"]}))                        
                         ''')
                         await channel.send(embed=embed)
-            last_menu_id = attacks[0]["id"] + 1
+            last_menu_id = int(attacks[0]["id"])+1
             db.misc.update_one({'_id':True}, {"$set": {'last_menu_id':last_menu_id}})
 
 
