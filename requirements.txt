@@ -8,3 +8,4 @@ pymongo
 arrow
 dnspython
 bs4
+calendar
