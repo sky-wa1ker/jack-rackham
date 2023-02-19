@@ -490,12 +490,12 @@ def get_alliance_loot_value(loot_note):
 
 
 
-@tasks.loop(minutes = 10)
+@tasks.loop(minutes = 15)
 async def menu_v3():
     channel = client.get_channel(858725272279187467) #menu channel
     misc = db.misc.find_one({'_id':True})
     async with aiohttp.ClientSession() as session:
-        async with session.post(graphql, json={'query':f"{{warattacks(orderBy:{{column:ID, order:DESC}}, min_id:{misc['last_menu_id']}){{data{{id date type loot_info war{{id war_type}}defender{{id nation_name leader_name score num_cities beige_turns vacation_mode_turns last_active alliance_id soldiers tanks aircraft ships}}}}}}}}"}) as r:
+        async with session.post(graphql, json={'query':f"{{warattacks(orderBy:{{column:ID, order:DESC}}, min_id:{misc['last_menu_id']}, first:500){{data{{id date type loot_info war{{id war_type}}defender{{id nation_name leader_name score num_cities beige_turns vacation_mode_turns last_active alliance_id soldiers tanks aircraft ships}}}}}}}}"}) as r:
             json_obj = await r.json()
             attacks = json_obj["data"]["warattacks"]["data"]
             for attack in attacks:
