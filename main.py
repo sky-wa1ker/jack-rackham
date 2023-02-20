@@ -519,7 +519,7 @@ Set beige reminder with Autolycus:
 
                 if attack["type"] == "ALLIANCELOOT":
                     alliance = get_alliance_loot_value(attack["loot_info"])
-                    if alliance["loot_value"] > 20000000:
+                    if alliance[1] > 20000000:
                         embed = discord.Embed(title='Alliance loot', description=f'''
 `{alliance[0]}`'s bank was looted for:
 {"${:,.2f}".format(alliance[1])}
