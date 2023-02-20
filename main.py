@@ -39,6 +39,8 @@ async def on_ready():
         member_updates.start()
     if not menu_v3.is_running():
         menu_v3.start()
+    if not big_bank_scanner.is_running():
+        big_bank_scanner.start()
     print('Online as {0.user}'.format(client))
 
 
@@ -522,12 +524,37 @@ Set beige reminder with Autolycus:
                     if alliance[1] > 20000000:
                         embed = discord.Embed(title='Alliance loot', description=f'''
 `{alliance[0]}`'s bank was looted for:
-{"${:,.2f}".format(alliance[1])}
-[Visit war page.]([War Link](https://politicsandwar.com/nation/war/timeline/war={attack["war"]["id"]}))                        
+**{"${:,.2f}".format(alliance[1])}**
+[Visit war page.](https://politicsandwar.com/nation/war/timeline/war={attack["war"]["id"]})
                         ''')
                         await channel.send(embed=embed)
             last_menu_id = int(attacks[0]["id"])+1
             db.misc.update_one({'_id':True}, {"$set": {'last_menu_id':last_menu_id}})
+
+
+
+@tasks.loop(minutes = 6)
+async def big_bank_scanner():
+    channel = client.get_channel(858725272279187467) #menu channel
+    misc = db.misc.find_one({'_id':True})
+    async with aiohttp.ClientSession() as session:
+        async with session.post(graphql, json={'query':f"{{bankrecs(orderBy:{{column:ID, order:DESC}}, first:50, stype:2, min_id:{misc['last_big_tx']}){{data{{id date money coal oil uranium iron bauxite lead gasoline munitions steel aluminum food receiver_id receiver{{nation_name last_active}}}}}}}}"}) as r:
+            json_obj = await r.json()
+            transactions = json_obj['data']['bankrecs']['data']
+            if len(transactions) > 0:
+                for transaction in transactions:
+                    withdrawal_value = transaction['money'] + (transaction['coal']*2000) + (transaction['oil']*2000) + (transaction['uranium']*2400) + (transaction['iron']*2000) + (transaction['bauxite']*2500) + (transaction['lead']*2700) + (transaction['gasoline']*3000) + (transaction['munitions']*1800) + (transaction['steel']*3400) + (transaction['aluminum']*2700) + (transaction['food']*130)
+                    if withdrawal_value > 100000000:
+                        embed = discord.Embed(title=f"Bank transaction.", description=f'''
+[{transaction["receiver"]["nation_name"]}](https://politicsandwar.com/nation/id={transaction["receiver_id"]}) received a withdrawal <t:{iso_to_unix(transaction["date"])}:R> of value:
+**{"${:,.2f}".format(withdrawal_value)}**
+[Visit bank page.](https://politicsandwar.com/nation/id={transaction["receiver_id"]}&display=bank)
+Recepient was last active <t:{iso_to_unix(transaction["receiver"]["last_active"])}:R>
+''')
+                        await channel.send(embed=embed)
+                last_big_tx = int(transactions[0]['id']) + 1
+                db.misc.update_one({'_id':True}, {"$set": {'last_big_tx':last_big_tx}})
+
 
 
 
