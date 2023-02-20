@@ -509,6 +509,7 @@ async def menu_v3():
 Estimated Loot : **{"${:,.2f}".format(raid["loot_value"])}**
 Beiged : <t:{raid["beige_unix"]}:R>
 Last Active : <t:{iso_to_unix(defender["last_active"])}:R>
+City Count : {defender["city_count"]}
 Military : `💂 {defender["soldiers"]} | ⚙️ {defender["tanks"]} | ✈️ {defender["aircraft"]} | 🚢 {defender["ships"]}`
 Defensive Range : `{round((float(defender['score']) / 1.75),2)} to {round((float(defender['score']) / 0.75),2)}`
 VM/Beige : `VM: {defender["vacation_mode_turns"]} turns | Beige: {defender["beige_turns"]} turns.` out of beige <t:{(raid["beige_unix"])+(defender["beige_turns"]*7200)}:R>
@@ -538,18 +539,22 @@ async def big_bank_scanner():
     channel = client.get_channel(858725272279187467) #menu channel
     misc = db.misc.find_one({'_id':True})
     async with aiohttp.ClientSession() as session:
-        async with session.post(graphql, json={'query':f"{{bankrecs(orderBy:{{column:ID, order:DESC}}, first:50, stype:2, min_id:{misc['last_big_tx']}){{data{{id date money coal oil uranium iron bauxite lead gasoline munitions steel aluminum food receiver_id receiver{{nation_name last_active}}}}}}}}"}) as r:
+        async with session.post(graphql, json={'query':f"{{bankrecs(orderBy:{{column:ID, order:DESC}}, first:50, stype:2, min_id:{misc['last_big_tx']}){{data{{id date note money coal oil uranium iron bauxite lead gasoline munitions steel aluminum food receiver_id receiver{{nation_name last_active score num_cities soldiers tanks aircraft ships}}}}}}}}"}) as r:
             json_obj = await r.json()
             transactions = json_obj['data']['bankrecs']['data']
             if len(transactions) > 0:
                 for transaction in transactions:
                     withdrawal_value = transaction['money'] + (transaction['coal']*2000) + (transaction['oil']*2000) + (transaction['uranium']*2400) + (transaction['iron']*2000) + (transaction['bauxite']*2500) + (transaction['lead']*2700) + (transaction['gasoline']*3000) + (transaction['munitions']*1800) + (transaction['steel']*3400) + (transaction['aluminum']*2700) + (transaction['food']*130)
-                    if withdrawal_value > 100000000:
-                        embed = discord.Embed(title=f"Bank transaction.", description=f'''
+                    if withdrawal_value > 300000000:
+                        embed = discord.Embed(title=f"Bank transaction", description=f'''
 [{transaction["receiver"]["nation_name"]}](https://politicsandwar.com/nation/id={transaction["receiver_id"]}) received a withdrawal <t:{iso_to_unix(transaction["date"])}:R> of value:
 **{"${:,.2f}".format(withdrawal_value)}**
+Note : {transaction["note"]}
+Last active <t:{iso_to_unix(transaction["receiver"]["last_active"])}:R>
+City count: {transaction['receiver']['num_cities']}
+Defensive Range : `{round((float(transaction['receiver']['score']) / 1.75),2)} to {round((float(transaction['receiver']['score']) / 0.75),2)}`
+Military : `💂 {transaction['receiver']["soldiers"]} | ⚙️ {transaction['receiver']["tanks"]} | ✈️ {transaction['receiver']["aircraft"]} | 🚢 {transaction['receiver']["ships"]}`
 [Visit bank page.](https://politicsandwar.com/nation/id={transaction["receiver_id"]}&display=bank)
-Recepient was last active <t:{iso_to_unix(transaction["receiver"]["last_active"])}:R>
 ''')
                         await channel.send(embed=embed)
                 last_big_tx = int(transactions[0]['id']) + 1
