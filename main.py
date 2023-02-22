@@ -545,7 +545,7 @@ async def big_bank_scanner():
             if len(transactions) > 0:
                 for transaction in transactions:
                     withdrawal_value = transaction['money'] + (transaction['coal']*2000) + (transaction['oil']*2000) + (transaction['uranium']*2400) + (transaction['iron']*2000) + (transaction['bauxite']*2500) + (transaction['lead']*2700) + (transaction['gasoline']*3000) + (transaction['munitions']*1800) + (transaction['steel']*3400) + (transaction['aluminum']*2700) + (transaction['food']*130)
-                    if withdrawal_value > 500000000:
+                    if withdrawal_value > 500000000 and "defeated" not in transaction["note"]:
                         embed = discord.Embed(title=f"Bank transaction", description=f'''
 [{transaction["receiver"]["nation_name"]}](https://politicsandwar.com/nation/id={transaction["receiver_id"]}) received a withdrawal <t:{iso_to_unix(transaction["date"])}:R> of value:
 **{"${:,.2f}".format(withdrawal_value)}**
