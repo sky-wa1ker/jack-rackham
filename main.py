@@ -509,7 +509,7 @@ async def menu_v3():
 Estimated Loot : **{"${:,.2f}".format(raid["loot_value"])}**
 Beiged : <t:{raid["beige_unix"]}:R>
 Last Active : <t:{iso_to_unix(defender["last_active"])}:R>
-City Count : {defender["city_count"]}
+City Count : {defender["num_cities"]}
 Military : `💂 {defender["soldiers"]} | ⚙️ {defender["tanks"]} | ✈️ {defender["aircraft"]} | 🚢 {defender["ships"]}`
 Defensive Range : `{round((float(defender['score']) / 1.75),2)} to {round((float(defender['score']) / 0.75),2)}`
 VM/Beige : `VM: {defender["vacation_mode_turns"]} turns | Beige: {defender["beige_turns"]} turns.` out of beige <t:{(raid["beige_unix"])+(defender["beige_turns"]*7200)}:R>
