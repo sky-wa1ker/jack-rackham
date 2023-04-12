@@ -393,6 +393,32 @@ async def pcode(ctx):
     await ctx.send('https://arrgh-pirate-code.vercel.app/')
 
 
+
+@client.command()
+async def bank(ctx,*, loot):
+    nums = re.findall(r'\b\d{1,3}(?:,\d{3})*(?:.\d+)?\b', loot)
+    resources = {'percent': float(nums[0]), "money":int(re.sub('\$|\,', '', nums[1])), "food":int(nums[12].replace(',', '')), "coal":int(nums[2].replace(',', '')), "oil":int(nums[3].replace(',', '')), "uranium":int(nums[4].replace(',', '')), "lead":int(nums[7].replace(',', '')), "iron":int(nums[5].replace(',', '')), "bauxite":int(nums[6].replace(',', '')), "gasoline":int(nums[8].replace(',', '')), "munitions":int(nums[9].replace(',', '')), "steel":int(nums[10].replace(',', '')), "aluminum":int(nums[11].replace(',', ''))}
+    bank = {"money":resources["money"]*(100/resources["percent"]), "food":resources["food"]*(100/resources["percent"]), "coal":resources["coal"]*(100/resources["percent"]), "oil":resources["oil"]*(100/resources["percent"]), "uranium":resources["uranium"]*(100/resources["percent"]), "lead":resources["lead"]*(100/resources["percent"]), "iron":resources["iron"]*(100/resources["percent"]), "bauxite":resources["bauxite"]*(100/resources["percent"]), "gasoline":resources["gasoline"]*(100/resources["percent"]), "munitions":resources["munitions"]*(100/resources["percent"]), "steel":resources["steel"]*(100/resources["percent"]), "aluminum":resources["aluminum"]*(100/resources["percent"])}    
+    
+    embed = discord.Embed(title="Bank Contents", description=f'''
+Money : {"${:,.2f}".format(bank['money'])}
+Food : {"{:,.2f}".format(bank['food'])}
+Coal : {"{:,.2f}".format(bank['coal'])}
+Oil : {"{:,.2f}".format(bank['oil'])}
+Uranium : {"{:,.2f}".format(bank['uranium'])}
+Lead : {"{:,.2f}".format(bank['lead'])}
+Iron : {"{:,.2f}".format(bank['iron'])}
+Bauxite : {"{:,.2f}".format(bank['bauxite'])}
+Gasoline : {"{:,.2f}".format(bank['gasoline'])}
+Munitions : {"{:,.2f}".format(bank['munitions'])}
+Steel : {"{:,.2f}".format(bank['steel'])}
+Aluminum : {"{:,.2f}".format(bank['aluminum'])}    
+''')
+    await ctx.send(embed=embed)
+
+
+
+
 @tasks.loop(minutes=3)
 async def war_alert():
     await asyncio.sleep(6)
