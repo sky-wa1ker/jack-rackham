@@ -529,7 +529,7 @@ async def menu_v3():
             for attack in attacks:
                 if attack["type"] == "VICTORY":
                     raid = get_raid_value(attack)
-                    if raid['loot_value'] > 20000000:
+                    if raid['loot_value'] > 35000000:
                         defender = attack["defender"]
                         embed = discord.Embed(title=f"{defender['nation_name']}", url=f'https://politicsandwar.com/nation/id={defender["id"]}', description=f'''
 Estimated Loot : **{"${:,.2f}".format(raid["loot_value"])}**
@@ -548,7 +548,7 @@ Set beige reminder with Autolycus:
 
                 if attack["type"] == "ALLIANCELOOT":
                     alliance = get_alliance_loot_value(attack["loot_info"])
-                    if alliance[1] > 20000000:
+                    if alliance[1] > 25000000:
                         embed = discord.Embed(title='Alliance loot', description=f'''
 `{alliance[0]}`'s bank was looted for:
 **{"${:,.2f}".format(alliance[1])}**
