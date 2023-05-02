@@ -498,6 +498,8 @@ def get_raid_value(attack):
     string_list = re.findall('[0-9]+', loot_note.replace(',', ''))
     x = [int(i) for i in string_list]
     basic_loot_value = x[0] + (x[1]*2000) + (x[2]*2000) + (x[3]*2400) + (x[4]*2000) + (x[5]*2500) + (x[6]*2700) + (x[7]*3000) + (x[8]*1800) + (x[9]*3400) + (x[10]*2700) + (x[11]*130)
+    if attack["war"]["war_type"] == 'ATTRITION' and attack["defender"]["id"] == attack["war"]["att_id"]:
+        attack["war"]["war_type"] = 'ORDINARY'
     war_type_modifier = {'RAID': 1, 'ORDINARY': 2, 'ATTRITION':4}
     loot_value = lambda basic_loot_value: basic_loot_value*war_type_modifier[attack["war"]["war_type"]]
     beige_unix = iso_to_unix(attack["date"])
@@ -523,7 +525,7 @@ async def menu_v3():
     channel = client.get_channel(858725272279187467) #menu channel
     misc = db.misc.find_one({'_id':True})
     async with aiohttp.ClientSession() as session:
-        async with session.post(graphql, json={'query':f"{{warattacks(orderBy:{{column:ID, order:DESC}}, min_id:{misc['last_menu_id']}, first:500){{data{{id date type loot_info war{{id war_type}}defender{{id nation_name leader_name score num_cities beige_turns vacation_mode_turns last_active alliance_id soldiers tanks aircraft ships}}}}}}}}"}) as r:
+        async with session.post(graphql, json={'query':f"{{warattacks(orderBy:{{column:ID, order:DESC}}, min_id:{misc['last_menu_id']}, first:500){{data{{id date type loot_info war{{id war_type att_id def_id}}defender{{id nation_name leader_name score num_cities beige_turns vacation_mode_turns last_active alliance_id soldiers tanks aircraft ships}}}}}}}}"}) as r:
             json_obj = await r.json()
             attacks = json_obj["data"]["warattacks"]["data"]
             for attack in attacks:
