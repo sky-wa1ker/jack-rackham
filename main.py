@@ -13,6 +13,9 @@ from discord.ext import commands, tasks
 import arrow
 from pymongo import MongoClient
 from datetime import datetime
+from itertools import combinations_with_replacement
+from collections import Counter
+
 
 
 token = os.environ['token']
@@ -291,6 +294,59 @@ Aluminum : {"{:,.2f}".format(float(nation["aluminum"]))}
             await ctx.followup.send("can't find nation with given arguments.")
     else:
         await ctx.respond('You do not have permission to use this command', ephemeral=True)
+
+
+
+
+
+attacks = {
+    "Ground": {"cost": 3, "damage": 10},
+    "Airstrike": {"cost": 4, "damage": 12},
+    "Naval": {"cost": 4, "damage": 14},
+    "Missiles": {"cost": 8, "damage": 18},
+    "Nukes": {"cost": 12, "damage": 25},
+}
+
+def calculate_combination_stats(combination):
+    total_cost = sum([attacks[a]["cost"] for a in combination])
+    total_damage = sum([attacks[a]["damage"] for a in combination])
+    return {"combination": combination, "total_cost": total_cost, "total_damage": total_damage}
+
+def efficient_combinations(resistance):
+    attack_types = list(attacks.keys())
+    max_length = resistance // min([attacks[a]["damage"] for a in attack_types]) + 1
+    combinations = [comb for i in range(1, max_length + 1) 
+                    for comb in combinations_with_replacement(attack_types, i)]
+    valid_combinations = [comb for comb in combinations 
+                          if sum([attacks[a]["damage"] for a in comb]) >= resistance]
+    valid_combinations_stats = [calculate_combination_stats(comb) for comb in valid_combinations]
+    sorted_combinations = sorted(valid_combinations_stats, 
+                                 key=lambda comb_stats: (comb_stats["total_cost"], -comb_stats["total_damage"]))[:5]
+    counts = [dict(Counter(comb_stats["combination"])) for comb_stats in sorted_combinations]
+    return list(zip(counts, sorted_combinations))
+
+
+
+@client.slash_command(description="Find the fastest way to beige someone at given resistance.")
+async def resistance(ctx, resistance:int):
+    combinations = efficient_combinations(resistance)
+    embed = discord.Embed(title=f'Fastest beige for {resistance} resistance.', description=f'''
+MAPs needed : **{combinations[0][1]['total_cost']}**
+{' | '.join("{}: {}".format(k, v) for k, v in combinations[0][0].items())}
+
+MAPs needed : **{combinations[1][1]['total_cost']}**
+{' | '.join("{}: {}".format(k, v) for k, v in combinations[1][0].items())}
+
+MAPs needed : **{combinations[2][1]['total_cost']}**
+{' | '.join("{}: {}".format(k, v) for k, v in combinations[2][0].items())}
+
+MAPs needed : **{combinations[3][1]['total_cost']}**
+{' | '.join("{}: {}".format(k, v) for k, v in combinations[3][0].items())}
+
+MAPs needed : **{combinations[4][1]['total_cost']}**
+{' | '.join("{}: {}".format(k, v) for k, v in combinations[4][0].items())}
+                              ''')
+    await ctx.respond(embed=embed)
 
 
 
