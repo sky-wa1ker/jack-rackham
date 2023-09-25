@@ -446,7 +446,7 @@ async def piratebuild(ctx):
 
 @client.command()
 async def pcode(ctx):
-    await ctx.send('https://arrgh-pirate-code.vercel.app/')
+    await ctx.send('https://code.arrgh.pw/')
 
 
 
