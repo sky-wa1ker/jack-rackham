@@ -13,7 +13,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: push-to-ghcr
-      uses: macbre/push-to-ghcr@v12
+      uses: macbre/push-to-ghcr@master
       with:
         image_name: ${{ github.repository }}
         github_token: ${{ secrets.GITHUB_TOKEN }}
