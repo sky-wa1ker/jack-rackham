@@ -1,10 +1,9 @@
 py-cord
-requests
-timeago
-datetime
 asyncio
 aiohttp
 pymongo
-arrow
 dnspython
-bs4
+tinydb
+pandas
+humanize
+pnwkit-py
