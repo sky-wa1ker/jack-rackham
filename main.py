@@ -248,9 +248,10 @@ async def recruitment():
 """
     channel = client.get_channel(312420656312614912)
     subscription = await kit.subscribe("nation", "create")
-    async for nation in subscription:
-        data = {'key': api_key, 'to': f'{nation.id}', 'subject': 'Have you considered piracy?', 'message': message}
-        async with aiohttp.ClientSession() as session:
+    async with aiohttp.ClientSession() as session:
+        async for nation in subscription:
+            await asyncio.sleep(0.2)
+            data = {'key': api_key, 'to': f'{nation.id}', 'subject': 'Have you considered piracy?', 'message': message}
             async with session.post("https://politicsandwar.com/api/send-message", data = data) as r:
                 if r.status == 200:
                     await channel.send(f'Sent message to {nation.leader_name} of {nation.nation_name} ({nation.id})')
@@ -263,8 +264,9 @@ async def recruitment():
 async def off_war_alert():
     channel = client.get_channel(514689777778294785)
     subscription = await kit.subscribe("war","create", filters={"att_alliance_id": [913]})
-    async for war in subscription:
-        async with aiohttp.ClientSession() as session:
+    async with aiohttp.ClientSession() as session:
+        async for war in subscription:
+            await asyncio.sleep(0.2)
             async with session.post(graphql, json={'query':f'''{{nations(id:{[war["att_id"],war["def_id"]]}){{data{{
       id nation_name leader_name alliance_id
       alliance{{name}}
@@ -325,8 +327,9 @@ Projects
 async def def_war_alert():
     channel = client.get_channel(514689777778294785)
     subscription = await kit.subscribe("war","create", filters={"def_alliance_id": [913]})
-    async for war in subscription:
-        async with aiohttp.ClientSession() as session:
+    async with aiohttp.ClientSession() as session:
+        async for war in subscription:
+            await asyncio.sleep(0.2)
             async with session.post(graphql, json={'query':f'''{{nations(id:{[war["att_id"],war["def_id"]]}){{data{{
       id nation_name leader_name alliance_id
       alliance{{name}}
