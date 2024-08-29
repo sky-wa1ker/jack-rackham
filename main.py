@@ -38,7 +38,7 @@ beige_alerts_graphql = f"https://api.politicsandwar.com/graphql?api_key={doom_ap
 
 
 intents = discord.Intents.all()
-client = commands.Bot(intents = intents)         #  << change it before pushing it live
+client = commands.Bot(intents = intents)
 
 
 ############## Intiailization ################
