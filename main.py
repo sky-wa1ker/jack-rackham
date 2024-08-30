@@ -49,6 +49,7 @@ async def on_ready():
     await client.change_presence(status=discord.Status.online, activity=game)
     if not tinydb_update.is_running():
          tinydb_update.start()
+    await tinydb_update.coro(force_run=True)
     if not captains_update.is_running():
          captains_update.start()
     if not menu.is_running():
@@ -206,9 +207,9 @@ def efficient_combinations(resistance):
 
 
 @tasks.loop(minutes=4)
-async def tinydb_update():
+async def tinydb_update(force_run=False):
     now = datetime.now(timezone.utc)
-    if now.hour == 0 and now.minute < 10:
+    if force_run or (now.hour == 0 and now.minute < 10):
         tiny_alliances.truncate()
         tiny_nations.truncate()
         types = ['nations', 'alliances']
