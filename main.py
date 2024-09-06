@@ -516,7 +516,7 @@ Set beige alert with : `/beige_alert add`
 
 
 
-@tasks.loop(minutes = 2)
+@tasks.loop(minutes = 3)
 async def big_bank_scanner():
     channel = client.get_channel(858725272279187467) #menu channel
     misc = db.misc.find_one({'_id':True})
@@ -545,7 +545,7 @@ Military : `💂 {transaction['receiver']["soldiers"]} | ⚙️ {transaction['re
 
 
 
-@tasks.loop(seconds=30)
+@tasks.loop(minutes=1)
 async def alerts():
     misc = db.misc.find_one({'_id':True})
     targets = list(misc['beige_alert_targets'])
