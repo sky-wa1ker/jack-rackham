@@ -558,7 +558,7 @@ async def alerts():
     "Brown","Green","Lime",
     "Maroon","Olive","Orange",
     "Pink","Purple","Red",
-    "White","Yellow"]){{
+    "White","Yellow", "Gray"]){{
     data{{
       id
       nation_name
