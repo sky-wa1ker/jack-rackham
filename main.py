@@ -45,23 +45,33 @@ client = commands.Bot(intents = intents)
 
 @client.event
 async def on_ready():
+    if not hasattr(client, 'subscriptions_started'):
+        client.subscriptions_started = False
     game = discord.Game("it cool.")
     await client.change_presence(status=discord.Status.online, activity=game)
+
     if not tinydb_update.is_running():
-         tinydb_update.start()
+        tinydb_update.start()
     await tinydb_update.coro(force_run=True)
+
     if not captains_update.is_running():
-         captains_update.start()
+        captains_update.start()
     if not menu.is_running():
         menu.start()
-    client.loop.create_task(recruitment())
-    client.loop.create_task(off_war_alert())
-    client.loop.create_task(def_war_alert())
+
+    if not client.subscriptions_started:
+        client.loop.create_task(recruitment())
+        client.loop.create_task(off_war_alert())
+        client.loop.create_task(def_war_alert())
+        client.subscriptions_started = True  # Set the flag to prevent re-creation
+
     if not big_bank_scanner.is_running():
         big_bank_scanner.start()
     if not alerts.is_running():
         alerts.start()
+
     print('Online as {0.user}'.format(client))
+
 
 
 
