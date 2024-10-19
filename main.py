@@ -8,6 +8,7 @@ import humanize
 from datetime import datetime, timezone, timedelta
 import os
 from discord.ext import commands, tasks
+from discord.errors import GatewayNotFound, HTTPException, ConnectionClosed
 from pymongo import MongoClient
 import zipfile
 import csv
@@ -68,6 +69,9 @@ async def on_ready():
         client.loop.create_task(def_war_alert())
         client.subscriptions_started = True  # Set the flag to prevent re-creation
 
+    loop = asyncio.get_running_loop()
+    loop.set_exception_handler(handle_global_exception)
+
     print('Online as {0.user}'.format(client))
 
 
@@ -88,6 +92,22 @@ async def on_command_error(ctx, error):
         await ctx.send('You do not have permission to use this command.')
     elif isinstance(error, commands.NotOwner):
         await ctx.send('Go away creep! You are not sam (˶˃⤙˂˶)')
+    elif isinstance(error, (aiohttp.ClientError, ConnectionClosed, GatewayNotFound, HTTPException)):
+        await ctx.send("Looks like I'm having trouble connecting. Please try again later.")
+    else:
+        await ctx.send("Oops! Something went wrong. Please try again.")
+        print(f"Unhandled error: {type(error)} - {error}")
+
+
+def handle_global_exception(loop, context):
+    exception = context.get("exception")
+    message = context.get("message")
+    if exception:
+        print(f"Caught exception: {exception}")
+    elif message:
+        print(f"Caught message: {message}")
+    print("Bot encountered an error, but it won't crash.")
+
 
 
 
