@@ -510,13 +510,14 @@ async def menu():
     async with aiohttp.ClientSession() as session:
         async with session.post(graphql, json={'query':f"{{warattacks(orderBy:{{column:ID, order:DESC}}, min_id:{misc['last_menu_id']}, first:500){{data{{id date type loot_info war{{id war_type att_id def_id}}defender{{id nation_name leader_name score num_cities beige_turns vacation_mode_turns last_active alliance_id soldiers tanks aircraft ships}}}}}}}}"}) as r:
             json_obj = await r.json()
-            attacks = json_obj["data"]["warattacks"]["data"]
-            for attack in attacks:
-                if attack["type"] == "VICTORY":
-                    raid = get_raid_value(attack)
-                    if raid['loot_value'] > 35000000:
-                        defender = attack["defender"]
-                        embed = discord.Embed(title=f"{defender['nation_name']}", url=f'https://politicsandwar.com/nation/id={defender["id"]}', description=f'''
+            try:
+                attacks = json_obj["data"]["warattacks"]["data"]
+                for attack in attacks:
+                    if attack["type"] == "VICTORY":
+                        raid = get_raid_value(attack)
+                        if raid['loot_value'] > 35000000:
+                            defender = attack["defender"]
+                            embed = discord.Embed(title=f"{defender['nation_name']}", url=f'https://politicsandwar.com/nation/id={defender["id"]}', description=f'''
 Estimated Loot : **{"${:,.2f}".format(raid["loot_value"])}**
 Beiged : <t:{raid["beige_unix"]}:R>
 Last Active : <t:{iso_to_unix(defender["last_active"])}:R>
@@ -527,20 +528,24 @@ VM/Beige : `VM: {defender["vacation_mode_turns"]} turns | Beige: {defender["beig
 [War Link.](https://politicsandwar.com/nation/war/timeline/war={attack["war"]["id"]})
 [Nation's war page.](https://politicsandwar.com/nation/id={defender["id"]}&display=war)
 Set beige alert with : `/beige_alert add`
-                                            ''')
-                        await channel.send(embed=embed)
+                                                ''')
+                            await channel.send(embed=embed)
 
-                if attack["type"] == "ALLIANCELOOT":
-                    alliance = get_alliance_loot_value(attack["loot_info"])
-                    if alliance[1] > 30000000:
-                        embed = discord.Embed(title='Alliance loot', description=f'''
+                    if attack["type"] == "ALLIANCELOOT":
+                        alliance = get_alliance_loot_value(attack["loot_info"])
+                        if alliance[1] > 30000000:
+                            embed = discord.Embed(title='Alliance loot', description=f'''
 `{alliance[0]}`'s bank was looted for:
 **{"${:,.2f}".format(alliance[1])}**
 [Visit war page.](https://politicsandwar.com/nation/war/timeline/war={attack["war"]["id"]})
-                        ''')
-                        await channel.send(embed=embed)
-            last_menu_id = int(attacks[0]["id"])+1
-            db.misc.update_one({'_id':True}, {"$set": {'last_menu_id':last_menu_id}})
+                            ''')
+                            await channel.send(embed=embed)
+                last_menu_id = int(attacks[0]["id"])+1
+                db.misc.update_one({'_id':True}, {"$set": {'last_menu_id':last_menu_id}})
+            except KeyError as e:
+                print(f"KeyError: Missing key {e}")
+            except Exception as e:
+                print(f"An unexpected error occurred: {e}")
 
 
 
@@ -551,12 +556,13 @@ async def big_bank_scanner():
     async with aiohttp.ClientSession() as session:
         async with session.post(graphql, json={'query':f"{{bankrecs(orderBy:{{column:ID, order:DESC}}, first:30, stype:2, min_id:{misc['last_big_tx']}){{data{{id date note money coal oil uranium iron bauxite lead gasoline munitions steel aluminum food receiver_id receiver{{nation_name last_active score num_cities soldiers tanks aircraft ships}}}}}}}}"}) as r:
             json_obj = await r.json()
-            transactions = json_obj['data']['bankrecs']['data']
-            if len(transactions) > 0:
-                for transaction in transactions:
-                    withdrawal_value = transaction['money'] + (transaction['coal']*3500) + (transaction['oil']*3500) + (transaction['uranium']*3200) + (transaction['iron']*3500) + (transaction['bauxite']*3700) + (transaction['lead']*4200) + (transaction['gasoline']*3800) + (transaction['munitions']*2000) + (transaction['steel']*4200) + (transaction['aluminum']*2700) + (transaction['food']*130)
-                    if withdrawal_value > 500000000 and "defeated" not in transaction["note"]:
-                        embed = discord.Embed(title=f"Bank transaction", description=f'''
+            try:
+                transactions = json_obj['data']['bankrecs']['data']
+                if len(transactions) > 0:
+                    for transaction in transactions:
+                        withdrawal_value = transaction['money'] + (transaction['coal']*3500) + (transaction['oil']*3500) + (transaction['uranium']*3200) + (transaction['iron']*3500) + (transaction['bauxite']*3700) + (transaction['lead']*4200) + (transaction['gasoline']*3800) + (transaction['munitions']*2000) + (transaction['steel']*4200) + (transaction['aluminum']*2700) + (transaction['food']*130)
+                        if withdrawal_value > 500000000 and "defeated" not in transaction["note"]:
+                            embed = discord.Embed(title=f"Bank transaction", description=f'''
 [{transaction["receiver"]["nation_name"]}](https://politicsandwar.com/nation/id={transaction["receiver_id"]}) received a withdrawal <t:{iso_to_unix(transaction["date"])}:R> of value:
 **{"${:,.2f}".format(withdrawal_value)}**
 Note : {transaction["note"]}
@@ -565,10 +571,14 @@ City count: {transaction['receiver']['num_cities']}
 Defensive Range : `{round((float(transaction['receiver']['score']) / 2.75),2)} to {round((float(transaction['receiver']['score']) / 0.75),2)}`
 Military : `💂 {transaction['receiver']["soldiers"]} | ⚙️ {transaction['receiver']["tanks"]} | ✈️ {transaction['receiver']["aircraft"]} | 🚢 {transaction['receiver']["ships"]}`
 [Visit bank page.](https://politicsandwar.com/nation/id={transaction["receiver_id"]}&display=bank)
-''')
-                        await channel.send(embed=embed)
-                last_big_tx = int(transactions[0]['id']) + 1
-                db.misc.update_one({'_id':True}, {"$set": {'last_big_tx':last_big_tx}})
+    ''')
+                            await channel.send(embed=embed)
+                    last_big_tx = int(transactions[0]['id']) + 1
+                    db.misc.update_one({'_id':True}, {"$set": {'last_big_tx':last_big_tx}})
+            except KeyError as e:
+                print(f"KeyError: Missing key {e}")
+            except Exception as e:
+                print(f"An unexpected error occurred: {e}")
 
 
 
