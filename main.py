@@ -44,30 +44,50 @@ client = commands.Bot(intents = intents)
 
 ############## Intiailization ################
 
+
+running_tasks = {
+    "tinydb_update": False,
+    "captains_update": False,
+    "menu": False,
+    "big_bank_scanner": False,
+    "alerts": False,
+    "recruitment": False,
+    "off_war_alert": False,
+    "def_war_alert": False,
+}
+
+
 @client.event
 async def on_ready():
-    if not hasattr(client, 'subscriptions_started'):
-        client.subscriptions_started = False
     game = discord.Game("it cool.")
     await client.change_presence(status=discord.Status.online, activity=game)
 
     if not tinydb_update.is_running():
         tinydb_update.start()
-    await tinydb_update.coro(force_run=True)
+        running_tasks["tinydb_update"] = True
     if not captains_update.is_running():
         captains_update.start()
+        running_tasks["captains_update"] = True
     if not menu.is_running():
         menu.start()
+        running_tasks["menu"] = True
     if not big_bank_scanner.is_running():
         big_bank_scanner.start()
+        running_tasks["big_bank_scanner"] = True
     if not alerts.is_running():
         alerts.start()
+        running_tasks["alerts"] = True
 
-    if not client.subscriptions_started:
+    # Start subscriptions only if not already started
+    if not running_tasks["recruitment"]:
         client.loop.create_task(recruitment())
+        running_tasks["recruitment"] = True
+    if not running_tasks["off_war_alert"]:
         client.loop.create_task(off_war_alert())
+        running_tasks["off_war_alert"] = True
+    if not running_tasks["def_war_alert"]:
         client.loop.create_task(def_war_alert())
-        client.subscriptions_started = True  # Set the flag to prevent re-creation
+        running_tasks["def_war_alert"] = True
 
     loop = asyncio.get_running_loop()
     loop.set_exception_handler(handle_global_exception)
