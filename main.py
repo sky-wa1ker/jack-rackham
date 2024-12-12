@@ -458,28 +458,28 @@ async def captains_update():
             nations = [{**{k: v for k, v in item.items() if k != "id"}, "_id": int(item["id"])} for item in idnations]
             
             captains = [nation for nation in nations if nation['alliance_position'] != 'APPLICANT']
-            captains_ids = [captain["_id"] for captain in captains]
-            existing_captains = db.captains.find({})
-            existing_captains_ids = [captain["_id"] for captain in existing_captains]
+            captains_ids = [int(captain["_id"]) for captain in captains]
+            existing_captains = list(db.captains.find({}))
+            existing_captains_ids = [int(captain["_id"]) for captain in existing_captains]
             
             applicants = [nation for nation in nations if nation['alliance_position'] == 'APPLICANT']
-            applicants_ids = [applicant["_id"] for applicant in applicants]
-            existing_applicants = db.applicants.find({})
-            existing_applicants_ids = [applicant["_id"] for applicant in existing_applicants]
+            applicants_ids = [int(applicant["_id"]) for applicant in applicants]
+            existing_applicants = list(db.applicants.find({}))
+            existing_applicants_ids = [int(applicant["_id"]) for applicant in existing_applicants]
 
 
             for old_captain in existing_captains:
-                if old_captain["_id"] not in captains_ids:
+                if int(old_captain["_id"]) not in captains_ids:
                     await admiralty_channel.send(f"Captain {old_captain['leader_name']} of [{old_captain['nation_name']}](https://politicsandwar.com/nation/id={old_captain['_id']}) ({old_captain['_id']}) has left the alliance.")
             
             for old_applicant in existing_applicants:
-                if old_applicant['_id'] not in applicants_ids:
-                    if old_applicant['_id'] not in captains_ids:
+                if int(old_applicant['_id']) not in applicants_ids:
+                    if int(old_applicant['_id']) not in captains_ids:
                         await admiralty_channel.send(f"Applicant {old_applicant['leader_name']} of [{old_applicant['nation_name']}](https://politicsandwar.com/nation/id={old_applicant['_id']}) ({old_applicant['_id']}) has revoked their application.")
             
             for applicant in applicants:
-                if applicant['_id'] not in existing_applicants_ids:
-                    if applicant['_id'] not in existing_captains_ids:
+                if int(applicant['_id']) not in existing_applicants_ids:
+                    if int(applicant['_id']) not in existing_captains_ids:
                         await admiralty_channel.send(f"{applicant['leader_name']} of [{applicant['nation_name']}](https://politicsandwar.com/nation/id={applicant['_id']}) ({applicant['_id']}) has applied to join the alliance.")
             
             await crew_channel.purge()
@@ -514,7 +514,6 @@ Wars : `⬆️ {captain["offensive_wars_count"]} | ⬇️ {captain["defensive_wa
                                     ''', color=dcolor)
                 await crew_channel.send(embed=embed)
                                       
-
 
             db.captains.delete_many({})
             db.captains.insert_many(captains)
