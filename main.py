@@ -9,7 +9,7 @@ from datetime import datetime, timezone, timedelta
 import os
 from discord.ext import commands, tasks
 from discord.errors import GatewayNotFound, HTTPException, ConnectionClosed
-from pymongo import MongoClient
+from pymongo import MongoClient, errors
 import zipfile
 import csv
 from pathlib import Path
@@ -26,7 +26,7 @@ import pnwkit
 token = os.environ['TOKEN']
 api_key = os.environ['API_KEY']
 doom_api_key = os.environ['DOOM_API_KEY']
-db_client = MongoClient(os.environ['DB_ACCESS_URL'])
+db_client = MongoClient(os.environ['DB_ACCESS_URL'], serverSelectionTimeoutMS=50000, connectTimeoutMS=50000, socketTimeoutMS=50000)
 
 
 kit = pnwkit.QueryKit(api_key)
@@ -57,36 +57,48 @@ running_tasks = {
 }
 
 
+async def retry_task(coro, retries=5, delay=5):
+    for attempt in range(retries):
+        try:
+            await coro()
+            return
+        except Exception as e:
+            print(f"Retrying after {delay} seconds due to error: {e}")
+            await asyncio.sleep(delay)
+            delay *= 2  # Exponential backoff
+    print("Max retries reached. Task failed.")
+
+
 @client.event
 async def on_ready():
     game = discord.Game("it cool.")
     await client.change_presence(status=discord.Status.online, activity=game)
 
-    if not tinydb_update.is_running():
+    if not running_tasks["tinydb_update"]:
         tinydb_update.start()
         running_tasks["tinydb_update"] = True
-    if not captains_update.is_running():
+    if not running_tasks["captains_update"]:
         captains_update.start()
         running_tasks["captains_update"] = True
-    if not menu.is_running():
+    if not running_tasks["menu"]:
         menu.start()
         running_tasks["menu"] = True
-    if not big_bank_scanner.is_running():
+    if not running_tasks["big_bank_scanner"]:
         big_bank_scanner.start()
         running_tasks["big_bank_scanner"] = True
-    if not alerts.is_running():
+    if not running_tasks["alerts"]:
         alerts.start()
         running_tasks["alerts"] = True
 
     # Start subscriptions only if not already started
     if not running_tasks["recruitment"]:
-        client.loop.create_task(recruitment())
+        client.loop.create_task(retry_task(recruitment))
         running_tasks["recruitment"] = True
     if not running_tasks["off_war_alert"]:
-        client.loop.create_task(off_war_alert())
+        client.loop.create_task(retry_task(off_war_alert))
         running_tasks["off_war_alert"] = True
     if not running_tasks["def_war_alert"]:
-        client.loop.create_task(def_war_alert())
+        client.loop.create_task(retry_task(def_war_alert))
         running_tasks["def_war_alert"] = True
 
     loop = asyncio.get_running_loop()
@@ -525,7 +537,11 @@ Wars : `⬆️ {captain["offensive_wars_count"]} | ⬇️ {captain["defensive_wa
 @tasks.loop(minutes = 15)
 async def menu():
     channel = client.get_channel(858725272279187467) #menu channel
-    misc = db.misc.find_one({'_id':True})
+    try:
+        misc = db.misc.find_one({'_id':True})
+    except errors.PyMongoError as e:
+        print(f"An error occurred: {e}")
+        return
     async with aiohttp.ClientSession() as session:
         async with session.post(graphql, json={'query':f"{{warattacks(orderBy:{{column:ID, order:DESC}}, min_id:{misc['last_menu_id']}, first:500){{data{{id date type loot_info war{{id war_type att_id def_id}}defender{{id nation_name leader_name score num_cities beige_turns vacation_mode_turns last_active alliance_id soldiers tanks aircraft ships}}}}}}}}"}) as r:
             json_obj = await r.json()
@@ -571,7 +587,11 @@ Set beige alert with : `/beige_alert add`
 @tasks.loop(minutes = 3)
 async def big_bank_scanner():
     channel = client.get_channel(858725272279187467) #menu channel
-    misc = db.misc.find_one({'_id':True})
+    try:
+        misc = db.misc.find_one({'_id':True})
+    except errors.PyMongoError as e:
+        print(f"An error occurred: {e}")
+        return
     async with aiohttp.ClientSession() as session:
         async with session.post(graphql, json={'query':f"{{bankrecs(orderBy:{{column:ID, order:DESC}}, first:30, stype:2, min_id:{misc['last_big_tx']}){{data{{id date note money coal oil uranium iron bauxite lead gasoline munitions steel aluminum food receiver_id receiver{{nation_name last_active score num_cities soldiers tanks aircraft ships}}}}}}}}"}) as r:
             json_obj = await r.json()
@@ -602,7 +622,7 @@ Military : `💂 {transaction['receiver']["soldiers"]} | ⚙️ {transaction['re
 
 
 
-@tasks.loop(minutes=1)
+@tasks.loop(minutes=3)
 async def alerts():
     misc = db.misc.find_one({'_id':True})
     targets = list(misc['beige_alert_targets'])
