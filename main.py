@@ -456,8 +456,9 @@ Projects
 `Pirate Eco: {bool_dict[defender["pirate_economy"]]} | Adv. Pirate Eco: {bool_dict[defender["advanced_pirate_economy"]]}`
                                               ''', color=15158332)
                         await channel.send(embed=embed)
-                        if type(db.discord_users.find_one({'nation_id':int(defender["id"])})) is dict:
-                            account = db.discord_users.find_one({'nation_id':int(defender["id"])})
+                        attacked_nation = await db.discord_users.find_one({'nation_id':int(defender["id"])})
+                        if type(attacked_nation) is dict:
+                            account = await db.discord_users.find_one({'nation_id':int(defender["id"])})
                             await channel.send(f"You have been attacked <@{account['_id']}>")
 
 
@@ -511,7 +512,7 @@ async def captains_update():
                     dcolor = 15158332
                 else:
                     dcolor = 1146986
-                discord_user = db.discord_users.find_one({"nation_id": captain["_id"]})
+                discord_user = await db.discord_users.find_one({"nation_id": captain["_id"]})
                 if discord_user:
                     discord_id = client.get_user(discord_user["_id"]).display_name
                 else:
@@ -537,10 +538,10 @@ Wars : `⬆️ {captain["offensive_wars_count"]} | ⬇️ {captain["defensive_wa
                 await crew_channel.send(embed=embed)
                                       
 
-            db.captains.delete_many({})
-            db.captains.insert_many(captains)
-            db.applicants.delete_many({})
-            db.applicants.insert_many(applicants)
+            await db.captains.delete_many({})
+            await db.captains.insert_many(captains)
+            await db.applicants.delete_many({})
+            await db.applicants.insert_many(applicants)
 
 
 
@@ -548,7 +549,7 @@ Wars : `⬆️ {captain["offensive_wars_count"]} | ⬇️ {captain["defensive_wa
 async def menu():
     channel = client.get_channel(858725272279187467) #menu channel
     try:
-        misc = db.misc.find_one({'_id':True})
+        misc = await db.misc.find_one({'_id':True})
     except PyMongoError as e:
         print(f"An error occurred: {e}")
         return
@@ -586,7 +587,7 @@ Set beige alert with : `/beige_alert add`
                             ''')
                             await channel.send(embed=embed)
                 last_menu_id = int(attacks[0]["id"])+1
-                db.misc.update_one({'_id':True}, {"$set": {'last_menu_id':last_menu_id}})
+                await db.misc.update_one({'_id':True}, {"$set": {'last_menu_id':last_menu_id}})
             except KeyError as e:
                 print(f"KeyError: Missing key {e}")
             except Exception as e:
@@ -598,7 +599,7 @@ Set beige alert with : `/beige_alert add`
 async def big_bank_scanner():
     channel = client.get_channel(858725272279187467) #menu channel
     try:
-        misc = db.misc.find_one({'_id':True})
+        misc = await db.misc.find_one({'_id':True})
     except PyMongoError as e:
         print(f"An error occurred: {e}")
         return
@@ -623,7 +624,7 @@ Military : `💂 {transaction['receiver']["soldiers"]} | ⚙️ {transaction['re
     ''')
                             await channel.send(embed=embed)
                     last_big_tx = int(transactions[0]['id']) + 1
-                    db.misc.update_one({'_id':True}, {"$set": {'last_big_tx':last_big_tx}})
+                    await db.misc.update_one({'_id':True}, {"$set": {'last_big_tx':last_big_tx}})
             except KeyError as e:
                 print(f"KeyError: Missing key {e}")
             except Exception as e:
@@ -635,7 +636,7 @@ Military : `💂 {transaction['receiver']["soldiers"]} | ⚙️ {transaction['re
 @tasks.loop(minutes=3)
 async def alerts():
     misc = await db.misc.find_one({'_id':True})
-    targets = await misc['beige_alert_targets'].to_list(length=None)
+    targets = list(misc['beige_alert_targets'])
     if len(targets) > 0:
         async with aiohttp.ClientSession() as session:
             async with session.post(beige_alerts_graphql, json={'query':f'''
@@ -656,16 +657,16 @@ async def alerts():
                 nations = json_obj["data"]["nations"]["data"]
                 if nations:
                     for nation in nations:
-                        target = db.beige_alerts.find_one({'_id':int(nation['id'])})
+                        target = await db.beige_alerts.find_one({'_id':int(nation['id'])})
                         if target:
                             subscribed_captains = target['subscribed_captains']
                             for captain in subscribed_captains:
                                 user = client.get_user(captain)
                                 await user.send(f'''[{nation['nation_name']}](https://politicsandwar.com/nation/id={nation['id']}) has left beige! 
 [Click here to go directly to war page](https://politicsandwar.com/nation/war/declare/id={nation['id']})''')
-                            db.beige_alerts.delete_one(target)
+                            await db.beige_alerts.delete_one(target)
                         targets.remove(int(nation['id']))
-                        db.misc.update_one(
+                        await db.misc.update_one(
                         {'_id': True}, 
                         {"$set": {'beige_alert_targets':targets}}
                         )
@@ -687,9 +688,9 @@ async def ping(ctx):
 async def register(ctx, nation_id:int, user:discord.User=None, admin:bool=False):
     await ctx.defer()
     if admin == False and user == None:
-        if db.discord_users.find_one({'_id':ctx.author.id}):
+        if await db.discord_users.find_one({'_id':ctx.author.id}):
             await ctx.respond('You\'re already registered.')
-        elif db.discord_users.find_one({'nation_id':nation_id}):
+        elif await db.discord_users.find_one({'nation_id':nation_id}):
             await ctx.respond('This nation is already registered.')
         else:
             async with aiohttp.ClientSession() as session:
@@ -708,7 +709,7 @@ async def register(ctx, nation_id:int, user:discord.User=None, admin:bool=False)
                     if len(nation) > 0:
                         username = nation[0]["discord"]
                         if username == str(ctx.author.name):
-                            db.discord_users.insert_one({'_id':ctx.author.id, 'nation_id':nation_id})
+                            await db.discord_users.insert_one({'_id':ctx.author.id, 'nation_id':nation_id})
                             await ctx.respond('Registration successful! you\'ve been verified.')
                             await ctx.author.add_roles(discord.utils.get(ctx.author.guild.roles, name='Jack Approves! ✅'))
                         else:
@@ -718,13 +719,13 @@ async def register(ctx, nation_id:int, user:discord.User=None, admin:bool=False)
     elif admin == True and user != None:    
         role = discord.utils.get(ctx.guild.roles, name="Admiralty")
         if role in ctx.author.roles:
-            if db.discord_users.find_one({'_id':user.id}):
+            if await db.discord_users.find_one({'_id':user.id}):
                 await ctx.respond('User is already registered.')
-            elif db.discord_users.find_one({'nation_id':nation_id}):
+            elif await db.discord_users.find_one({'nation_id':nation_id}):
                 await ctx.respond('This nation is already registered.')
             else:
                 try:
-                    db.discord_users.insert_one({'_id':ctx.author.id, 'nation_id':nation_id})
+                    await db.discord_users.insert_one({'_id':ctx.author.id, 'nation_id':nation_id})
                     await ctx.respond('Registration successful! user has been verified.')
                     await user.add_roles(discord.utils.get(user.guild.roles, name='Jack Approves! ✅'))
                 except:
@@ -740,16 +741,16 @@ async def register(ctx, nation_id:int, user:discord.User=None, admin:bool=False)
 async def unregister(ctx, user:discord.User=None, nation_id:int=None, admin:bool=False):
     await ctx.defer()
     if admin == False and user == None and nation_id == None:
-        if db.discord_users.find_one({'_id':ctx.author.id}):
-            db.discord_users.delete_one({'_id':ctx.author.id})
+        if await db.discord_users.find_one({'_id':ctx.author.id}):
+            await db.discord_users.delete_one({'_id':ctx.author.id})
             await ctx.respond('Unregistration successful!')
         else:
             await ctx.respond('You are not registered.')
     elif admin == True and user != None and nation_id == None:
         role = discord.utils.get(ctx.guild.roles, name="Admiralty")
         if role in ctx.author.roles:
-            if db.discord_users.find_one({'_id':user.id}):
-                db.discord_users.delete_one({'_id':user.id})
+            if await db.discord_users.find_one({'_id':user.id}):
+                await db.discord_users.delete_one({'_id':user.id})
                 await ctx.respond('Unregistration successful!')
             else:
                 await ctx.respond('User is not registered.')
@@ -758,8 +759,8 @@ async def unregister(ctx, user:discord.User=None, nation_id:int=None, admin:bool
     elif admin == True and user == None and nation_id != None:
         role = discord.utils.get(ctx.guild.roles, name="Admiralty")
         if role in ctx.author.roles:
-            if db.discord_users.find_one({'nation_id':nation_id}):
-                db.discord_users.delete_one({'nation_id':nation_id})
+            if await db.discord_users.find_one({'nation_id':nation_id}):
+                await db.discord_users.delete_one({'nation_id':nation_id})
                 await ctx.respond('Unregistration successful!')
             else:
                 await ctx.respond('Nation is not registered.')
@@ -774,11 +775,12 @@ async def unregister(ctx, user:discord.User=None, nation_id:int=None, admin:bool
 async def update_verification(ctx, user:discord.User, nation_id:int):
     role = discord.utils.get(ctx.guild.roles, name="Admiralty")
     if role in ctx.author.roles:
-        if type(db.discord_users.find_one({'_id':user.id})) is dict:
+        user = await db.discord_users.find_one({'_id':user.id})
+        if type(user) is dict:
             filter = { '_id':user.id }
-            db.discord_users.update_one(filter, {"$set": {'username':user.name, 'nation_id':nation_id}})
+            await db.discord_users.update_one(filter, {"$set": {'username':user.name, 'nation_id':nation_id}})
             await ctx.respond("Success!, the verification details for this user have been updated.")
-        elif db.discord_users.find_one({'_id':user.id}) == None:
+        elif await db.discord_users.find_one({'_id':user.id}) == None:
             await ctx.respond('The user is not verified yet.')
         else:
             await ctx.respond('Something went wrong...')
@@ -789,7 +791,7 @@ async def update_verification(ctx, user:discord.User, nation_id:int):
 @client.slash_command(description="Get information about yourself, regiser if you haven't already.")
 async def me(ctx):
     await ctx.defer()
-    account = db.discord_users.find_one({'_id':ctx.author.id})
+    account = await db.discord_users.find_one({'_id':ctx.author.id})
     if account: parameters = f"id:{account['nation_id']}"
     else: parameters = f'discord_id:"{str(ctx.author.id)}"'
     async with aiohttp.ClientSession() as session:
@@ -908,7 +910,7 @@ async def whois(ctx, user: discord.User=None, nation_id:int=None):
     elif user != None and nation_id != None:
         await ctx.respond("You only need to specify one of the two.")
     elif user != None and nation_id == None:
-        account = db.discord_users.find_one({'_id':user.id})
+        account = await db.discord_users.find_one({'_id':user.id})
         if account: parameter = f"id: {account['nation_id']}"
         else: parameter = f'discord: "{str(user.name)}"'
         async with aiohttp.ClientSession() as session:
@@ -961,7 +963,7 @@ nations({parameter}){{
                 else:
                     await ctx.respond("Could not find this user.")
     elif user == None and nation_id != None:
-        account = db.discord_users.find_one({'nation_id':nation_id})
+        account = await db.discord_users.find_one({'nation_id':nation_id})
         if account:
             user = await client.fetch_user(account["_id"])
             await ctx.respond(f'''
@@ -1100,7 +1102,7 @@ async def warchest(ctx, nation_id:int=None, user:discord.User=None):
         await ctx.defer(ephemeral=True)
         try:
             if user != None and nation_id == None:
-                user_nation = db.discord_users.find_one({"_id": user.id})
+                user_nation = await db.discord_users.find_one({"_id": user.id})
                 if user_nation: 
                     parameter = f"id: {user_nation['nation_id']}, alliance_position:[2,3,4,5], alliance_id:913"
                 else:
@@ -1274,23 +1276,23 @@ async def add(ctx, nation:discord.Option(str, "Choose nation to add to beige ale
     await ctx.defer()
     captain_role = discord.utils.get(ctx.guild.roles, name="Captain")
     if captain_role in ctx.author.roles:
-        if db.discord_users.find_one({'_id':ctx.author.id}):
+        if await db.discord_users.find_one({'_id':ctx.author.id}):
             nation_id = int(re.search(r'^\d+(?=\s*-)', nation).group())
             nation_name = re.search(r"\d+\s*-\s*(.*)", nation).group(1)
-            misc = db.misc.find_one({'_id':True})
+            misc = await db.misc.find_one({'_id':True})
             existing_targets = misc['beige_alert_targets']
             if len(existing_targets) < 200:
                 if nation_id not in existing_targets:
                     existing_targets.append(nation_id)
-                    db.beige_alerts.insert_one({'_id':nation_id, 'name':nation_name, 'subscribed_captains':[ctx.author.id]})
-                    db.misc.update_one({'_id':True}, {"$set": {'beige_alert_targets':existing_targets}})
+                    await db.beige_alerts.insert_one({'_id':nation_id, 'name':nation_name, 'subscribed_captains':[ctx.author.id]})
+                    await db.misc.update_one({'_id':True}, {"$set": {'beige_alert_targets':existing_targets}})
                     await ctx.respond(f'Added {nation} to your beige alert list.')
 
                 elif nation_id in existing_targets:
-                    alert = db.beige_alerts.find_one({'_id':nation_id})
+                    alert = await db.beige_alerts.find_one({'_id':nation_id})
                     if ctx.author.id not in alert['subscribed_captains']:
                         alert['subscribed_captains'].append(ctx.author.id)
-                        db.beige_alerts.update_one({'_id':nation_id}, {"$set": {'subscribed_captains':alert['subscribed_captains']}})
+                        await db.beige_alerts.update_one({'_id':nation_id}, {"$set": {'subscribed_captains':alert['subscribed_captains']}})
                         await ctx.respond(f'Added you to in the list for {nation}.')
                     else:
                         await ctx.respond(f'You are already subscribed to {nation}.')
@@ -1314,7 +1316,7 @@ async def view_or_remove(ctx, target:discord.Option(str, "By default shows first
         await ctx.respond("You have no active alerts to remove.")
     else:
         target_id = int(re.search(r'^\d+(?=\s*-)', target).group())
-        alert = db.beige_alerts.find_one({'_id': target_id})
+        alert = await db.beige_alerts.find_one({'_id': target_id})
 
         if alert:
             subscribed_captains = alert['subscribed_captains']
@@ -1322,21 +1324,21 @@ async def view_or_remove(ctx, target:discord.Option(str, "By default shows first
             if ctx.author.id in subscribed_captains:
                 if len(subscribed_captains) > 1:
                     subscribed_captains.remove(ctx.author.id)
-                    db.beige_alerts.update_one(
+                    await db.beige_alerts.update_one(
                         {'_id': target_id}, 
                         {"$set": {'subscribed_captains': subscribed_captains}}
                     )
                     await ctx.respond(f"Removed your subscription to {target}.")
                 else:
-                    misc = db.misc.find_one({'_id': True})
+                    misc = await db.misc.find_one({'_id': True})
                     existing_targets = misc['beige_alert_targets']
                     existing_targets.remove(target_id)
                     
-                    db.misc.update_one(
+                    await db.misc.update_one(
                         {'_id': True}, 
                         {"$set": {'beige_alert_targets': existing_targets}}
                     )
-                    db.beige_alerts.delete_one({'_id': target_id})
+                    await db.beige_alerts.delete_one({'_id': target_id})
                     await ctx.respond(f"Removed {target} from your beige alert list.")
                 alerts_cache.pop(ctx.interaction.user.id, None)
             else:
