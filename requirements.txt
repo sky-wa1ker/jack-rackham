@@ -2,6 +2,7 @@ py-cord
 asyncio
 aiohttp
 pymongo
+motor
 dnspython
 tinydb
 pandas

@@ -2,14 +2,17 @@
 from tinydb import TinyDB
 import discord
 import aiohttp
+from aiohttp import ClientConnectionError
 import re
+import random
 import pandas as pd
 import humanize
 from datetime import datetime, timezone, timedelta
 import os
 from discord.ext import commands, tasks
 from discord.errors import GatewayNotFound, HTTPException, ConnectionClosed
-from pymongo import MongoClient, errors
+from motor.motor_asyncio import AsyncIOMotorClient
+from pymongo.errors import PyMongoError
 import zipfile
 import csv
 from pathlib import Path
@@ -26,7 +29,7 @@ import pnwkit
 token = os.environ['TOKEN']
 api_key = os.environ['API_KEY']
 doom_api_key = os.environ['DOOM_API_KEY']
-db_client = MongoClient(os.environ['DB_ACCESS_URL'], serverSelectionTimeoutMS=50000, connectTimeoutMS=50000, socketTimeoutMS=50000)
+db_client = AsyncIOMotorClient(os.environ['DB_ACCESS_URL'], serverSelectionTimeoutMS=50000, connectTimeoutMS=50000, socketTimeoutMS=50000)
 
 
 kit = pnwkit.QueryKit(api_key)
@@ -57,16 +60,34 @@ running_tasks = {
 }
 
 
-async def retry_task(coro, retries=5, delay=5):
+async def retry_task(coro, task_name, delay=5, max_delay=3600):
+    """Retry a coroutine indefinitely with capped exponential backoff."""
+    retries = 0
+    while True:
+        try:
+            print(f"Starting task: {task_name}")
+            await coro()
+            print(f"Task {task_name} completed successfully (unlikely for subscriptions).")
+            break
+        except Exception as e:
+            retries += 1
+            print(f"Error in task {task_name}: {e}")
+            backoff_time = min(delay * (2 ** retries) + random.uniform(0, 1), max_delay)
+            print(f"Retrying task {task_name} in {backoff_time:.2f} seconds...")
+            await asyncio.sleep(backoff_time)
+
+
+
+async def retry_mongo_query(query_func, *args, retries=5, delay=2):
     for attempt in range(retries):
         try:
-            await coro()
-            return
+            return await query_func(*args)
         except Exception as e:
-            print(f"Retrying after {delay} seconds due to error: {e}")
+            print(f"MongoDB query failed: {e}. Retrying in {delay}s...")
             await asyncio.sleep(delay)
-            delay *= 2  # Exponential backoff
-    print("Max retries reached. Task failed.")
+            delay *= 2
+    raise Exception("Max retries reached for MongoDB query.")
+
 
 
 @client.event
@@ -152,7 +173,7 @@ async def targets_autocomplete(ctx: discord.AutocompleteContext):
     user_id = ctx.interaction.user.id
     search_term = ctx.value.lower()
     if user_id not in alerts_cache:
-        all_targets = list(db.beige_alerts.find({}))
+        all_targets  = await retry_mongo_query(db.beige_alerts.find({}).to_list, length=None)
         user_targets = [target for target in all_targets if user_id in target['subscribed_captains']]
         alerts_cache[user_id] = [f"{target['_id']} - {target['name']}" for target in user_targets]
     targets = alerts_cache[user_id]
@@ -471,12 +492,12 @@ async def captains_update():
             
             captains = [nation for nation in nations if nation['alliance_position'] != 'APPLICANT']
             captains_ids = [int(captain["_id"]) for captain in captains]
-            existing_captains = list(db.captains.find({}))
+            existing_captains = await retry_mongo_query(db.beige_alerts.find({}).to_list, length=None)
             existing_captains_ids = [int(captain["_id"]) for captain in existing_captains]
             
             applicants = [nation for nation in nations if nation['alliance_position'] == 'APPLICANT']
             applicants_ids = [int(applicant["_id"]) for applicant in applicants]
-            existing_applicants = list(db.applicants.find({}))
+            existing_applicants = await retry_mongo_query(db.applicants.find({}).to_list, length=None)
             existing_applicants_ids = [int(applicant["_id"]) for applicant in existing_applicants]
 
 
@@ -539,7 +560,7 @@ async def menu():
     channel = client.get_channel(858725272279187467) #menu channel
     try:
         misc = db.misc.find_one({'_id':True})
-    except errors.PyMongoError as e:
+    except PyMongoError as e:
         print(f"An error occurred: {e}")
         return
     async with aiohttp.ClientSession() as session:
@@ -589,7 +610,7 @@ async def big_bank_scanner():
     channel = client.get_channel(858725272279187467) #menu channel
     try:
         misc = db.misc.find_one({'_id':True})
-    except errors.PyMongoError as e:
+    except PyMongoError as e:
         print(f"An error occurred: {e}")
         return
     async with aiohttp.ClientSession() as session:
@@ -625,7 +646,7 @@ Military : `💂 {transaction['receiver']["soldiers"]} | ⚙️ {transaction['re
 @tasks.loop(minutes=3)
 async def alerts():
     misc = db.misc.find_one({'_id':True})
-    targets = list(misc['beige_alert_targets'])
+    targets = await misc['beige_alert_targets'].to_list(length=None)
     if len(targets) > 0:
         async with aiohttp.ClientSession() as session:
             async with session.post(beige_alerts_graphql, json={'query':f'''
