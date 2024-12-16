@@ -78,17 +78,6 @@ async def retry_task(coro, task_name, delay=5, max_delay=3600):
 
 
 
-async def retry_mongo_query(query_func, *args, retries=5, delay=2):
-    for attempt in range(retries):
-        try:
-            return await query_func(*args)
-        except Exception as e:
-            print(f"MongoDB query failed: {e}. Retrying in {delay}s...")
-            await asyncio.sleep(delay)
-            delay *= 2
-    raise Exception("Max retries reached for MongoDB query.")
-
-
 
 @client.event
 async def on_ready():
@@ -113,13 +102,13 @@ async def on_ready():
 
     # Start subscriptions only if not already started
     if not running_tasks["recruitment"]:
-        client.loop.create_task(retry_task(recruitment))
+        client.loop.create_task(retry_task(recruitment, "recruitment"))
         running_tasks["recruitment"] = True
     if not running_tasks["off_war_alert"]:
-        client.loop.create_task(retry_task(off_war_alert))
+        client.loop.create_task(retry_task(off_war_alert, "off_war_alert"))
         running_tasks["off_war_alert"] = True
     if not running_tasks["def_war_alert"]:
-        client.loop.create_task(retry_task(def_war_alert))
+        client.loop.create_task(retry_task(def_war_alert, "def_war_alert"))
         running_tasks["def_war_alert"] = True
 
     loop = asyncio.get_running_loop()
@@ -173,7 +162,7 @@ async def targets_autocomplete(ctx: discord.AutocompleteContext):
     user_id = ctx.interaction.user.id
     search_term = ctx.value.lower()
     if user_id not in alerts_cache:
-        all_targets  = await retry_mongo_query(db.beige_alerts.find({}).to_list, length=None)
+        all_targets  = await db.beige_alerts.find({}).to_list(length=None)
         user_targets = [target for target in all_targets if user_id in target['subscribed_captains']]
         alerts_cache[user_id] = [f"{target['_id']} - {target['name']}" for target in user_targets]
     targets = alerts_cache[user_id]
@@ -492,12 +481,12 @@ async def captains_update():
             
             captains = [nation for nation in nations if nation['alliance_position'] != 'APPLICANT']
             captains_ids = [int(captain["_id"]) for captain in captains]
-            existing_captains = await retry_mongo_query(db.beige_alerts.find({}).to_list, length=None)
+            existing_captains = await db.captains.find({}).to_list(length=None)
             existing_captains_ids = [int(captain["_id"]) for captain in existing_captains]
             
             applicants = [nation for nation in nations if nation['alliance_position'] == 'APPLICANT']
             applicants_ids = [int(applicant["_id"]) for applicant in applicants]
-            existing_applicants = await retry_mongo_query(db.applicants.find({}).to_list, length=None)
+            existing_applicants = await db.applicants.find({}).to_list(length=None)
             existing_applicants_ids = [int(applicant["_id"]) for applicant in existing_applicants]
 
 
@@ -645,7 +634,7 @@ Military : `💂 {transaction['receiver']["soldiers"]} | ⚙️ {transaction['re
 
 @tasks.loop(minutes=3)
 async def alerts():
-    misc = db.misc.find_one({'_id':True})
+    misc = await db.misc.find_one({'_id':True})
     targets = await misc['beige_alert_targets'].to_list(length=None)
     if len(targets) > 0:
         async with aiohttp.ClientSession() as session:
