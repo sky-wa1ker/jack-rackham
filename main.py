@@ -725,10 +725,9 @@ async def register(ctx, nation_id:int, user:discord.User=None, admin:bool=False)
                 await ctx.respond('This nation is already registered.')
             else:
                 try:
-                    await db.discord_users.insert_one({'_id':ctx.author.id, 'nation_id':nation_id})
+                    await db.discord_users.insert_one({'_id':user.id, 'nation_id':nation_id})
                     await ctx.respond('Registration successful! user has been verified.')
-                    role = discord.utils.get(ctx.guild.roles, name='Jack Approves! ✅')
-                    await user.add_roles(role)
+                    await user.add_roles(discord.utils.get(ctx.guild.roles, name='Jack Approves! ✅'))
                 except Exception as e:
                     await ctx.respond(f'Something went wrong... {e}')
         else:
