@@ -727,9 +727,10 @@ async def register(ctx, nation_id:int, user:discord.User=None, admin:bool=False)
                 try:
                     await db.discord_users.insert_one({'_id':ctx.author.id, 'nation_id':nation_id})
                     await ctx.respond('Registration successful! user has been verified.')
-                    await user.add_roles(discord.utils.get(user.guild.roles, name='Jack Approves! ✅'))
-                except:
-                    await ctx.respond('Something went wrong...')
+                    role = discord.utils.get(ctx.guild.roles, name='Jack Approves! ✅')
+                    await user.add_roles(role)
+                except Exception as e:
+                    await ctx.respond(f'Something went wrong... {e}')
         else:
             await ctx.respond(f'admin mode is for admiralty only.')
     else:
