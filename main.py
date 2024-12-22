@@ -549,7 +549,7 @@ Wars : `⬆️ {captain["offensive_wars_count"]} | ⬇️ {captain["defensive_wa
 async def menu():
     channel = client.get_channel(858725272279187467) #menu channel
     try:
-        misc = await db.misc.find_one({'_id':True})
+        misc = await db.misc.find_one({'_id':"menu_id"})
     except PyMongoError as e:
         print(f"An error occurred: {e}")
         return
@@ -561,7 +561,7 @@ async def menu():
                 for attack in attacks:
                     if attack["type"] == "VICTORY":
                         raid = get_raid_value(attack)
-                        if raid['loot_value'] > 35000000:
+                        if raid['loot_value'] > 50000000:
                             defender = attack["defender"]
                             embed = discord.Embed(title=f"{defender['nation_name']}", url=f'https://politicsandwar.com/nation/id={defender["id"]}', description=f'''
 Estimated Loot : **{"${:,.2f}".format(raid["loot_value"])}**
@@ -579,7 +579,7 @@ Set beige alert with : `/beige_alert add`
 
                     if attack["type"] == "ALLIANCELOOT":
                         alliance = get_alliance_loot_value(attack["loot_info"])
-                        if alliance[1] > 30000000:
+                        if alliance[1] > 50000000:
                             embed = discord.Embed(title='Alliance loot', description=f'''
 `{alliance[0]}`'s bank was looted for:
 **{"${:,.2f}".format(alliance[1])}**
@@ -587,7 +587,7 @@ Set beige alert with : `/beige_alert add`
                             ''')
                             await channel.send(embed=embed)
                 last_menu_id = int(attacks[0]["id"])+1
-                await db.misc.update_one({'_id':True}, {"$set": {'last_menu_id':last_menu_id}})
+                await db.misc.update_one({'_id':"menu_id"}, {"$set": {'last_menu_id':last_menu_id}})
             except KeyError as e:
                 print(f"KeyError: Missing key {e}")
             except Exception as e:
@@ -599,7 +599,7 @@ Set beige alert with : `/beige_alert add`
 async def big_bank_scanner():
     channel = client.get_channel(858725272279187467) #menu channel
     try:
-        misc = await db.misc.find_one({'_id':True})
+        misc = await db.misc.find_one({'_id':"big_tx"})
     except PyMongoError as e:
         print(f"An error occurred: {e}")
         return
@@ -624,7 +624,7 @@ Military : `💂 {transaction['receiver']["soldiers"]} | ⚙️ {transaction['re
     ''')
                             await channel.send(embed=embed)
                     last_big_tx = int(transactions[0]['id']) + 1
-                    await db.misc.update_one({'_id':True}, {"$set": {'last_big_tx':last_big_tx}})
+                    await db.misc.update_one({'_id':"big_tx"}, {"$set": {'last_big_tx':last_big_tx}})
             except KeyError as e:
                 print(f"KeyError: Missing key {e}")
             except Exception as e:
@@ -635,7 +635,7 @@ Military : `💂 {transaction['receiver']["soldiers"]} | ⚙️ {transaction['re
 
 @tasks.loop(minutes=3)
 async def alerts():
-    misc = await db.misc.find_one({'_id':True})
+    misc = await db.misc.find_one({'_id':"alerts"})
     targets = list(misc['beige_alert_targets'])
     if len(targets) > 0:
         async with aiohttp.ClientSession() as session:
@@ -667,7 +667,7 @@ async def alerts():
                             await db.beige_alerts.delete_one(target)
                         targets.remove(int(nation['id']))
                         await db.misc.update_one(
-                        {'_id': True}, 
+                        {'_id': "alerts"}, 
                         {"$set": {'beige_alert_targets':targets}}
                         )
                         
@@ -776,12 +776,13 @@ async def update_verification(ctx, user:discord.User, nation_id:int):
     role = discord.utils.get(ctx.guild.roles, name="Admiralty")
     if role in ctx.author.roles:
         user = await db.discord_users.find_one({'_id':user.id})
-        if type(user) is dict:
-            filter = { '_id':user.id }
-            await db.discord_users.update_one(filter, {"$set": {'username':user.name, 'nation_id':nation_id}})
+        if user:
+            await db.discord_users.update_one({'_id':user.id}, {"$set": {'_id':user.id, 'nation_id':nation_id}})
             await ctx.respond("Success!, the verification details for this user have been updated.")
-        elif await db.discord_users.find_one({'_id':user.id}) == None:
-            await ctx.respond('The user is not verified yet.')
+        elif await db.discord_users.find_one({'nation_id':nation_id}):
+            await db.discord_users.remove_one({'nation_id':nation_id})
+            await db.discord_users.insert_one({'_id':user.id, 'nation_id':nation_id})
+            await ctx.respond("Success!, the verification details for this user have been updated.")
         else:
             await ctx.respond('Something went wrong...')
     else:
@@ -1279,13 +1280,13 @@ async def add(ctx, nation:discord.Option(str, "Choose nation to add to beige ale
         if await db.discord_users.find_one({'_id':ctx.author.id}):
             nation_id = int(re.search(r'^\d+(?=\s*-)', nation).group())
             nation_name = re.search(r"\d+\s*-\s*(.*)", nation).group(1)
-            misc = await db.misc.find_one({'_id':True})
+            misc = await db.misc.find_one({'_id':"alerts"})
             existing_targets = misc['beige_alert_targets']
             if len(existing_targets) < 200:
                 if nation_id not in existing_targets:
                     existing_targets.append(nation_id)
                     await db.beige_alerts.insert_one({'_id':nation_id, 'name':nation_name, 'subscribed_captains':[ctx.author.id]})
-                    await db.misc.update_one({'_id':True}, {"$set": {'beige_alert_targets':existing_targets}})
+                    await db.misc.update_one({'_id':"alerts"}, {"$set": {'beige_alert_targets':existing_targets}})
                     await ctx.respond(f'Added {nation} to your beige alert list.')
 
                 elif nation_id in existing_targets:
@@ -1330,12 +1331,12 @@ async def view_or_remove(ctx, target:discord.Option(str, "By default shows first
                     )
                     await ctx.respond(f"Removed your subscription to {target}.")
                 else:
-                    misc = await db.misc.find_one({'_id': True})
+                    misc = await db.misc.find_one({'_id': "alerts"})
                     existing_targets = misc['beige_alert_targets']
                     existing_targets.remove(target_id)
                     
                     await db.misc.update_one(
-                        {'_id': True}, 
+                        {'_id': "alerts"}, 
                         {"$set": {'beige_alert_targets': existing_targets}}
                     )
                     await db.beige_alerts.delete_one({'_id': target_id})
