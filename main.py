@@ -717,8 +717,9 @@ async def register(ctx, nation_id:int, user:discord.User=None, admin:bool=False)
                     else:
                         await ctx.respond('Nation not found.')
     elif admin == True and user != None:    
-        role = discord.utils.get(ctx.guild.roles, name="Admiralty")
-        if role in ctx.author.roles:
+        admiralty = discord.utils.get(ctx.guild.roles, name="Admiralty")
+        gunner = discord.utils.get(ctx.guild.roles, name="Gunner")
+        if admiralty in ctx.author.roles or gunner in ctx.author.roles:
             if await db.discord_users.find_one({'_id':user.id}):
                 await ctx.respond('User is already registered.')
             elif await db.discord_users.find_one({'nation_id':nation_id}):
@@ -747,8 +748,9 @@ async def unregister(ctx, user:discord.User=None, nation_id:int=None, admin:bool
         else:
             await ctx.respond('You are not registered.')
     elif admin == True and user != None and nation_id == None:
-        role = discord.utils.get(ctx.guild.roles, name="Admiralty")
-        if role in ctx.author.roles:
+        admiralty = discord.utils.get(ctx.guild.roles, name="Admiralty")
+        gunner = discord.utils.get(ctx.guild.roles, name="Gunner")
+        if admiralty in ctx.author.roles or gunner in ctx.author.roles:
             if await db.discord_users.find_one({'_id':user.id}):
                 await db.discord_users.delete_one({'_id':user.id})
                 await ctx.respond('Unregistration successful!')
@@ -773,8 +775,9 @@ async def unregister(ctx, user:discord.User=None, nation_id:int=None, admin:bool
 
 @client.slash_command(description="Update a user's verification details.")
 async def update_verification(ctx, user:discord.User, nation_id:int):
-    role = discord.utils.get(ctx.guild.roles, name="Admiralty")
-    if role in ctx.author.roles:
+    admiralty = discord.utils.get(ctx.guild.roles, name="Admiralty")
+    gunner = discord.utils.get(ctx.guild.roles, name="Gunner")
+    if admiralty in ctx.author.roles or gunner in ctx.author.roles:
         user = await db.discord_users.find_one({'_id':user.id})
         if user:
             await db.discord_users.update_one({'_id':user.id}, {"$set": {'_id':user.id, 'nation_id':nation_id}})
@@ -1099,7 +1102,8 @@ async def counter(ctx,
 async def warchest(ctx, nation_id:int=None, user:discord.User=None):
     admiralty = discord.utils.get(ctx.guild.roles, name="Admiralty")
     mentor = discord.utils.get(ctx.guild.roles, name="Mentor")
-    if admiralty in ctx.author.roles or mentor in ctx.author.roles:
+    gunner = discord.utils.get(ctx.guild.roles, name="Gunner")
+    if admiralty in ctx.author.roles or mentor in ctx.author.roles or gunner in ctx.author.roles:
         await ctx.defer(ephemeral=True)
         try:
             if user != None and nation_id == None:
