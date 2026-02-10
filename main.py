@@ -82,6 +82,7 @@ async def retry_task(coro, task_name, delay=5, max_delay=3600):
 @client.event
 async def on_ready():
     game = discord.Game("it cool.")
+    await client.wait_until_ready()
     await client.change_presence(status=discord.Status.online, activity=game)
 
     if not running_tasks["tinydb_update"]:
