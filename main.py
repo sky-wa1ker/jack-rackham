@@ -273,6 +273,14 @@ def efficient_combinations(resistance):
     return list(zip(counts, sorted_combinations))
 
 
+async def resolve_channel(channel_id: int):
+    channel = client.get_channel(channel_id)
+    if channel:
+        return channel
+    else:
+        return await client.fetch_channel(channel_id)
+
+
 ######################## loops and tasks ############################
 
 
@@ -318,7 +326,7 @@ async def recruitment():
 <p style="text-align: center;"><br></p>
 <p style="text-align: center;"><a href="https://politicsandwar.fandom.com/wiki/Arrgh#The_Pirate_Code" rel="noopener noreferrer" target="_blank"><strong>Know more about us (The Pirate Code)</strong></a></p>
 """
-    channel = client.get_channel(312420656312614912)
+    channel = await resolve_channel(312420656312614912)
     subscription = await kit.subscribe("nation", "create")
     async with aiohttp.ClientSession() as session:
         async for nation in subscription:
@@ -334,7 +342,7 @@ async def recruitment():
 
 
 async def off_war_alert():
-    channel = client.get_channel(514689777778294785)
+    channel = await resolve_channel(514689777778294785)
     subscription = await kit.subscribe("war","create", filters={"att_alliance_id": [913]})
     async with aiohttp.ClientSession() as session:
         async for war in subscription:
@@ -397,7 +405,7 @@ Projects
 
 
 async def def_war_alert():
-    channel = client.get_channel(514689777778294785)
+    channel = await resolve_channel(514689777778294785)
     subscription = await kit.subscribe("war","create", filters={"def_alliance_id": [913]})
     async with aiohttp.ClientSession() as session:
         async for war in subscription:
@@ -466,8 +474,8 @@ Projects
 
 @tasks.loop(minutes=30)
 async def captains_update():
-    crew_channel = client.get_channel(1255666123509071932)
-    admiralty_channel = client.get_channel(220580210251137024)
+    crew_channel = await resolve_channel(1255666123509071932)
+    admiralty_channel = await resolve_channel(220580210251137024)
     async with aiohttp.ClientSession() as session:
         async with session.post(graphql, json={'query': f'''
 {{
@@ -548,7 +556,7 @@ Wars : `⬆️ {captain["offensive_wars_count"]} | ⬇️ {captain["defensive_wa
 
 @tasks.loop(minutes = 15)
 async def menu():
-    channel = client.get_channel(858725272279187467) #menu channel
+    channel = await resolve_channel(858725272279187467) #menu channel
     try:
         misc = await db.misc.find_one({'_id':"menu_id"})
     except PyMongoError as e:
@@ -598,7 +606,7 @@ Set beige alert with : `/beige_alert add`
 
 @tasks.loop(minutes = 3)
 async def big_bank_scanner():
-    channel = client.get_channel(858725272279187467) #menu channel
+    channel = await resolve_channel(858725272279187467) #menu channel
     try:
         misc = await db.misc.find_one({'_id':"big_tx"})
     except PyMongoError as e:
